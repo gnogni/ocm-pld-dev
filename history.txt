@@ -1,0 +1,598 @@
+--
+-- *.*
+--   ESE MSX-SYSTEM3 / MSX clone on a Cyclone FPGA (ALTERA)
+--   Revision 1.00
+--
+-- Copyright (c) 2006 Kazuhiro Tsujikawa (ESE Artists' factory)
+-- Copyright (c) 2006 D4 Enterprise,Inc.
+-- Copyright (c) 2006 MSX association
+-- All rights reserved.
+--
+-- Redistribution and use of this source code or any derivative works, are
+-- permitted provided that the following conditions are met:
+--
+-- 1. Redistributions of source code must retain the above copyright notice,
+--    this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright
+--    notice, this list of conditions and the following disclaimer in the
+--    documentation and/or other materials provided with the distribution.
+-- 3. Redistributions may not be sold, nor may they be used in a commercial
+--    product or activity without specific prior written permission.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+-- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+-- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+-- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+-- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+-- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+-- OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+-- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+-------------------------------------------------------------------------------------------------------------------
+-- OCM-PLDs modified, compiled and tested by KdL 2006-2021
+-------------------------------------------------------------------------------------------------------------------
+--
+-- Dedicated firmware for the following 1st Gen machines based on Altera Cyclone I:
+--                1chipMSX, Zemmix Neo (KR), Zemmix Neo BR, SX-1 (regular) and [SX-1 Mini/Mini+].
+--
+-- Dedicated firmware for the following 2nd Gen machines based on Altera Cyclone IV-E:
+--                SM-X (regular), [SM-X Mini] and SX-2.
+--
+-- [!] ATTENTION: the machines in square brackets have not been tested directly by me as I do not own them.
+-------------------------------------------------------------------------------------------------------------------
+--
+-- KdL Index!     https://gnogni.altervista.org
+--
+-- HRA!           http://hraroom.s602.xrea.com  &  http://www5d.biglobe.ne.jp/hra/note/onechipmsx
+-- caro           http://www.caro.su/msx/ocm_de0.htm  &  http://www.caro.su/msx/ocm_de1.htm
+-- Yuukun         http://miyako.asablo.jp/blog
+-- György         http://github.com/gyurco/MSX_MiST
+-- uniabis        http://uniabis.net/pico/msx/deocmpldcv/
+-- Victor Trucco  http://www.victortrucco.com  &  http://gitlab.com/victor.trucco/sm-x
+-- 8bits4ever     http://www.8bits4ever.net/msx
+--
+-- Grauw          http://map.grauw.nl
+-- TNI            http://www.tni.nl  &  http://ips.tni.nl/system-rom/logofix
+-- XL2S           http://www.xl2s.tk
+-- TobiFlex       http://www.cpcwiki.eu/index.php/TobiFlex  &  http://www.symbos.de
+-- Sebbeug        http://www.sebbeug.fr/msx/1chipMSX
+-- Konamiman      http://www.konamiman.com  &  http://github.com/Konamiman/Nextor/releases
+-- ducasp         http://github.com/ducasp
+--
+-- MRC thread     http://www.msx.org/forum/msx-talk/revival/one-chip-msx-improvement-project?page=999
+-- TASM32ud       http://www.msx.org/forum/development/cross-development/chaos-assembler-z80-undocumented-features
+--
+-- Notepad++      http://notepad-plus-plus.org
+--
+-- Quartus II v11.0sp1 Web Edition (1chipMSX, Zemmix Neo and SX-1)
+--                http://mega.nz/file/FdJgSbDB#UL9W4iM1T9rx_FdcbCuBwgtiTp8P2tDoiClobiNTQnI
+--
+-- Quartus II v13.0sp1 Web Edition (SM-X and SX-2)
+--                http://fpgasoftware.intel.com/13.0sp1/?edition=web
+-------------------------------------------------------------------------------------------------------------------
+--
+-- Special thanks to:
+--                Erik F. Luppes, Marcel Schipper, Alexandre Souza, Enrico Barbisan, Simon Vis, Dmitriy Pichugin,
+--                Jos van den Biggelaar, Luciano Cadari, Camilo Daniel Fernandez, Masaaki Furuta, Antxiko Gorjon,
+--                Arjan van Kooi, Alex Mena, André Ligthart, Emerson Polesi, Niels Walta, Liberatore Maggetti,
+--                Max Feingold, Byoung Wook Kim, Sander Morsink, Alexandre Barros, Miguel Ángel Fernández López,
+--                Sébastien Guebels, Márcio Nascimento, Rodrigo Fernandes, Luis Fernando Luca, Fabio Belavenuto,
+--                Renato Navaro, Fabiano Szuba, Anderson Cleiton Pacheco, Alexandre Felipe Salgado Figueiredo,
+--                Bernat sot Rahola, Danilo Drago, Victor Chung, Markus Vordermeier, Jose Angel Velasco Fernandez,
+--                Jorge Torres Chacon, Fukushi Toyotaka, Alonso Jose Nuñez Gonzalez, Javier Molejon Saavedra,
+--                Pedro Prado, Fabio Augusto Carmelita Rodrigues Dos Santos, Emerson Cavallari, Sandro Singer,
+--                Alexandre Da Silva Oliveira, Fabio Ritter, Mauricio Ferreira Cresti, Benjamin Wiley Sittler,
+--                Mario Cavalcanti, Danilo Angelo, Patrick van Arkel, Massimiliano Privato, Jacco Bot, Ferrerico,
+--                Maarten Loor and Andre Ruiz.
+-------------------------------------------------------------------------------------------------------------------
+--
+
+
+__________________________________
+v3.x KdL/HRA's Unofficial Release \________________________________________________________________________________
+
+
+v3.9 [2021.08.23] [KdL's Updates!]
+
+- Updated Switched I/O ports ($40-$4F) module to Revision 10:
+  new features dedicated to 2nd Gen machines, so SM-X and SX-2 can control Internal OPL3 and VGA Scalines.
+  Removed the signal called "ZemmixNeo" in order to make the specification less constrained to the type of machine.
+- Updated documentation in the [docs\] folder, including the "hardware patches to 2020.10.16" now summarized.
+- Updated 'mglocm.com' v2.2a (2021.08.11) in the [msxtools\mglunch\] folder.
+- Updated jic2pld converter which now allows you to auto-adapt the input files for EPCS16 and higher devices.
+- Updated and revised all the scripts to compile and collect firmware. The 'zz5_set_synthesis_seed.cmd' script
+  is used on the 1st Gen machines to generate random variants needed to re-enter when space limits are exceeded.
+  Using this script also allows you to find better solutions than others, thus achieving system stability.
+- New RESET model rewritten and parsed from zero. The new method improves the compatibility of external cartridges.
+  Three actions are available: a simple click <1s for a quick reset; a long click >1s that reloads SDBIOS; a click
+  during the initial flashing allows you to cancel SDBIOS and force the use of EPBIOS without removing the SD card.
+- New Autofire module, a function suggested by Konamiman currently only available for 2nd Gen machines, by HRA!
+  The list of special keys has been updated as usual in the 'details.txt' of the [firmware\] folder.
+- New F2 device designed by me to manage the operating states of the ESP8266 Wi-Fi BIOS implemented by ducasp.
+- Improved Wi-Fi module with Quick Receive support by ducasp, LFSR counter and some minor optimizations.
+- Improved System Timer (S1990) module with LFSR counter and reset command, based on the HRA! project.
+- Improved and fixed RTC module by HRA! with some changes made by me like LFSR counter and rtcena signal.
+- Improved some critical counters, now they are programmed separately if XTAL is 21.47727MHz or 50.00000MHz.
+- Improved VDP wait controller, LMMV is reverted to normal speed in accordance with the current VDP update.
+- Improved VDP R#23 for the text modes and added support for TEXTQ and MULTIQ modes, by HRA!
+- Optimized turboR PCM Device with LFSR counter.
+- Optimized CMT control on 2nd Gen machines, the SCRLK key has been re-mapped as a toggle for the Internal OPL3.
+- Added Wi-Fi support for 1st Gen machines. A special USB Wi-Fi Header/Dongle with ESP-01 can then be connected to
+  the USB port-1 of 1chipMSX, Zemmix Neo and SX-1 (the USB port-2 is used for the USB keyboard on some Zemmix Neo).
+- Fixed damaged graphics in Fighter's Ragnarök game thanks to a bug fix in VDP R#17 management, by HRA!
+  This fix solves various issues and allows you to successfully run games with the animated Sunrise logo.
+- Separation of the T800 from the T80 thinking about the future R800 clone.
+- Restructuring of the [ocm_sm\] folder now designed to quickly managed new 2nd Gen machines.
+- Cleaned up the source code from parts of unused code and countless optimizations to reduce space.
+- The firmware list has reached a total of sixty builds with the new SX-1 Mini/Mini+, SX-2 and SM-X Mini machines.
+  Firmware interchangeability groups are now highlighted in the 'details.txt' of the [firmware\] folder.
+
+Notes and warnings:
+- Nextor kernel is unable to flash the PLD firmware using 'pldload.com' and the machine can be BRICKED!!
+  The current 'pldflash.com' and 'smxflash.com' are the only ones to do this, be very careful when using them.
+- In case the SD card is not detected after a hard reset, simply reinsert it on the fly or hold the reset for 2s.
+  Nextor can now automatically mount the SD card even if it has not been inserted into the slot before system boot.
+- Some firmware may not be as stable as others. When necessary, I suggest trying another keyboard layout.
+- The most of Microcabin games can run better with the 'runit.com' tool, with 'ep.com' two drives are required.
+  If you experience issues using SofaRun, you may need to increase the loading delay from the game settings.
+- Most of the features of the MSX turboR have not yet been developed and are for testing purposes only. The MULU
+  opcodes and System Timer (S1990) are no longer available on the 1st Gen machines due to the space limit reached.
+- Currently, the MIDI interface is limited to the operation of the MIDRY software and very few others.
+- Philips Music Module does not support the tMegaSD function and only works at 3.58MHz, run SETSMART -030B40 to go.
+- The main cause of instability in the 1st Gen machines is the option "Force Use of Synchronous Clear Signals".
+  This option was introduced in OCM-PLD v2.4 and currently cannot be disabled due to running out of resources.
+  In the 2nd Gen machines this option has been disabled and will not be used, so they are much more stable.
+  Since this new generation does not need more space yet, the compression of the SOF has also been disabled.
+  If necessary, it will still be possible to activate it by modifying the structure of the COF in this way:
+  "<sof_filename>output_files/ocm_sm.sof<compress_bitstream>1</compress_bitstream></sof_filename>".
+- On the 1st Gen machines the hard reset lock function does not work with cartridges due to a hardware limitation.
+  A hardware patch can be made by isolating pin 15 of the slots from the reset button and connecting it to pin 16.
+  This patch is not supported by firmware prior to v3.9 nor by third parties, so I do NOT recommend using it.
+- The ESP8266 Wi-Fi BIOS has NOT been integrated into EPBIOS because its full maturity has not yet been reached.
+
+Some known issues:
+- The sprites disable and enable after three lines instead of after one line, reported by Grauw and Andre.
+- Some PSG sounds are not played accurately and sometimes the OPLL drum kit sounds too loud.
+- The 'Break' command of ESE-PS2 module do not work during the hard reset or if you unplug the keyboard at warm.
+- The current version of MSX turboR BIOS can be started with Internal Mapper 4096kB only using Nextor kernel
+  and generates some issues with the PSG output (simply just listen to the beep sound to confirm it).
+- DIX game won't start due to INT_n inaccuracy, a temporary patch can run it by changing 00293h from C8h to 00h.
+- Internal OPL3 does not work with VGMPlay v1.3 final version but it is still possible to use VGMPlay v1.3-rc5.
+
+
+v3.8.1 [2020.05.23] [KdL's Updates!]
+
+- Updated documentation in the [docs\] folder and added the "hardware patch 2020.04.06" which shows which pull-up
+  resistors must be replaced in the defective machines, in order to correctly use the external cartridges.
+- Added MIDI output on joystick port-2 of the 1chipMSX and Zemmix Neo machines, a preliminary version like SM-X.
+- Fixed the direction of the data bus on SM-X, now the external PSG cartridges work well, tested by ToughkidCST.
+- The firmware are interchangeable only by machine type, therefore DO NOT mix 1chipMSX, Zemmix Neo and SM-X.
+
+v3.8 [2020.01.09] [KdL's Updates!]
+- Updated all keyboard layouts by adding KANA/CODE to the [MENU] key and fixed the assignment of [SHIFT+F6].
+  Also, from this release, the UK layout is renamed to the US layout as it has always been incorrect.
+- Updated documentation in the [docs\] folder.
+- Updated 'vgmplay.com' v1.3-rc5 in the [msxtools\vgmplay\] folder.
+- Updated some scripts to compile and collect firmware.
+- New turboR PCM Device, initial release without a digital filter (LPF), by HRA!
+  If using SDBIOS (MSX2+), version 2.8 or later must be loaded to enable PCM audio at system startup.
+- New contents in the [msxtools\] folder, Read Silicon ID v1.1 and MPCM v1.04 / MPCM-OCM patch.
+- Improved the global reset and some gaps in the Switched I/O ports ($40-$4F) Revision 9.
+- Improved the vertical centering for VGA modes, you need to realign the image screen after the update.
+- Improved VDP wait controller, Sunrise logo works faster now but the graphic glitches are not yet fixed.
+- Improved tMegaSD function to be able to start "Xak Precious Package: The Tower of Gazzel" with SofaRunIt.
+- Improved compatibility for some PS/2 keyboards, by uniabis.
+- Fixed FIELD statement in DISK BASIC version 2.01 of MegaSDHC kernel, by uniabis.
+- Fixed the lack of page flipping (VDP R#13) capability and the undocumented "Cadari" bit, by ducasp.
+- Fixed an issue with OPLL at the amplitude modulation frequency when tremulo is turned on, by GreyRogue.
+- Fixed the WAIT_n signal of external slots that was wrong, by Victor Trucco.
+- Cleaned up the source code in general and converted the ANSI files to the UTF-8 format.
+- The firmware are interchangeable only by machine type, therefore DO NOT mix 1chipMSX, Zemmix Neo and SM-X.
+
+Related to SM-X:
+- Integration of the Firmware Update 1.3 released on 20th November 2019 by Victor Trucco.
+- New DIP-SW User Manual for SM-X in the [docs\] folder and pinout description for the Joystick to MIDI cable.
+- New MYDRI v1.06 in the [msxtools\] folder, an impressive MIDI player compatible with SM-X.
+- New dedicated scripts to compile and collect firmware for SM-X.
+- New IPL-ROM Revision 2.00 with 512kB Dual-EPBIOS to allow a rapid exchange of MegaSDHC and Nextor kernels
+  via DIP-SW7. The use of SDBIOS will continue to run in single mode to maintain an optimal user experience.
+- Improved some general aspects between faster system startup, clearer HDMI sound output and other things.
+- Added the DIP-SW8 status LED to display read/write access to the SD card.
+- Restored the video output configuration to take advantage of "Pixel Ratio 1:1 for LED display" in VGA mode,
+  this solution also fixed PAL mode via the HDMI video output.
+
+
+v3.7.1 [2019.05.20] [KdL's Updates!]
+- Updated the RTCSAVE tool to Revision 3.0 in the [msxtools\rtcsave\] folder,
+  a fixed version of the RTCSETUP.ASC demo example has been moved here from OCM-EXTRA Pack.
+- Updated 'vgmplay.com' v1.3-rc4 in the [msxtools\vgmplay\] folder.
+- Updated some scripts to compile and collect firmware, implemented the use of any version of Quartus II.
+- New contents in the [msxtools\] folder, MSX COMMANDER v1.1.05 and the ZEXALL tool.
+- Improved VDP wait controller for greater game compatibility (games like Breaker and RADX-8 are playable now).
+- Fixed a bug of line buffer for VGA upscan converter, this was causing a limit of 4096 colors in the VGA output.
+- Restored the reset control in the T80 core, all removed signals have been reworked upstream.
+- Regression in luminance calibration to improve the color scale of YJK modes (1chipMSX only).
+- In this release all Zemmix Neo firmware are interchangeable with each other.
+
+v3.7 [2019.04.15] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 9:
+  new Linear support for the Internal Slot-1 and Slot-2 (games like "Tina's Adventure Island" are playable now),
+  thanks to Sebbeug for testing and suggesting its implementation.
+- Updated documentation in the [docs\] folder.
+- Updated 'mglocm.com' v2.0370b (2019.04.12) in the [msxtools\mglunch\] folder.
+- Updated 'vgmplay.com' v1.3-rc3 in the [msxtools\vgmplay\] folder.
+- Updated 'z80_and_r800_opcodes_list.pdf' v1.10 by GDX in the [esemsx3\src\cpu\opcodes\] folder.
+- Updated some scripts to compile and collect firmware, including support for Windows 10 October 2018.
+- New contents in the [msxtools\] folder, some FlashAir tools by Yuukun.
+- New setup for TimeQuest Timing Analyser, in collaboration with György.
+- Improved the overall stability of firmware by removing all the latches, by György.
+  The warning log has been reduced to around 30/35 messages, a negligible value compared to the previous 105/110.
+- Improved detection of the SD card that sometimes failed, by György.
+- Fixed a minor issue in joystick port-2 related to pin 3 management.
+- Cleaned up the source code from parts of unused code and fixed some inaccuracies in the comments.
+- In this release all Zemmix Neo firmware are interchangeable with each other.
+
+
+v3.6.2 [2018.07.27] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 8:
+  added some vertical offsets useful for centering games like Ark-A-Noah and Space Manbow (scmd-$47..$4F).
+- Updated documentation in the [docs\] folder.
+- Updated 'mglocm.com' v1.9e in the [msxtools\mglunch\] folder.
+- Updated some scripts to compile and collect firmware, including support for the 8bits4ever SX-1 board.
+- Updated English keyboard layout by adding optional scancode $61 '\|'.
+- Fixed the playability of ANMA games by improving the accuracy of the H-SYNC signal, thanks to Andre.
+- In this release all Zemmix Neo firmware are interchangeable with each other.
+
+v3.6.1 [2018.06.03] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) datasheet and DIP-SW User Manual in the [docs\] folder with some news:
+  now the VGA mode is the new output for LED TVs or LED displays and the VGA+ mode is the legacy output,
+  the new scmd-$81/$82 can exchange the two VGA modes to better manage the Zemmix Neo hardware scanlines;
+  the trick "Pixel Ratio 1:1 for VGA Output" has been replaced with the new "Pixel Ratio 1:1 for LED Display".
+- Updated 'mglocm.com' (2018.06.03) in the [msxtools\mglunch\] folder.
+- Updated some scripts to compile and collect firmware to improve multi-release stability.
+- Added 'stability_tests.ods' to the [firmware\] folder, a simple procedure to better test all firmware variants.
+- Fixed an overscan PAL mode issue by improving the accuracy of the H-SYNC signal, thanks to Grauw.
+- In this release all Zemmix Neo firmware are back to being interchangeable with each other.
+
+v3.6 [2018.05.14] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 7:
+  new audio presets "Emphasis PSG Sound", "Emphasis SCC-I Sound" and "Emphasis OPLL Sound" (scmd-$44/$45/$46),
+  new [SHIFT+PGUP/PGDOWN] keys to do the fast switch of master volume from max level to middle, min and mute,
+  new "Pixel Ratio 1:1 for VGA Output" (scmd-$7F) a trick to get the correct pixel ratio on a non-CRT display
+  (e.g. A:\>SETSMART -7F7F7F7F is fine for a VX2835WM), fixed scmd-$F9 to allow the use of an external FM-PAC,
+  new scmd-$D6/D7 that allow to force the centering of YJK modes and VDP R#25 mask (useful for MSX2+ games).
+- Updated DIP-SW User Manual in the [docs\] folder.
+- New 'mglocm.com' and 'mglunch.com' (2017.11.18) in the [msxtools\mglunch\] folder.
+- New audio mixer that improve the amplitude of internal sounds and balance the input line of external slots:
+  global audio starts at level 10 out of 13 to avoid clipping for at least two internal chips at a time;
+  to reduce the audio noise, I suggest setting everything to the max level and an external mixer volume of 80%.
+- Improved timings of VDP command engine, the intros of Fray and Space Manbow are okay now but I emphasize that
+  the wait control does not calculate the actual times of the VDP commands, which still makes it inaccurate.
+- Improved VGA output to help directly set a pixel ratio 1:1 on a LED TV at 60Hz (also w/o the trick scmd-$7F).
+- Added MULUB and MULUW opcodes inside T80 Core: MSX turboR BIOS is required to use them, by TobiFlex.
+- Fixed random sprites during the blank screen (ref. Manbow 2) and fixed H-SYNC signal (ref. Unknown Reality).
+- Fixed the border color of YJK modes (SCREEN 10, 11 and 12) that should has been palettized.
+- Fixed the horizontal position of YJK modes by +4 pixels on the right.
+- In this release NOT all Zemmix Neo firmware are interchangeable with each other, a special note is with them.
+
+
+v3.5 [2017.10.10] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 6:
+  added Slot-0 Primary Mode signal to the smart commands, useful to disable FM-BIOS or to run some old games.
+- Updated DIP-SW User Manual in the [docs\] folder.
+- Updated some scripts to compile and collect firmware.
+- New ESE-MegaSCC+ 1024kB for the Slot-1, shared with the 2nd half of ESE-MegaSCC+ Slot-2.
+- New ESE-MegaSCC+ 2048kB for the Slot-2, tested with the beta version of Super Mario World.
+- New 'mglocm.com' with 16 Mbits ROM support in the [msxtools\mglocm\] folder.
+- Improved Slot3-3 allocation, BASIC'n and IPL-ROM are shared now and Slot0-1 is free to use any novelties.
+- In this release all Zemmix Neo firmware are interchangeable with each other.
+
+
+v3.4.2 [2017.10.02] [KdL's Updates!]
+- Updated DIP-SW User Manual in the [docs\] folder.
+- Updated some scripts to compile and collect firmware.
+- New 'z80_and_r800_opcodes_list.pdf' v1.05 by GDX in the [esemsx3\src\cpu\opcodes\] folder.
+- New ESE-MegaRAM ASCII-16K 2048kB, tested with the game Pointless Fighting!
+- Added 'details.txt' to the [firmware\] folder, inside there are firmware descriptions and special keys.
+
+v3.4.1 [2017.09.22] [KdL's Updates!]
+- Added and updated some scripts to compile and collect firmware.
+- Improved Switched I/O ports module, CMT will be disabled if MSX turboR BIOS is detected.
+- Improved DACout signal, run SETAUDIO.COM /S to separate the external audio cartridges from the internal sound.
+- Regression in luminance calibration of RGB 15KHz to improve audio SNR (Zemmix Neo only), thanks to Alex Mena.
+
+v3.4 [2017.09.18] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 5:
+  Right Inverse Audio is a good solution for recording really clean balanced audio, suggested by Grauw.
+- Updated documentation and DIP-SW User Manual in the [docs\] folder.
+- Updated all scripts to compile and collect firmware and added new ones to better manage the multi-release.
+- New generation of Hex-files 304kB from OCM-SDBIOS Pack v2.0
+- New IPL-ROM Revision 2.00 that loads 304kB EPBIOS or 512kB SDBIOS with autodetection of JIS-ROM and F4 Device.
+- New method to improve the system boot time... I am very proud of this result!
+- New contents in the [msxtools\] folder, RTC save v2.2 with source code, new JIS Table and SwapEIDI tools.
+- Added support to Nextor kernel, MSX turboR BIOS and JIS 2nd level: a proper SDBIOS is required for them.
+- Bug fixes and improvements on Internal Mapper 2048kB, Kanji ROM controller, Hard Reset Key lock and I/O ports.
+- New optimization trick which gives a big reduction of 5% in logic elements.
+- The default synthesis settings have been reset to "Area" and "Normal compilation".
+- There are many PLDs in this package, choose the one you like from the [firmware\] folder.
+
+Notes and warnings:
+- The main intent of this release is to open the road for OCM to evolve in a MSX turboR machine and which is why
+  I deliberately avoided the addition of less-used new components (ESE-RAMdisk, RS-232 and MOUSE PS/2 adapter).
+- OCM-SDBIOS v1.9.2 or earlier is no longer supported by now and OCM-SDBIOS v2.0 or later is needed to have fun.
+
+
+v3.3.3 [2017.06.07] [KdL's Updates!]
+- New Hex-files 304kB from OCM-SDBIOS Pack v1.9.2 with MSX3 Final Release and Zemmix Neo logos.
+  "UK layout with backslash" is the default profile from now.
+- New 'pld_collector.cmd' script, a simple collector tool for testing more PLDs.
+- Fixed access to port $40 for external cartridges, thanks to WORP3.
+- The default synthesis settings have been set to "Balanced" and "Extra effort", suggested by Fabio Belavenuto.
+
+Notes:
+- The Nextor kernel will be natively supported by future releases.
+- Sometimes random glitches or other strange issues could be caused by the optimizations of Quartus II.
+  In these situations it is suggested to recompile the project by replacing 'emsx_top.qsf' (balanced technique)
+  with the alternive 'emsx_top.qsf.area'.
+- Some games go to black screen using 'ep.com'. I suggest to enable two disk drives via 'eset.com' and retry.
+
+v3.3.2 [2017.03.27] [KdL's Updates!]
+- Updated the [msxtools\] folder.
+- Calibration of the luminance for both machines 1chipMSX and Zemmix Neo, thanks to Dmitriy Pichugin for testing.
+- Minor fixes and ajustements.
+
+v3.3.1 [2017.03.16] [KdL's Updates!]
+- Updated all scripts to compile and collect firmware.
+- Fixed the issue of VGMPlay by improving the accuracy of the H-SYNC signal, thanks to Grauw.
+
+v3.3 [2017.03.12] [KdL's Updates!]
+- Updated documentation and DIP-SW User Manual in the [docs\] folder.
+- Updated the [msxtools\] folder: use 'eset.com' to add more drive letters and 'ep.com' to mount the disk images.
+- New Hex-files 304kB from OCM-SDBIOS Pack v1.9 with MSX3 Final Release and Zemmix Neo logos.
+- New IPL-ROM Revision 1.05(K) that quickly loads a 304kB EPBIOS/384kB SDBIOS.
+- New SDHC support by Yuukun-OKEI, thanks to MAX.
+- New useful scripts for easy compilation and collection of firmware.
+- Added Brazilian keyboard layout by Fabio Belavenuto, Luis Luca and Emiliano Vaz Fraga.
+- Fixed R0 S#5 timing of VDP TH9958 by Yuukun: the intro of Dragon Quest 2 MSX2 is okay now, thanks to miyashu.
+- Fixed the RstEna signal through regression and other minor fixes (RC2_2014.11.20).
+- Fixed MainRAM/MegaRAM clear function (RC1_2014.11.16).
+
+Notes:
+- As regards the speed of cpu I inform you that "custom 8.06MHz" is the same 10.74MHz of the original firmware.
+  All the "custom speed" frequencies were acquired with a comparison benchmark through blueMSX and openMSX.
+- The initial VDP-V9938 core is finally deprecated since the VDP-TH9958 has achieved the same stability.
+
+A known issue:
+- VGMPlay has been fixed by Grauw for a inaccuracy of H-SYNC signal.
+
+
+v3.2.3 [2014.10.11] [KdL's Updates!]
+- New "Only A:" BIOS patch: the [CTRL] key will not be longer to press at boot, thanks to pmt7ar.
+
+v3.2.2 [2014.07.27] [KdL's Updates!]
+- Fixed the INT_n signal of VDP TH9958: the MIDI-IN of Music Module is okay now, thanks to msxkun.
+  This fix is also for the black screen on PlaySoniq and Franky cartridges, thanks to msd.
+
+v3.2.1 [2014.06.05] [KdL's Updates!]
+- Fixed OPLL I/O address that it had overlapped to the OPL4 cartridges, thanks to Retro fan.
+
+v3.2 [2013.12.15] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 4.
+- Updated documentation and DIP-SW User Manual in the [docs\] folder.
+- Updated the [msxtools\] folder.
+- New Hex-files 320kB from OCM-SDBIOS Pack v1.4 with MSX3 and Zemmix Neo logos.
+- New IPL-ROM Revision 1.01(K) that quickly loads a 320kB EPBIOS/384kB SDBIOS.
+- New LFSR counter for RTC module and speed limiter for logo animation.
+- New external clock rule, the toggles are limited to 5.37MHz for async mode.
+- New ID "Machine Type" (0-15) for OCM, Zemmix Neo, Altera DE0/DE1, etc.
+- New rules for LEDs and VGA luminance by machine type.
+- Added F4 Device Inverted support, also for Warm Reset function.
+- Added PAL 50Hz support for VGA modes, by caro.
+- Added RWIN and LWIN as alternatives to the space-bar, useful for the players.
+- Added CPI(R)CPD(R) undocumented flags inside T80 Core, by TobiFlex.
+- Fixed the black screen event with MegaSD Off, by caro.
+- Fixed various bug on H-Sync and V-Sync of VDP TH9958.
+- Increased VRAM to 1024kB, a full control of 16 pages by 64kB is allowed.
+- Increased the boot speed with CPU clock at 3.58MHz.
+- Improved the hard reset rules and increased the stability of system.
+- Restored [SHIFT+UP/DOWN] toggles to the original master volume.
+- Replaced [PAUSE] key with Lights On/Off control to prevent any data corruption.
+- Enabled the AUTO_RESOURCE_SHARING of Quartus II to get more LEs.
+- There are many PLDs in this package: choose the one you like from the [firmware\] folder.
+
+Note:
+- The T80 Core is fully approved by ZEXALL tool from this release.
+
+Some known issues:
+- MIDI-IN of Music Module do not work properly with VDP TH9958.
+- PlaySoniq and Franky go to black screen from OCM-PLD v2.4 firmware.
+
+
+v3.1 [2011.07.09] [KdL's Updates!]
+- Updated Switched I/O ports ($40-$4F) module to Revision 3.
+- New Pseudo-Stereo, red for external cartridges and white for internal sounds.
+- New asynchronous tPANA, CPU @5.37MHz and Slots @3.58MHz (experimental).
+- Updated documentation and DIP-SW User Manual in the [esemsx3\docs\] folder.
+- Improved tMSD compatibility, its speedup was reduced to 5.37MHz.
+- Improved hard reset and cartridges detection at boot.
+- Improved code readability of sources 'emsx_top.vhd' and 'swioports.vhd'.
+- Hidden the border color '7' at startup on all Hex-files.
+- Updated the [msxtools\] folder.
+- Added Western Hex-file, suggested for future new layouts.
+- Added Spanish keyboard layout by DRomeo.
+- MSX2 and MSX2+ all in one. PLDs in this package:
+  31ukyen?.pld is  English keyboard layout with yen
+  31jpyen?.pld is Japanese
+  31ukbsl?.pld is  English keyboard layout with backslash
+  31frbsl?.pld is   French
+  31esbsl?.pld is  Spanish
+
+Notes:
+- Recommended configuration for Pseudo-Stereo and MoonBlaster:
+  red for right output and white for left output.
+- [PAUSE] key is not really stable. Make caution using it!
+
+
+v3.0 [2011.05.19] [KdL's Updates!]
+- MSX2+ edition based on OCM-PLD Pack v2.4
+- Updated Switched I/O ports ($40-$4F) module to Revision 2.
+- New documentation and DIP-SW User Manual in the [esemsx3\docs\] folder.
+- IPL-ROM module that include the Pletter routine by caro.
+- Stable release of VDP, PSG and KANJI modules by HRA!
+- Improved hard reset key: one click for a fast reset.
+  Hold few seconds or double click for a complete reset.
+- Improved code readability of sources replacing tabs with spaces.
+- Minor fixes to improved LEs resources.
+- Updated the [msxtools\] folder.
+- New custom Hex-files compressed by Pletter:
+  yen or backslash, 80 columns, key click off and logo antialiasing fix.
+- PLDs in this package: JP layout, UK yen, UK backslash and FR backslash.
+- This release has been optimized with Quartus II 11.0 Web Edition.
+
+A tip:
+- loading a BIOS from SD card, get the 1st boot faster:
+  check the [msxtools\rtcsave\] folder to read more.
+
+
+____________________
+v2.x (discontinued) \______________________________________________________________________________________________
+
+
+v2.4 [2011.04.13] [KdL's Updates!]
+- New Switched I/O ports ($40-$4F) module.
+- New documentation and DIP-SW User Manual in the [esemsx3\docs\] folder.
+- Added an additional cpu clock of 5.37MHz, tPANA with redirection possibility.
+- Added a hybrid clock to get fast SD card access with any cpu clock, tMegaSD.
+- Added fine-tuning at 10MHz, controlled by [SHIFT+PGUP/PGDOWN] keys.
+- Added T80 undocumented DDCB and FDCB opcodes, by TobiFlex.
+- Added an additional French keyboard layout, by Atheus.
+- Added many LED options and adjusted light intensity.
+- Renew and improved RTC module realized by HRA!
+- Improved stability of [PAUSE] key but still isn't perfect! Tested on KMGR3SCC.
+- Fixed minor bugs on PS/2 keyboard interface module.
+- Disabled OSD and Debug Window to cut LEs.
+- Disabled SCC interpolation to cut LEs.
+- Modified and updated the [msxtools\] folder.
+- Modified hex-file to get easy a customizable MSX2 bios, mainly to have
+  80 columns, key click sound off, backslash and logo antialiasing fix.
+- PLDs in this package: JP layout, UK yen, UK backslash and FR backslash.
+- This release has been optimized with Quartus II 8.1 Web Edition using:
+  * Ignore LCELL Buffers [On]
+  * Force Use of Synchronous Clear Signals [On]
+
+A known issue:
+- Fray Intro Disk have start with corrupted sound and freeze over 6.10MHz.
+
+
+v2.3 [2010.04.13] [KdL's Updates!]
+- Fixed a bug inside of "vm2413.vhd" source code.
+- Modified DIP-SW4 original function with 2MB/4MB memory mapper selection.
+- There is a separated PLD file for every keyboard layout.
+  These files have been optimized with Quartus II 9.1sp2 Wed Edition.
+- Updated DIP-SW User Manual [esemsx3\src\doc\dipsw_v23.htm].
+- This package will have the full source code from now.
+
+A tip:
+- to bypass the error messages of MSXDOS2 when drive B: of the MegaSD
+  is empty, make an ASSIGN B:=A: at the prompt of the command line.
+
+
+v2.2b [2008.04.13] [KdL/HRA/caro's Updates!]
+- Improved SCC_RAM module (by caro).
+- Fixed RTC module (by HRA!).
+- Fixed SCREEN 0 blink timing (by caro/HRA!).
+- Fixed OPLL VM2413 controller (by HRA!).
+- Fixed low-pass filter of sound mixer (by HRA!).
+- Added Slot-1 selector on [SHIFT+F12] key.
+- Added Slot-2 selector on [SHIFT+Scroll Lock] key.
+- Swapped DIP-SW7 and DIP-SW8 position.
+- Restored VGA high luminance.
+- Forced all VGA modes at 60Hz.
+- VDP Debug Mode is disabled but source code contain it again.
+- Updated DIP-SW User Manual [src_upgrade\doc\dipsw_v2x.htm].
+
+v2.2a [2008.03.21] [KdL's Updates!]
+- [F12] is Clock Inverter Toggle that swap DIP-SW6 status temporary.
+- [SHIFT+F12] is "VDP Debug Mode" for now.
+- Updated DIP-SW User Manual [src_upgrade\doc\dipsw_v2x.htm].
+
+v2.2 [2008.03.15] [KdL's Updates!]
+- Added all DIP-SW status LED.
+- Mixed Print Screen and DIP-SW1/2 status LEDs.
+- Mixed SD/MMC access lamp to DIP-SW8 status LED.
+- Modified VGA full amplitude mode into new VGA 60Hz forced mode without
+  affecting VDP R9: sync or other graphic problems are possible when PAL
+  mode is selected with this combination (for test purpose only).
+- New CMT switch is [SCROLL LOCK] key (OFF by default).
+- Scroll Lock status LED is now CMT status LED.
+- Power status LED is now Pause status LED (OFF when Paused).
+- Num Lock status LED is now Kana (F7) status LED.
+- Restored original VDP module.
+- Updated DIP-SW User Manual [src_upgrade\doc\dip_sw_v2_2.htm].
+
+
+v2.1 [2007.05.20] [HRA's Updates!]
+- Improved operation precision of SCC and OPLL modules.
+- Restored original PSG module.
+
+Relevant link:
+http://www5d.biglobe.ne.jp/~hra/note/onechipmsx/files/emsx_top_20070520.zip
+
+
+v2.0 [2007.02.20] [HRA's New Model!]
+- Adapted and added System Timer (S1990) (I/O $E6-$E7).
+- Added Mega-RAM SCC+(1MB) to Slot-1 when DIP-SW3=ON.
+- Added DIP-SW6 status on 2nd LED from right.
+- Added DIP-SW3 status on 3rd LED from right.
+- Added a better low pass filter to audio output.
+- Modified standard mapper from 1MB to 2MB.
+- Fixed an access problem to SCC registry.
+- Fixed many problems to VDP routines.
+- Fixed a problem to the 5tap FIR Filter.
+- Fixed a problem to SCC signal compared to the original hardware.
+- Removed the noise on SCC output.
+- Removed CMT function and Audio-R enabled when DIP-SW3=OFF.
+- Added 4th and 5th LED from right as test for VDP output.
+
+Relevant link:
+http://www5d.biglobe.ne.jp/~hra/note/onechipmsx/files/emsx_top_20070214.zip
+
+
+____________________
+v1.x (discontinued) \______________________________________________________________________________________________
+
+
+v1.2 [2007.02.20]
+- Changed the clock model to select frequency in realtime via DIP-SW6
+  (however, it does not advised).
+- Stability improved in 10MHz mode.
+- Unnecessary signals deleted.
+- CMT restored from original source (originally removed by HRA!).
+- Mixer circuit and the volume adjustment circuits are now separated.
+- Default PSG/SCC-I/OPLL volume is set to the max value.
+
+Relevant link:
+http://www5d.biglobe.ne.jp/~hra/note/onechipmsx/top.htm
+
+
+v1.1 [2007.02.20]
+- Reshaped PSG to reduce noise.
+
+Relevant link:
+http://www5d.biglobe.ne.jp/~hra/note/onechipmsx/psg.htm
+
+
+v1.0 [2006.12.16]
+- Changed the LEDs from 'Knight Rider' mode to SD/MMC access lamp.
+- Fixed a boot issue when starting/resetting in 10MHz mode.
+
+Relevant link:
+http://www5d.biglobe.ne.jp/~hra/note/onechipmsx/index.htm
+
+
+___________________________________________________________________________________________________________________
+Enjoy!
+

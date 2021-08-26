@@ -1,0 +1,2 @@
+# OpenFile D:/download/DE0-CV/OCM-PLD/ocm-pld_v3.9/ocm_sm/src_addons/peripheral/test_of_autofire/vsim.wlf
+add wave -position end vsim:/tb/u_autofire/*

@@ -1,0 +1,65 @@
+Firmware Collection
+===================
+- Choose a firmware by machine type, keyboard layout and EPBIOS type from the available variants.
+
+- For 1chipMSX, Zemmix Neo, SX-1 (regular) and SX-1 Mini/Mini+,
+    copy the 'emsx_top.pld' file in the same folder of 'flash.bat' and 'pldflash.com' files
+    and run these command lines from MSX-DOS 2 to go:
+
+  A:\>FLASH EMSX_TOP.PLD
+    or
+  A:\>SET EXPERT ON
+  A:\>PLDFLASH EMSX_TOP.PLD
+
+- For SM-X (regular), SM-X Mini and SX-2,
+    copy the 'ocm_sm.pld' file in the same folder of 'xflash.bat' and 'smxflash.com' files
+    and run these command lines from MSX-DOS 2 to go:
+
+  A:\>XFLASH OCM_SM.PLD
+    or
+  A:\>SET EXPERT ON
+  A:\>SMXFLASH OCM_SM.PLD
+
+- The 'pld_collector.cmd' script is a firmware collection tool useful to quickly put them on the SD card.
+
+
+WARNING!! Do NOT turn off the device until the Flash Process is done
+--------------------------------------------------------------------
+A corrupted PLD file might cause your system to FAIL!
+Any damages caused by improper operations of updating the firmware is at your own risk. Please be responsible.
+
+Using incorrect firmware, you may need to use the recovery procedures as described below.
+
+
+Recovery Guide for 1chipMSX, Zemmix Neo, SX-1 (regular) and SX-1 Mini/Mini+
+===========================================================================
+Here is how to flash the device after a failed update using a personal computer with Windows OS.
+
+1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
+
+2. Download and install Stand-Alone Quartus II Programmer 11.0sp1 (free):
+http://mega.nz/file/UMIBRawT#65w_Q1o5ZRJpghSjrZAyCSrc7IpdXIhVjnxaNLG6Vn4
+
+3. For 1chipMSX and Zemmix Neo, open the case and attach the cable on the JTAG connector with the pin-1 towards the front of device.
+   For SX-1 (regular) and SX-1 Mini/Mini+, check out the provided documentation or ask to the manufacturer.
+
+4. Run the programmer and power on the device, select "Active Serial Programming" method to load a dedicated 'recovery.pof' file.
+
+
+Recovery Guide for SM-X (regular), SM-X Mini and SX-2
+=====================================================
+Here is how to flash the device after a failed update using a personal computer with Windows OS.
+
+1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
+
+2. Download and install Stand-Alone Quartus II Programmer 13.0sp1 (free):
+http://download.altera.com/akdlm/software/acdsinst/13.0sp1/232/ib_installers/QuartusProgrammerSetup-13.0.1.232.exe
+
+3. For SM-X (regular), go to the bottom and attach the cable on the JTAG connector with the pin-1 towards the front of device.
+   For SM-X Mini and SX-2, check out the provided documentation or ask their respective manufacturers.
+
+4. Run the programmer and power on the device, select "JTAG" method to load a dedicated 'recovery.jic' file.
+
+
+______________
+KdL 2021.08.23

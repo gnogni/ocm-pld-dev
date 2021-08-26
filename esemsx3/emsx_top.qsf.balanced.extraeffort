@@ -1,0 +1,654 @@
+# Project-Wide Assignments
+# ========================
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "4.1 SP2"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:28:47  OCTOBER 07, 2004"
+set_global_assignment -name LAST_QUARTUS_VERSION "11.0 SP1"
+set_global_assignment -name VHDL_FILE src/video/vdp.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_colordec.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_command.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_doublebuf.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_graphic123m.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_graphic4567.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_hvcounter.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_interrupt.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_linebuf.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_ntsc_pal.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_package.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_register.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_spinforam.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_sprite.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_ssg.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_text12.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_vga.vhd
+set_global_assignment -name VHDL_FILE src/video/vdp_wait_control.vhd
+set_global_assignment -name VHDL_FILE src/video/vencode.vhd
+set_global_assignment -name VHDL_FILE src/sound/scc/megaram.vhd
+set_global_assignment -name VHDL_FILE src/sound/scc/scc_wave.vhd
+set_global_assignment -name VHDL_FILE src/sound/psg/psg.vhd
+set_global_assignment -name VHDL_FILE src/sound/psg/psg_wave.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/AttackTable.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/Controller.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/EnvelopeGenerator.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/EnvelopeMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/FeedbackMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/LinearTable.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/Operator.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/Opll.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/OutputGenerator.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/OutputMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/PhaseGenerator.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/PhaseMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/RegisterMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/SineTable.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/SlotCounter.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/TemporalMixer.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/vm2413.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/VoiceMemory.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/vm2413/VoiceRom.vhd
+set_global_assignment -name VHDL_FILE src/sound/opll/eseopll.vhd
+set_global_assignment -name VHDL_FILE src/sound/lpf/lpf.vhd
+set_global_assignment -name VHDL_FILE src/sound/filter/esefir5.vhd
+set_global_assignment -name VHDL_FILE src/sound/filter/tapram.vhd
+set_global_assignment -name VHDL_FILE src/sound/dac/esepwm.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/eseps2.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/fifo.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/iplrom_304k.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/kanji.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/keymap.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/mapper.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/megasd.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/midi.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/ram.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/swioports.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/systemtimer.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/UART.vhd
+set_global_assignment -name VHDL_FILE src/peripheral/wifi_lite.vhd
+set_global_assignment -name VHDL_FILE src/sys/pll4x.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80_Pack.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE src/cpu/T80a.vhd
+set_global_assignment -name VHDL_FILE src/emsx_top.vhd
+set_global_assignment -name VERILOG_FILE src/peripheral/rtc.v
+set_global_assignment -name VERILOG_FILE src/sound/tr_pcm/tr_pcm.v
+set_global_assignment -name SDC_FILE emsx_top_constrains.sdc
+
+# Pin & Location Assignments
+# ==========================
+set_location_assignment PIN_1 -to pJoyA[0]
+set_location_assignment PIN_2 -to pJoyA[4]
+set_location_assignment PIN_3 -to pJoyA[1]
+set_location_assignment PIN_4 -to pJoyA[5]
+set_location_assignment PIN_5 -to pJoyA[2]
+set_location_assignment PIN_6 -to pStrA
+set_location_assignment PIN_7 -to pJoyA[3]
+set_location_assignment PIN_8 -to pJoyB[0]
+set_location_assignment PIN_11 -to pJoyB[4]
+set_location_assignment PIN_12 -to pJoyB[1]
+set_location_assignment PIN_13 -to pJoyB[5]
+set_location_assignment PIN_14 -to pJoyB[2]
+set_location_assignment PIN_15 -to pStrB
+set_location_assignment PIN_16 -to pJoyB[3]
+set_location_assignment PIN_17 -to pIopRsv14
+set_location_assignment PIN_18 -to pIopRsv15
+set_location_assignment PIN_19 -to pIopRsv16
+set_location_assignment PIN_20 -to pIopRsv17
+set_location_assignment PIN_21 -to pIopRsv18
+set_location_assignment PIN_23 -to pIopRsv19
+set_location_assignment PIN_28 -to pClk21m
+set_location_assignment PIN_29 -to pExtClk
+set_location_assignment PIN_38 -to pMemClk
+set_location_assignment PIN_39 -to pMemCke
+set_location_assignment PIN_41 -to pIopRsv20
+set_location_assignment PIN_42 -to pIopRsv21
+set_location_assignment PIN_43 -to pLed[0]
+set_location_assignment PIN_44 -to pLed[1]
+set_location_assignment PIN_45 -to pLed[2]
+set_location_assignment PIN_46 -to pLed[3]
+set_location_assignment PIN_47 -to pLed[4]
+set_location_assignment PIN_48 -to pLed[5]
+set_location_assignment PIN_49 -to pLed[6]
+set_location_assignment PIN_50 -to pLed[7]
+set_location_assignment PIN_53 -to pDip[0]
+set_location_assignment PIN_54 -to pDip[1]
+set_location_assignment PIN_55 -to pDip[2]
+set_location_assignment PIN_56 -to pDip[3]
+set_location_assignment PIN_57 -to pDip[4]
+set_location_assignment PIN_58 -to pDip[5]
+set_location_assignment PIN_59 -to pDip[6]
+set_location_assignment PIN_60 -to pDip[7]
+set_location_assignment PIN_61 -to pSd_Dt[1]
+set_location_assignment PIN_62 -to pSd_Dt[0]
+set_location_assignment PIN_63 -to pSd_Ck
+set_location_assignment PIN_64 -to pSd_Cm
+set_location_assignment PIN_65 -to pSd_Dt[3]
+set_location_assignment PIN_66 -to pSd_Dt[2]
+set_location_assignment PIN_67 -to pPs2Dat
+set_location_assignment PIN_68 -to pPs2Clk
+set_location_assignment PIN_73 -to pVideoDat
+set_location_assignment PIN_74 -to pVideoVS_n
+set_location_assignment PIN_75 -to pVideoHS_n
+set_location_assignment PIN_76 -to pVideoClk
+set_location_assignment PIN_77 -to pDac_VB[0]
+set_location_assignment PIN_78 -to pDac_VB[1]
+set_location_assignment PIN_79 -to pDac_VB[2]
+set_location_assignment PIN_82 -to pDac_VB[3]
+set_location_assignment PIN_83 -to pDac_VB[4]
+set_location_assignment PIN_84 -to pDac_VB[5]
+set_location_assignment PIN_85 -to pDac_VG[0]
+set_location_assignment PIN_86 -to pDac_VG[1]
+set_location_assignment PIN_87 -to pDac_VG[2]
+set_location_assignment PIN_88 -to pDac_VG[3]
+set_location_assignment PIN_93 -to pDac_VG[4]
+set_location_assignment PIN_94 -to pDac_VG[5]
+set_location_assignment PIN_95 -to pDac_VR[0]
+set_location_assignment PIN_98 -to pDac_VR[1]
+set_location_assignment PIN_99 -to pDac_VR[2]
+set_location_assignment PIN_100 -to pDac_VR[3]
+set_location_assignment PIN_101 -to pDac_VR[4]
+set_location_assignment PIN_104 -to pDac_VR[5]
+set_location_assignment PIN_105 -to pDac_SL[0]
+set_location_assignment PIN_106 -to pDac_SL[1]
+set_location_assignment PIN_107 -to pDac_SL[2]
+set_location_assignment PIN_108 -to pDac_SL[3]
+set_location_assignment PIN_113 -to pDac_SL[4]
+set_location_assignment PIN_114 -to pDac_SL[5]
+set_location_assignment PIN_115 -to pDac_SR[0]
+set_location_assignment PIN_116 -to pDac_SR[1]
+set_location_assignment PIN_117 -to pDac_SR[2]
+set_location_assignment PIN_118 -to pDac_SR[3]
+set_location_assignment PIN_119 -to pDac_SR[4]
+set_location_assignment PIN_120 -to pDac_SR[5]
+set_location_assignment PIN_121 -to pSltSlts2_n
+set_location_assignment PIN_122 -to pSltCs1_n
+set_location_assignment PIN_123 -to pSltCs2_n
+set_location_assignment PIN_124 -to pSltCs12_n
+set_location_assignment PIN_125 -to pSltSltsl_n
+set_location_assignment PIN_126 -to pSltRsv5
+set_location_assignment PIN_127 -to pSltRfsh_n
+set_location_assignment PIN_128 -to pSltWait_n
+set_location_assignment PIN_131 -to pSltInt_n
+set_location_assignment PIN_132 -to pSltM1_n
+set_location_assignment PIN_133 -to pSltBdir_n
+set_location_assignment PIN_134 -to pSltIorq_n
+set_location_assignment PIN_135 -to pSltMerq_n
+set_location_assignment PIN_136 -to pSltWr_n
+set_location_assignment PIN_137 -to pSltRd_n
+set_location_assignment PIN_138 -to pSltRsv16
+set_location_assignment PIN_139 -to pSltAdr[9]
+set_location_assignment PIN_140 -to pSltAdr[15]
+set_location_assignment PIN_141 -to pSltAdr[11]
+set_location_assignment PIN_143 -to pSltAdr[10]
+set_location_assignment PIN_144 -to pCpuClk
+set_location_assignment PIN_152 -to pSltClk
+set_location_assignment PIN_153 -to pSltRst_n
+set_location_assignment PIN_156 -to pSltAdr[7]
+set_location_assignment PIN_158 -to pSltAdr[6]
+set_location_assignment PIN_159 -to pSltAdr[12]
+set_location_assignment PIN_160 -to pSltAdr[8]
+set_location_assignment PIN_161 -to pSltAdr[14]
+set_location_assignment PIN_162 -to pSltAdr[13]
+set_location_assignment PIN_163 -to pSltAdr[1]
+set_location_assignment PIN_164 -to pSltAdr[0]
+set_location_assignment PIN_165 -to pSltAdr[3]
+set_location_assignment PIN_166 -to pSltAdr[2]
+set_location_assignment PIN_167 -to pSltAdr[5]
+set_location_assignment PIN_168 -to pSltAdr[4]
+set_location_assignment PIN_169 -to pSltDat[1]
+set_location_assignment PIN_170 -to pSltDat[0]
+set_location_assignment PIN_173 -to pSltDat[3]
+set_location_assignment PIN_174 -to pSltDat[2]
+set_location_assignment PIN_175 -to pSltDat[5]
+set_location_assignment PIN_176 -to pSltDat[4]
+set_location_assignment PIN_177 -to pSltDat[7]
+set_location_assignment PIN_178 -to pSltDat[6]
+set_location_assignment PIN_179 -to pSltSw1
+set_location_assignment PIN_180 -to pSltSw2
+set_location_assignment PIN_181 -to pMemDat[0]
+set_location_assignment PIN_182 -to pMemDat[1]
+set_location_assignment PIN_183 -to pMemDat[2]
+set_location_assignment PIN_184 -to pMemDat[3]
+set_location_assignment PIN_185 -to pMemDat[4]
+set_location_assignment PIN_186 -to pMemDat[5]
+set_location_assignment PIN_187 -to pMemDat[6]
+set_location_assignment PIN_188 -to pMemDat[7]
+set_location_assignment PIN_193 -to pMemLdq
+set_location_assignment PIN_194 -to pMemWe_n
+set_location_assignment PIN_195 -to pMemCas_n
+set_location_assignment PIN_196 -to pMemRas_n
+set_location_assignment PIN_197 -to pMemCs_n
+set_location_assignment PIN_200 -to pMemBa0
+set_location_assignment PIN_201 -to pMemBa1
+set_location_assignment PIN_202 -to pMemAdr[10]
+set_location_assignment PIN_203 -to pMemAdr[0]
+set_location_assignment PIN_206 -to pMemAdr[1]
+set_location_assignment PIN_207 -to pMemAdr[2]
+set_location_assignment PIN_208 -to pMemAdr[3]
+set_location_assignment PIN_213 -to pMemDat[15]
+set_location_assignment PIN_214 -to pMemDat[14]
+set_location_assignment PIN_215 -to pMemDat[13]
+set_location_assignment PIN_216 -to pMemDat[12]
+set_location_assignment PIN_217 -to pMemDat[11]
+set_location_assignment PIN_218 -to pMemDat[10]
+set_location_assignment PIN_219 -to pMemDat[9]
+set_location_assignment PIN_222 -to pMemDat[8]
+set_location_assignment PIN_223 -to pMemUdq
+set_location_assignment PIN_224 -to pMemAdr[12]
+set_location_assignment PIN_225 -to pMemAdr[11]
+set_location_assignment PIN_226 -to pMemAdr[9]
+set_location_assignment PIN_227 -to pMemAdr[8]
+set_location_assignment PIN_228 -to pMemAdr[7]
+set_location_assignment PIN_233 -to pMemAdr[6]
+set_location_assignment PIN_234 -to pMemAdr[5]
+set_location_assignment PIN_235 -to pMemAdr[4]
+set_location_assignment PIN_236 -to pUsbN1
+set_location_assignment PIN_237 -to pUsbP1
+set_location_assignment PIN_238 -to pUsbN2
+set_location_assignment PIN_239 -to pUsbP2
+set_location_assignment PIN_240 -to pLedPwr
+
+# Classic Timing Assignments
+# ==========================
+set_global_assignment -name ENABLE_CLOCK_LATENCY ON
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+
+# Analysis & Synthesis Assignments
+# ================================
+set_global_assignment -name SAVE_DISK_SPACE OFF
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 240
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 8
+set_global_assignment -name FAMILY Cyclone
+set_global_assignment -name ALLOW_POWER_UP_DONT_CARE OFF
+set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_ANY_ROM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name TOP_LEVEL_ENTITY emsx_top
+set_global_assignment -name AUTO_ENABLE_SMART_COMPILE ON
+set_global_assignment -name AUTO_RESOURCE_SHARING ON
+set_global_assignment -name IGNORE_LCELL_BUFFERS ON
+set_global_assignment -name FORCE_SYNCH_CLEAR ON
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name CYCLONE_OPTIMIZATION_TECHNIQUE BALANCED
+set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
+
+# Fitter Assignments
+# ==================
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[5]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[4]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[3]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[2]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[1]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SL[0]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[5]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[4]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[3]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[2]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[1]
+set_instance_assignment -name IO_STANDARD LVCMOS -to pDac_SR[0]
+set_global_assignment -name DEVICE EP1C12Q240C8
+set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "AS INPUT TRI-STATED"
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD LVTTL
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+
+# Assembler Assignments
+# =====================
+set_global_assignment -name CYCLONE_CONFIGURATION_DEVICE EPCS4
+set_global_assignment -name USE_CONFIGURATION_DEVICE ON
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
+set_global_assignment -name GENERATE_RBF_FILE ON
+
+# SignalTap II Assignments
+# ========================
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+
+# LogicLock Region Assignments
+# ============================
+set_global_assignment -name LOGICLOCK_INCREMENTAL_COMPILE_ASSIGNMENT OFF
+
+# start CLOCK(pClk21m)
+# --------------------
+
+    # Classic Timing Assignments
+    # ==========================
+    set_global_assignment -name FMAX_REQUIREMENT "21.48 MHz" -section_id pClk21m
+    set_global_assignment -name INCLUDE_EXTERNAL_PIN_DELAYS_IN_FMAX_CALCULATIONS OFF -section_id pClk21m
+
+# end CLOCK(pClk21m)
+# ------------------
+
+# start CLOCK(pSltClk)
+# --------------------
+
+    # Classic Timing Assignments
+    # ==========================
+    set_global_assignment -name FMAX_REQUIREMENT "10.74 MHz" -section_id pSltClk
+    set_global_assignment -name INCLUDE_EXTERNAL_PIN_DELAYS_IN_FMAX_CALCULATIONS OFF -section_id pSltClk
+
+# end CLOCK(pSltClk)
+# ------------------
+
+# ----------------------
+# start ENTITY(emsx_top)
+
+    # Classic Timing Assignments
+    # ==========================
+    set_instance_assignment -name CLOCK_SETTINGS pClk21m -to pClk21m
+    set_instance_assignment -name CLOCK_SETTINGS pSltClk -to pSltClk
+
+    # Analysis & Synthesis Assignments
+    # ================================
+    set_instance_assignment -name SYNTH_CRITICAL_CLOCK ON -to "pll4x:U00|c0"
+    set_instance_assignment -name SYNTH_CRITICAL_CLOCK ON -to "pll4x:U00|c1"
+
+    # Fitter Assignments
+    # ==================
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[0]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[1]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[2]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[3]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[4]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyA[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyA[5]
+    set_instance_assignment -name PCI_IO ON -to pJoyA[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pStrA
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pStrA
+    set_instance_assignment -name PCI_IO ON -to pStrA
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[0]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[1]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[2]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[3]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[4]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pJoyB[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pJoyB[5]
+    set_instance_assignment -name PCI_IO ON -to pJoyB[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pStrB
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pStrB
+    set_instance_assignment -name PCI_IO ON -to pStrB
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv14
+    set_instance_assignment -name PCI_IO ON -to pIopRsv14
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv15
+    set_instance_assignment -name PCI_IO ON -to pIopRsv15
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv16
+    set_instance_assignment -name PCI_IO ON -to pIopRsv16
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv17
+    set_instance_assignment -name PCI_IO ON -to pIopRsv17
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv18
+    set_instance_assignment -name PCI_IO ON -to pIopRsv18
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv19
+    set_instance_assignment -name PCI_IO ON -to pIopRsv19
+    set_instance_assignment -name PCI_IO ON -to pClk21m
+    set_instance_assignment -name PCI_IO ON -to pExtClk
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemClk
+    set_instance_assignment -name PCI_IO ON -to pMemClk
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemCke
+    set_instance_assignment -name PCI_IO ON -to pMemCke
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv20
+    set_instance_assignment -name PCI_IO ON -to pIopRsv20
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pIopRsv21
+    set_instance_assignment -name PCI_IO ON -to pIopRsv21
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[0]
+    set_instance_assignment -name PCI_IO ON -to pLed[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[1]
+    set_instance_assignment -name PCI_IO ON -to pLed[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[2]
+    set_instance_assignment -name PCI_IO ON -to pLed[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[3]
+    set_instance_assignment -name PCI_IO ON -to pLed[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[4]
+    set_instance_assignment -name PCI_IO ON -to pLed[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[5]
+    set_instance_assignment -name PCI_IO ON -to pLed[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[6]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[6]
+    set_instance_assignment -name PCI_IO ON -to pLed[6]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLed[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLed[7]
+    set_instance_assignment -name PCI_IO ON -to pLed[7]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[0]
+    set_instance_assignment -name PCI_IO ON -to pDip[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[1]
+    set_instance_assignment -name PCI_IO ON -to pDip[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[2]
+    set_instance_assignment -name PCI_IO ON -to pDip[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[3]
+    set_instance_assignment -name PCI_IO ON -to pDip[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[4]
+    set_instance_assignment -name PCI_IO ON -to pDip[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[5]
+    set_instance_assignment -name PCI_IO ON -to pDip[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[6]
+    set_instance_assignment -name PCI_IO ON -to pDip[6]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pDip[7]
+    set_instance_assignment -name PCI_IO ON -to pDip[7]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Ck
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Ck
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Cm
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Cm
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Dt[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Dt[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Dt[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Dt[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Dt[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Dt[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSd_Dt[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSd_Dt[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pPs2Clk
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pPs2Clk
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pPs2Dat
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pPs2Dat
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pVideoVS_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 24MA -to pVideoVS_n
+    set_instance_assignment -name SLOW_SLEW_RATE OFF -to pVideoVS_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pVideoHS_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 24MA -to pVideoHS_n
+    set_instance_assignment -name SLOW_SLEW_RATE OFF -to pVideoHS_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pVideoClk
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pVideoClk
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pVideoDat
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pVideoDat
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pDac_VB
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pDac_VG
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pDac_VR
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pDac_SL
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pDac_SR
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltSlts2_n
+    set_instance_assignment -name PCI_IO ON -to pSltSlts2_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltCs1_n
+    set_instance_assignment -name PCI_IO ON -to pSltCs1_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltCs2_n
+    set_instance_assignment -name PCI_IO ON -to pSltCs2_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltCs12_n
+    set_instance_assignment -name PCI_IO ON -to pSltCs12_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltSltsl_n
+    set_instance_assignment -name PCI_IO ON -to pSltSltsl_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltRsv5
+    set_instance_assignment -name PCI_IO ON -to pSltRsv5
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltRfsh_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltRfsh_n
+    set_instance_assignment -name PCI_IO ON -to pSltRfsh_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltWait_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltWait_n
+    set_instance_assignment -name PCI_IO ON -to pSltWait_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltInt_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltInt_n
+    set_instance_assignment -name PCI_IO ON -to pSltInt_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltM1_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltM1_n
+    set_instance_assignment -name PCI_IO ON -to pSltM1_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltBdir_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltBdir_n
+    set_instance_assignment -name PCI_IO ON -to pSltBdir_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltIorq_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltIorq_n
+    set_instance_assignment -name PCI_IO ON -to pSltIorq_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltMerq_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltMerq_n
+    set_instance_assignment -name PCI_IO ON -to pSltMerq_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltWr_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltWr_n
+    set_instance_assignment -name PCI_IO ON -to pSltWr_n
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltRd_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltRd_n
+    set_instance_assignment -name PCI_IO ON -to pSltRd_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltRsv16
+    set_instance_assignment -name PCI_IO ON -to pSltRsv16
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pCpuClk
+    set_instance_assignment -name PCI_IO ON -to pCpuClk
+    set_instance_assignment -name PCI_IO ON -to pSltClk
+    set_instance_assignment -name PCI_IO ON -to pSltRst_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[0]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[1]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[2]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[3]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[4]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[5]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[6]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[6]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[7]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[8]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[8]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[9]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[9]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[10]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[10]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[11]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[11]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[12]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[12]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[13]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[13]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[14]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[14]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltAdr[15]
+    set_instance_assignment -name PCI_IO ON -to pSltAdr[15]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[0]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[1]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[2]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[3]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[4]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[5]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[6]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[6]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[6]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pSltDat[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltDat[7]
+    set_instance_assignment -name PCI_IO ON -to pSltDat[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltSw1
+    set_instance_assignment -name PCI_IO ON -to pSltSw1
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pSltSw2
+    set_instance_assignment -name PCI_IO ON -to pSltSw2
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemCs_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemRas_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemCas_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemWe_n
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemLdq
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemUdq
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemBa0
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemBa1
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[6]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[8]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[9]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[10]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[11]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemAdr[12]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[0]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[0]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[1]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[1]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[2]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[2]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[3]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[3]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[4]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[4]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[5]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[5]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[6]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[6]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[7]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[7]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[8]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[8]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[9]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[9]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[10]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[10]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[11]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[11]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[12]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[12]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[13]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[13]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[14]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[14]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pMemDat[15]
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pMemDat[15]
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pUsbN1
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pUsbN1
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pUsbP1
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pUsbP1
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pUsbN2
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pUsbP2
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pLedPwr
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to pLedPwr
+    set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to pClk21m
+
+# end ENTITY(emsx_top)
+# --------------------

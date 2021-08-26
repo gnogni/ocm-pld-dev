@@ -1,0 +1,10 @@
+# vsim -c -t 1ps -do "run.do" tb 
+# Start time: 21:18:59 on Aug 06,2021
+# Loading sv_std.std
+# Loading work.tb
+# Loading work.autofire
+# do run.do
+# ** Note: $finish    : tb.sv(92)
+#    Time: 1392493200 ps  Iteration: 1  Instance: /tb
+# End time: 21:18:59 on Aug 06,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
