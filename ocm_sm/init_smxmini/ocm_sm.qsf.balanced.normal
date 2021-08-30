@@ -74,6 +74,7 @@ set_global_assignment -name VHDL_FILE src_addons/sys/debounce.vhd
 set_global_assignment -name VHDL_FILE src_addons/sm_emsx_top.vhd
 set_global_assignment -name VHDL_FILE src_addons/top.vhd
 set_global_assignment -name SYSTEMVERILOG_FILE src_addons/sys/hdmi_config.sv
+set_global_assignment -name VERILOG_FILE src_addons/peripheral/autofire.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/ps2_mouse.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/sm_rtc.v
 set_global_assignment -name VERILOG_FILE src_addons/sys/i2c.v
