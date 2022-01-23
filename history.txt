@@ -86,7 +86,7 @@
 --                Pedro Prado, Fabio Augusto Carmelita Rodrigues Dos Santos, Emerson Cavallari, Sandro Singer,
 --                Alexandre Da Silva Oliveira, Fabio Ritter, Mauricio Ferreira Cresti, Benjamin Wiley Sittler,
 --                Mario Cavalcanti, Danilo Angelo, Patrick van Arkel, Massimiliano Privato, Jacco Bot, Ferrerico,
---                Maarten Loor and Andre Ruiz.
+--                Maarten Loor, Andre Ruiz and Emiliano Olea Lucas.
 -------------------------------------------------------------------------------------------------------------------
 --
 
