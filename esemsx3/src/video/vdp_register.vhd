@@ -507,7 +507,7 @@ BEGIN
             REG_R12_BLINK_MODE      <= (OTHERS => '0');
             REG_R13_BLINK_PERIOD    <= (OTHERS => '0');
             REG_R7_FRAME_COL        <= (OTHERS => '0');
-            REG_R8_SP_OFF           <= '1';
+            REG_R8_SP_OFF           <= '0';
             REG_R8_COL0_ON          <= '0';
             REG_R9_PAL_MODE         <= FORCED_V_MODE;
             FF_R9_2PAGE_MODE        <= '0';
