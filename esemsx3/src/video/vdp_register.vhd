@@ -301,10 +301,10 @@ BEGIN
                 REG_R1_DISP_ON      <= FF_R1_DISP_ON;
                 REG_R0_DISP_MODE    <= FF_R0_DISP_MODE;
                 REG_R1_DISP_MODE    <= FF_R1_DISP_MODE;
-
-                REG_R25_SP2         <= FF_R25_SP2;
-                REG_R26_H_SCROLL    <= FF_R26_H_SCROLL;
-
+                IF( VDP_ID /= "00000" )THEN
+                    REG_R25_SP2         <= FF_R25_SP2;
+                    REG_R26_H_SCROLL    <= FF_R26_H_SCROLL;
+                END IF;
             END IF;
         END IF;
     END PROCESS;
@@ -690,15 +690,21 @@ BEGIN
                         WHEN "10111" =>     -- #23
                             REG_R23_VSTART_LINE     <= VDPP1DATA;
                         WHEN "11001" =>     -- #25
-                            REG_R25_CMD <= VDPP1DATA(6);
-                            REG_R25_YAE <= VDPP1DATA(4);
-                            REG_R25_YJK <= VDPP1DATA(3);
-                            REG_R25_MSK <= VDPP1DATA(1);
-                            FF_R25_SP2 <= VDPP1DATA(0);
+                            IF( VDP_ID /= "00000" )THEN
+                                REG_R25_CMD <= VDPP1DATA(6);
+                                REG_R25_YAE <= VDPP1DATA(4);
+                                REG_R25_YJK <= VDPP1DATA(3);
+                                REG_R25_MSK <= VDPP1DATA(1);
+                                FF_R25_SP2 <= VDPP1DATA(0);
+                            END IF;
                         WHEN "11010" =>     -- #26
-                            FF_R26_H_SCROLL <= VDPP1DATA( 5 DOWNTO 0 );
+                            IF( VDP_ID /= "00000" )THEN
+                                FF_R26_H_SCROLL <= VDPP1DATA( 5 DOWNTO 0 );
+                            END IF;
                         WHEN "11011" =>     -- #27
-                            REG_R27_H_SCROLL <= VDPP1DATA( 2 DOWNTO 0 );
+                            IF( VDP_ID /= "00000" )THEN
+                                REG_R27_H_SCROLL <= VDPP1DATA( 2 DOWNTO 0 );
+                            END IF;
                         WHEN OTHERS => NULL;
                     END CASE;
                 ELSIF ( VDPREGPTR(4) = '0') THEN

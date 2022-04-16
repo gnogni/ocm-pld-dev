@@ -356,9 +356,9 @@ architecture RTL of emsx_top is
             pRamDbi         : in    std_logic_vector( 15 downto 0 );
             pRamDbo         : out   std_logic_vector(  7 downto 0 );
 
-            VdpSpeedMode    : in    std_logic;                          -- for V9958 MSX2+/tR VDP
-            RatioMode       : in    std_logic_vector(  2 downto 0 );    -- for V9958 MSX2+/tR VDP
-            centerYJK_R25_n : in    std_logic;                          -- for V9958 MSX2+/tR VDP
+            VdpSpeedMode    : in    std_logic;                          -- for TH9958 VDP core
+            RatioMode       : in    std_logic_vector(  2 downto 0 );    -- for TH9958 VDP core
+            centerYJK_R25_n : in    std_logic;                          -- for TH9958 VDP core
 
             -- Video Output
             pVideoR         : out   std_logic_vector(  5 downto 0 );
@@ -374,8 +374,8 @@ architecture RTL of emsx_top is
             BLANK_o         : out   std_logic;
 
             -- CXA1645(RGB->NTSC encoder) signals
---          pVideoSC        : out   std_logic;                          -- for V9938 MSX2 VDP
---          pVideoSYNC      : out   std_logic;                          -- for V9938 MSX2 VDP
+--          pVideoSC        : out   std_logic;                          -- for V9938 VDP core
+--          pVideoSYNC      : out   std_logic;                          -- for V9938 VDP core
 
             -- Display resolution (0=15kHz, 1=31kHz)
             DispReso        : in    std_logic;
@@ -565,10 +565,10 @@ architecture RTL of emsx_top is
             PsgVol          : inout std_logic_vector(  2 downto 0 );            -- PSG Volume
             MstrVol         : inout std_logic_vector(  2 downto 0 );            -- Master Volume
             CustomSpeed     : inout std_logic_vector(  3 downto 0 );            -- Counter limiter of CPU wait control
-            tMegaSD         : inout std_logic;                                  -- Turbo on MegaSD access   :   3.58MHz to 5.37MHz autoselection
+            tMegaSD         : inout std_logic;                                  -- Turbo on MegaSD access   :   3.58MHz to 5.37MHz auto selection
             tPanaRedir      : inout std_logic;                                  -- tPana Redirection switch
             VdpSpeedMode    : inout std_logic;                                  -- VDP Speed Mode           :   0=Normal, 1=Fast
-            V9938_n         : inout std_logic;                                  -- V9938 Status             :   0=V9938, 1=V9958
+            V9938_n         : inout std_logic;                                  -- VDP core installed       :   0=V9938, 1=TH9958
             Mapper_req      : inout std_logic;                                  -- Mapper req               :   Warm or Cold Reset are necessary to complete the request
             Mapper_ack      : out   std_logic;                                  -- Current Mapper state
             MegaSD_req      : inout std_logic;                                  -- MegaSD req               :   Warm or Cold Reset are necessary to complete the request
@@ -976,7 +976,7 @@ architecture RTL of emsx_top is
     constant SdrCmd_de      : std_logic_vector(  3 downto 0 ) := "1111";            -- deselect
     constant SdrCmd_pr      : std_logic_vector(  3 downto 0 ) := "0010";            -- precharge all
     constant SdrCmd_re      : std_logic_vector(  3 downto 0 ) := "0001";            -- refresh
-    constant SdrCmd_ms      : std_logic_vector(  3 downto 0 ) := "0000";            -- mode regiser set
+    constant SdrCmd_ms      : std_logic_vector(  3 downto 0 ) := "0000";            -- mode register set
 
     constant SdrCmd_xx      : std_logic_vector(  3 downto 0 ) := "0111";            -- no operation
     constant SdrCmd_ac      : std_logic_vector(  3 downto 0 ) := "0011";            -- activate
@@ -1863,7 +1863,7 @@ begin
                         when "001"  => PpiPortC(1) <= dbo(0); -- key_matrix Y(1)
                         when "010"  => PpiPortC(2) <= dbo(0); -- key_matrix Y(2)
                         when "011"  => PpiPortC(3) <= dbo(0); -- key_matrix Y(3)
-                        when "100"  => PpiPortC(4) <= dbo(0); -- cassete motor on (0=On,1=Off)
+                        when "100"  => PpiPortC(4) <= dbo(0); -- cassete motor (0=On,1=Off)
                         when "101"  => PpiPortC(5) <= dbo(0); -- cassete audio out
                         when "110"  => PpiPortC(6) <= dbo(0); -- CAPS lamp (0=On,1=Off)
                         when others => PpiPortC(7) <= dbo(0); -- 1bit sound port
@@ -2056,8 +2056,8 @@ begin
     ----------------------------------------------------------------
     -- Video output
     ----------------------------------------------------------------
---  V9938_n <= '0';         -- '0' is V9938 MSX2 VDP
-    V9938_n <= '1';         -- '1' is V9958 MSX2+/tR VDP
+--  V9938_n <= '0';         -- '0' is V9938 VDP core
+    V9938_n <= '1';         -- '1' is TH9958 VDP core
 
     process( clk21m )
     begin
@@ -2070,7 +2070,7 @@ begin
                 Reso_v      <= '0';                                 -- Hsync:15kHz
                 pVideoHS_n  <= 'Z';                                 -- CSync Disabled
                 pVideoVS_n  <= DACout;                              -- Audio Out (Mono)
---              legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 MSX2 VDP)
+--              legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 VDP core)
 
             when "01" =>                                            -- RGB 15kHz
                 pDac_VR     <= VideoR;                              -- Luminance 100%
@@ -2079,7 +2079,7 @@ begin
                 Reso_v      <= '0';                                 -- Hsync:15kHz
                 pVideoHS_n  <= VideoCS_n;                           -- CSync Enabled
                 pVideoVS_n  <= DACout;                              -- Audio Out (Mono)
---              legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 MSX2 VDP)
+--              legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 VDP core)
 
             when others =>                                          -- VGA / VGA+ 31kHz
                 pDac_VR     <= VideoR;                              -- Luminance 100%
@@ -2088,8 +2088,8 @@ begin
                 Reso_v      <= '1';                                 -- Hsync:31kHz
                 pVideoHS_n  <= VideoHS_n;
                 pVideoVS_n  <= VideoVS_n;
---              legacy_vga  <= not DisplayMode(0);                  -- behaves like vAllow_n        (for V9938 MSX2 VDP)
-                if( legacy_sel = '0' )then                          -- Assignment of Legacy Output  (for V9958 MSX2+/tR VDP)
+--              legacy_vga  <= not DisplayMode(0);                  -- behaves like vAllow_n        (for V9938 VDP core)
+                if( legacy_sel = '0' )then                          -- Assignment of Legacy Output  (for TH9958 VDP core)
                     legacy_vga  <= not DisplayMode(0);              -- to VGA
                 else
                     legacy_vga  <= DisplayMode(0);                  -- to VGA+
@@ -2689,12 +2689,12 @@ begin
                         KanRom, KanAdr, RamDbi, open);
 
     U20 : vdp
-        -- V9938 MSX2 VDP
+        -- V9938 VDP core
 --      port map(clk21m, reset, VdpReq, open, wrt, adr, VdpDbi, dbo, pVdpInt_n,
 --                      open, WeVdp_n, VdpAdr, VrmDbi, VrmDbo,
 --                      VideoR, VideoG, VideoB, VideoHS_n, VideoVS_n, VideoCS_n,
 --                      VideoDHClk, VideoDLClk, open, open, Reso_v, ntsc_pal_type, forced_v_mode, legacy_vga);
-        -- V9958 MSX2+/tR VDP
+        -- TH9958 VDP core
         port map(clk21m, reset, VdpReq, open, wrt, adr, VdpDbi, dbo, pVdpInt_n,
                         open, WeVdp_n, VdpAdr, VrmDbi, VrmDbo, VdpSpeedMode or (not hybridclk_n), RatioMode, centerYJK_R25_n,
                         VideoR, VideoG, VideoB, VideoHS_n, VideoVS_n, VideoCS_n,

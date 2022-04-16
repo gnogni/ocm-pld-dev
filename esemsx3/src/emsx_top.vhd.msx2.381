@@ -904,7 +904,7 @@ architecture RTL of emsx_top is
     constant SdrCmd_de      : std_logic_vector(  3 downto 0 ) := "1111";    -- deselect
     constant SdrCmd_pr      : std_logic_vector(  3 downto 0 ) := "0010";    -- precharge all
     constant SdrCmd_re      : std_logic_vector(  3 downto 0 ) := "0001";    -- refresh
-    constant SdrCmd_ms      : std_logic_vector(  3 downto 0 ) := "0000";    -- mode regiser set
+    constant SdrCmd_ms      : std_logic_vector(  3 downto 0 ) := "0000";    -- mode register set
 
     constant SdrCmd_xx      : std_logic_vector(  3 downto 0 ) := "0111";    -- no operation
     constant SdrCmd_ac      : std_logic_vector(  3 downto 0 ) := "0011";    -- activate

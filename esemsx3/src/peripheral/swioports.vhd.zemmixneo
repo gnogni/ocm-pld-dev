@@ -3,7 +3,7 @@
 --   Switched I/O ports ($40-$4F)
 --   Revision 10
 --
--- Copyright (c) 2011-2021 KdL
+-- Copyright (c) 2011-2022 KdL
 -- All rights reserved.
 --
 -- Redistribution and use of this source code or any derivative works, are
@@ -56,10 +56,10 @@ entity switched_io_ports is
         PsgVol          : inout std_logic_vector(  2 downto 0 );            -- PSG Volume
         MstrVol         : inout std_logic_vector(  2 downto 0 );            -- Master Volume
         CustomSpeed     : inout std_logic_vector(  3 downto 0 );            -- Counter limiter of CPU wait control
-        tMegaSD         : inout std_logic;                                  -- Turbo on MegaSD access   :   3.58MHz to 5.37MHz autoselection
+        tMegaSD         : inout std_logic;                                  -- Turbo on MegaSD access   :   3.58MHz to 5.37MHz auto selection
         tPanaRedir      : inout std_logic;                                  -- tPana Redirection switch
         VdpSpeedMode    : inout std_logic;                                  -- VDP Speed Mode           :   0=Normal, 1=Fast
-        V9938_n         : inout std_logic;                                  -- V9938 Status             :   0=V9938, 1=V9958
+        V9938_n         : inout std_logic;                                  -- VDP core installed       :   0=V9938, 1=TH9958
         Mapper_req      : inout std_logic;                                  -- Mapper req               :   Warm or Cold Reset are necessary to complete the request
         Mapper_ack      : out   std_logic;                                  -- Current Mapper state
         MegaSD_req      : inout std_logic;                                  -- MegaSD req               :   Warm or Cold Reset are necessary to complete the request
@@ -123,7 +123,7 @@ architecture RTL of switched_io_ports is
 
     -- OCM-PLD version number (x \ 10).(y mod 10).(z[0~3])                  -- OCM-PLD version 0.0(.0) ~ 25.5(.3)
     constant ocm_pld_xy : std_logic_vector(  7 downto 0 ) := "00100111";    -- 39
-    constant ocm_pld_z  : std_logic_vector(  1 downto 0 ) :=       "00";    -- 0
+    constant ocm_pld_z  : std_logic_vector(  1 downto 0 ) :=       "01";    -- 1
 
     -- Switched I/O Ports revision number (0-31)                            -- Switched I/O ports Revision 0 ~ 31
     constant swioRevNr  : std_logic_vector(  4 downto 0 ) :=    "01010";    -- 10
@@ -584,7 +584,7 @@ begin
                             -- SMART CODES  #027, #028
                             when "00011011" =>                                  -- VDP Speed Mode is Normal (default)
                                 VdpSpeedMode    <=  '0';
-                            when "00011100" =>                                  -- VDP Speed Mode is Fast (V9958 only)
+                            when "00011100" =>                                  -- VDP Speed Mode is Fast (TH9958 only)
                                 VdpSpeedMode    <=  '1' and V9938_n;
                             -- SMART CODES  #029, #030
                             when "00011101" =>                                  -- MegaSD Off       (warm reset to go)
@@ -961,6 +961,14 @@ begin
                     if( req = '1' and wrt = '1' and (adr(3 downto 0) = "0110")  and (io40_n = "00101011") )then
                         OpllVol             <=  not dbo(2 downto 0);
                         SccVol              <=  not dbo(6 downto 4);
+                    end if;
+                    -- in assignment: 'Port $4C ID212 [VDP ID selector]' [Reserved to IPL-ROM]' (write only) (0-1=MSX1 or MSX2 BIOS, 2-255=any other BIOS)
+                    if( req = '1' and wrt = '1' and (adr(3 downto 0) = "1100")  and (io40_n = "00101011") and ff_ldbios_n = '0' )then
+                        if( dbo(7 downto 1) = "0000000" )then
+                            VDP_ID          :=  "00000";                        -- Set VDP ID = 0 (V9938)
+                        else
+                            VDP_ID          :=  "00010";                        -- Set VDP ID = 2 (V9958) (default)
+                        end if;
                     end if;
                     -- in assignment: 'Port $4D ID212 [VRAM Slot IDs]' (read/write_n)
                     if( req = '1' and wrt = '1' and (adr(3 downto 0) = "1101")  and (io40_n = "00101011") )then

@@ -82,8 +82,8 @@ LIBRARY IEEE;
 PACKAGE VDP_PACKAGE IS
 
     -- VDP ID
---  CONSTANT VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00000";  -- V9938
-    CONSTANT VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00010";  -- V9958
+--  SHARED VARIABLE VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00000";  -- V9938
+    SHARED VARIABLE VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00010";  -- V9958
 
     -- display start position ( when adjust=(0,0) )
     -- [from V9938 Technical Data Book]

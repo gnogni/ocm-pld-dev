@@ -1,1 +1,1 @@
-set_global_assignment -name SYNTHESIS_SEED 7
+set_global_assignment -name SYNTHESIS_SEED 2
