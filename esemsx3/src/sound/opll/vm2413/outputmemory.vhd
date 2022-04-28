@@ -66,7 +66,7 @@ begin
 
       if init_ch /= 18 then
 
-        data_array(init_ch) <= (others=>'0');
+        data_array(init_ch) <= (others => '0');
         init_ch := init_ch + 1;
 
       elsif wr='1' then

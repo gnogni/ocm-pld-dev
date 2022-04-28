@@ -65,7 +65,7 @@ begin
 
      if init_slot /= 18 then
 
-       phase_array(init_slot) <= (others=>'0');
+       phase_array(init_slot) <= (others => '0');
        init_slot := init_slot + 1;
 
      elsif memwr = '1' then

@@ -103,10 +103,10 @@ begin
 
     if reset = '1' then
 
-      pmcount <= (others=>'0');
+      pmcount <= (others => '0');
       memwr <= '0';
-      lastkey := (others=>'0');
-      dphase  := (others=>'0');
+      lastkey := (others => '0');
+      dphase  := (others => '0');
       noise14 := '0';
       noise17 := '0';
 
@@ -144,7 +144,7 @@ begin
 
         -- Update Phase
         if lastkey(conv_integer(slot)) = '0' and key = '1' and (rhythm = '0' or (slot /= "01110" and slot /= "10001")) then
-          memin <= (others=>'0');
+          memin <= (others => '0');
         else
           memin <= memout + dphase;
         end if;

@@ -237,25 +237,25 @@ begin   -- rtl
 
             key <= '0';
             rhythm <= '0';
-            tll := (others=>'0');
-            kll := (others=>'0');
+            tll := (others => '0');
+            kll := (others => '0');
             kflag := '0';
-            rflag <= (others=>'0');
+            rflag <= (others => '0');
             user_voice_wr <= '0';
             user_voice_addr <= 0;
             regs_wr <='0';
-            ar  <= (others=>'0');
-            dr  <= (others=>'0');
-            sl  <= (others=>'0');
-            rr  <= (others=>'0');
-            tl  <= (others=>'0');
-            fb  <= (others=>'0');
+            ar  <= (others => '0');
+            dr  <= (others => '0');
+            sl  <= (others => '0');
+            rr  <= (others => '0');
+            tl  <= (others => '0');
+            fb  <= (others => '0');
             wf  <= '0';
-            ml  <= (others=>'0');
-            fnum <= (others=>'0');
-            blk <= (others=>'0');
+            ml  <= (others => '0');
+            fnum <= (others => '0');
+            blk <= (others => '0');
             key <= '0';
-            rks <= (others=>'0');
+            rks <= (others => '0');
             rhythm <= '0';
             extra_mode := '0';
             vindex := 0;
@@ -273,9 +273,9 @@ begin   -- rtl
                      vindex := conv_integer(slot) mod 2;
 --              else
 --                  if vindex = voice_id_type'high then
---                      vindex:= 0;
+--                      vindex := 0;
 --                  else
---                      vindex:= vindex + 1;
+--                      vindex := vindex + 1;
 --                  end if;
 --              end if;
 
@@ -429,7 +429,7 @@ begin   -- rtl
                          - ("0"&("111"-regs_rdata(11 downto 9))&"000")) & '0';
 
                 if kll(kll'high) ='1' or slot_voice_data.kl = "00" then
-                    kll := (others=>'0');
+                    kll := (others => '0');
                 else
                     kll := shr(kll, "11" - slot_voice_data.kl );
                 end if;
@@ -446,7 +446,7 @@ begin   -- rtl
                 tll := tll + kll;
 
                 if tll(tll'high) ='1' then
-                    tl <= (others=>'1');
+                    tl <= (others => '1');
                 else
                     tl <= tll(tl'range);
                 end if;

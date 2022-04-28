@@ -65,7 +65,7 @@ begin
    elsif clk'event and clk = '1' then
 
      if init_slot /= 18 then
-       egdata_set(init_slot) <= (others=>'1');
+       egdata_set(init_slot) <= (others => '1');
        init_slot := init_slot + 1;
      elsif wr = '1' then
        egdata_set(conv_integer(waddr)) <= CONV_EGDATA_VECTOR(wdata);

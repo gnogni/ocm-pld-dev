@@ -86,15 +86,15 @@ begin
             when "00011" => mmute <= '1';
             when "00100" => mmute <= '1';
             when "00101" => mmute <= '1';
-            when "00110" => maddr <= "00111"; mmute<='0'; -- CH3
-            when "00111" => maddr <= "01001"; mmute<='0'; -- CH4
-            when "01000" => maddr <= "01011"; mmute<='0'; -- CH5
+            when "00110" => maddr <= "00111"; mmute <='0'; -- CH3
+            when "00111" => maddr <= "01001"; mmute <='0'; -- CH4
+            when "01000" => maddr <= "01011"; mmute <='0'; -- CH5
             when "01001" => mmute <= '1';
             when "01010" => mmute <= '1';
             when "01011" => mmute <= '1';
-            when "01100" => maddr <= "01101"; mmute<='0'; -- CH6
-            when "01101" => maddr <= "01111"; mmute<='0'; -- CH7
-            when "01110" => maddr <= "10001"; mmute<='0'; -- CH8
+            when "01100" => maddr <= "01101"; mmute <='0'; -- CH6
+            when "01101" => maddr <= "01111"; mmute <='0'; -- CH7
+            when "01110" => maddr <= "10001"; mmute <='0'; -- CH8
             when "01111" => mmute <= '1';
             when "10000" => mmute <= '1';
             when "10001" => mmute <= '1';

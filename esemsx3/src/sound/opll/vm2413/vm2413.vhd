@@ -115,10 +115,10 @@ package VM2413 is
   -- Envelope generator states
   subtype EGSTATE_TYPE is std_logic_vector(1 downto 0);
 
-  constant Attack  : EGSTATE_TYPE := "01";
-  constant Decay   : EGSTATE_TYPE := "10";
-  constant Release : EGSTATE_TYPE := "11";
-  constant Finish  : EGSTATE_TYPE := "00";
+  constant Attack_sta  : EGSTATE_TYPE := "01";
+  constant Decay_sta   : EGSTATE_TYPE := "10";
+  constant Release_sta : EGSTATE_TYPE := "11";
+  constant Finish_sta  : EGSTATE_TYPE := "00";
 
   -- Envelope generator phase
   subtype EGPHASE_TYPE is std_logic_vector(22 downto 0);

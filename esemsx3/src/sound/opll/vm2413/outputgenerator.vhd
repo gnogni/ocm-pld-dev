@@ -171,13 +171,13 @@ begin
                     --  LinerTable から opout で指定されたアドレスに対応する値が出てくるステージ
                     if( slot(0) = '0' )then
                         --  フィードバックメモリにはモジュレータのときしか書き込まない
-                        fb_addr <= conv_integer(slot)/2;
-                        fb_wdata<= AVERAGE(mo_rdata, li_data);
-                        fb_wr   <= '1';
+                        fb_addr  <= conv_integer(slot)/2;
+                        fb_wdata <= AVERAGE(mo_rdata, li_data);
+                        fb_wr    <= '1';
                     end if;
                     -- Store raw output
-                    mo_wdata<= li_data;
-                    mo_wr   <= '1';
+                    mo_wdata <= li_data;
+                    mo_wr    <= '1';
                 end if;
             end if;
         end if;

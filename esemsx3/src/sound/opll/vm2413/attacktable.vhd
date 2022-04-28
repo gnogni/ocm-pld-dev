@@ -81,7 +81,7 @@ architecture rtl of attacktable is
     end component;
 
     type ar_adjust_array is array ( 0 to 127 ) of std_logic_vector( 6 downto 0 );
-    constant ar_adjust : ar_adjust_array :=(
+    constant ar_adjust : ar_adjust_array := (
         "0000000", "0000000", "0000000", "0000000", "0000000", "0000001", "0000001", "0000001",
         "0000001", "0000001", "0000010", "0000010", "0000010", "0000010", "0000011", "0000011",
         "0000011", "0000011", "0000100", "0000100", "0000100", "0000100", "0000100", "0000101",

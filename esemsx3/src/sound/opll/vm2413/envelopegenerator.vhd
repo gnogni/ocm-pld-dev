@@ -144,14 +144,14 @@ begin
         variable ntable     : std_logic_vector(17 downto 0);
     begin
         if( reset = '1' )then
-            rm      := (others=>'0');
-            lastkey := (others=>'0');
+            rm      := (others => '0');
+            lastkey := (others => '0');
             memwr   <= '0';
-            egstate := Finish;
-            egphase := (others=>'0');
+            egstate := Finish_sta;
+            egphase := (others => '0');
             ntable  := (others => '1');
             amphase(amphase'high downto amphase'high-4) := "00001";
-            amphase(amphase'high-5 downto 0)            := (others=>'0');
+            amphase(amphase'high-5 downto 0)            := (others => '0');
 
         elsif( clk'event and clk='1' )then
 
@@ -177,18 +177,18 @@ begin
 
                 elsif stage = 2 then
                     case egstate is
-                        when Attack =>
+                        when Attack_sta =>
                             rm := '0'&ar;
                             egtmp := ("00"&tl&"000000") + ("00"&ardata);        -- カーブを描いて上昇する
-                        when Decay  =>
+                        when Decay_sta =>
                             rm := '0'&dr;
                             egtmp := ("00"&tl&"000000") + ("00"&egphase(22-1 downto 22-7-6));
-                        when Release=>
+                        when Release_sta =>
                             rm := '0'&rr;
                             egtmp := ("00"&tl&"000000") + ("00"&egphase(22-1 downto 22-7-6));
-                        when Finish =>
+                        when Finish_sta =>
                             egtmp(egtmp'high downto egtmp'high -1) := "00";
-                            egtmp(egtmp'high-2 downto 0) := (others=>'1');
+                            egtmp(egtmp'high-2 downto 0) := (others => '1');
                     end case;
 
                     -- SD and HH
@@ -211,57 +211,57 @@ begin
                     if egtmp(egtmp'high downto egtmp'high-1) = "00" then    -- リミッタ
                         egout <= egtmp(egout'range);
                     else
-                        egout <= (others=>'1');
+                        egout <= (others => '1');
                     end if;
 
                     if rm /= "00000" then
 
                         rm := rm + rks(3 downto 2);
                         if rm(rm'high)='1' then
-                            rm(3 downto 0):="1111";
+                            rm(3 downto 0) := "1111";
                         end if;
 
                         case egstate is
-                            when Attack =>
-                                dphase(dphase'high downto 5) := (others=>'0');
+                            when Attack_sta =>
+                                dphase(dphase'high downto 5) := (others => '0');
                                 dphase(5 downto 0) := "110" * ('1'&rks(1 downto 0));
                                 dphase := SHL( dphase, rm(3 downto 0) );
                                 egphase := egphase - dphase(egphase'range);
-                            when Decay | Release =>
-                                dphase(dphase'high downto 3) := (others=>'0');
+                            when Decay_sta | Release_sta =>
+                                dphase(dphase'high downto 3) := (others => '0');
                                 dphase(2 downto 0) := '1'&rks(1 downto 0);
                                 dphase  := SHL(dphase, rm(3 downto 0) - '1');
                                 egphase := egphase + dphase(egphase'range);
-                            when Finish =>
+                            when Finish_sta =>
                                 null;
                         end case;
 
                     end if;
 
                     case egstate is
-                        when Attack =>
+                        when Attack_sta =>
                             if egphase(egphase'high) = '1' then
-                                egphase := (others=>'0');
-                                egstate := Decay;
+                                egphase := (others => '0');
+                                egstate := Decay_sta;
                             end if;
-                        when Decay =>
+                        when Decay_sta =>
                             if egphase(egphase'high downto egphase'high-4) >= '0'&sl then
-                                egstate := Release;
+                                egstate := Release_sta;
                             end if;
-                        when Release =>
+                        when Release_sta =>
                             if( egphase(egphase'high downto egphase'high-4) >= "01111" ) then
-                                egstate:= Finish;
+                                egstate := Finish_sta;
                             end if;
-                        when Finish =>
+                        when Finish_sta =>
                             egphase := (others => '1');
                     end case;
 
                     if lastkey(conv_integer(slot)) = '0' and key = '1' then
-                        egphase(egphase'high):= '0';
-                        egphase(egphase'high-1 downto 0) := (others =>'1');
-                        egstate:= Attack;
-                    elsif lastkey(conv_integer(slot)) = '1' and key = '0' and egstate /= Finish then
-                        egstate:= Release;
+                        egphase(egphase'high) := '0';
+                        egphase(egphase'high-1 downto 0) := (others => '1');
+                        egstate := Attack_sta;
+                    elsif lastkey(conv_integer(slot)) = '1' and key = '0' and egstate /= Finish_sta then
+                        egstate := Release_sta;
                     end if;
                     lastkey(conv_integer(slot)) := key;
 
