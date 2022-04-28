@@ -12,7 +12,14 @@ if "%1"=="" echo.&echo Hardware Setup: %CABLE%&echo.&echo Press any key to start
 echo.&echo Uploading...&echo.&echo Firmware: "%~dp0fw\recovery.jic"&echo.
 
 copy /Y fw\recovery.jic %PROJECT%.jic >nul 2>nul
-"%QUARTUS_ROOTDIR%\bin\quartus_pgm.exe" -c %CABLE% %PROJECT%.cdf >nul 2>nul
+
+set QPGM=%QUARTUS_ROOTDIR%\bin64\quartus_pgm.exe
+if exist %QPGM% goto init
+set QPGM=%QUARTUS_ROOTDIR%\bin\quartus_pgm.exe
+if not exist %QPGM% goto err_quartus
+
+:init
+"%QPGM%" -c %CABLE% %PROJECT%.cdf >nul 2>nul
 if %ERRORLEVEL% == 0 (cls&echo.&echo PROGRAMMING SUCCEEDED!) else (color 4f&cls&echo.&echo PROGRAMMING FAILED!)
 del %PROJECT%.jic >nul 2>nul
 goto timer

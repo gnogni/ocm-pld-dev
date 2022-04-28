@@ -292,7 +292,8 @@ architecture Behavior of top is
     generic map
     (
         use_wifi_g              => true,
-        use_midi_g              => true
+        use_midi_g              => true,
+        use_opl3_g              => true
     )
     port map(
         -- Clock, Reset ports

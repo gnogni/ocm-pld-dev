@@ -40,11 +40,40 @@ module opl3
  output         [7:0] dout,
  input          [7:0] din,
  input                we,
+ input                mono,
 
  output signed [15:0] sample_l,
  output signed [15:0] sample_r
 );
 
+//------------------------------------------------------------------------------
+// Ducasp hack to have mono output without having to render registers for two
+// channels. So, just set mono pin and leave one channel not connected to have
+// all sound (in mono) in that channel and not needing to render the other
+// channel output as Quartus will exclude that as it is not connected
+reg [7:0] regdin;
+reg monoCx = 1'b0;
+reg nextDataMono = 1'b0;
+assign regdin = (monoCx && addr[0] ) ? din[5] ? {din[7:6], 2'b11, din[3:0]} : din[4] ? {din[7:6], 2'b11, din[3:0]} : din : din;
+//------------------------------------------------------------------------------
+always @(posedge clk or negedge rst_n) begin
+    if(rst_n == 0) begin
+        monoCx <= 0;
+        nextDataMono <= 0;
+    end
+    else begin
+        if(~addr[0] && write && din[7:4] == 4'b1100 && mono) nextDataMono <= 1'b1; //Write to Cx next data, and force on both channels
+        else if(~addr[0] && write) nextDataMono <= 1'b0; //No need to force anything
+        if(write_end && nextDataMono) begin
+            monoCx <= 1'b1; //Next data will be masked to both channels if only one channel is set
+            nextDataMono <= 1'b0;
+        end;
+        if(addr[0] && write_end && monoCx) begin //Writing data end
+            nextDataMono <= 1'b0;
+            monoCx <= 1'b0;
+        end
+    end
+end
 //------------------------------------------------------------------------------
 // Fix proposed by Laurens Holst (Grauw)
 
@@ -59,12 +88,13 @@ assign dout = !addr ? io_readdata : 8'hFF;
 
 //------------------------------------------------------------------------------
 
-reg [12:0] period_80us = 12'b0101000000000;
+reg [12:0] period_80us = 12'b0011010110110; // Ducasp - changed period for the proper one for our clock
 
 reg old_write;
 always @(posedge clk) old_write <= we;
 
 wire write = (~old_write & we);
+wire write_end = (old_write & ~we);
 
 reg [8:0] index;
 always @(posedge clk or negedge rst_n) begin
@@ -148,7 +178,7 @@ opl3sw #(OPLCLK) opl3
 
     .cpu_clk(clk),
     .addr(addr),
-    .din(din),
+    .din(regdin),
     .wr(write),
 
     .clk(clk_opl),

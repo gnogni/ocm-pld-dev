@@ -46,7 +46,8 @@ library ieee;
 entity emsx_top is
     generic(
         use_wifi_g      : boolean   := false;
-        use_midi_g      : boolean   := false
+        use_midi_g      : boolean   := false;
+        use_opl3_g      : boolean   := false
     );
     port(
         -- Clock, Reset ports
@@ -651,6 +652,7 @@ architecture RTL of emsx_top is
             dout            : out   std_logic_vector(  7 downto 0 );
             din             : in    std_logic_vector(  7 downto 0 );
             we              : in    std_logic;
+            mono            : in    std_logic;
 
             sample_l        : out   std_logic_vector( 15 downto 0 );
             sample_r        : out   std_logic_vector( 15 downto 0 )
@@ -1058,6 +1060,7 @@ architecture RTL of emsx_top is
     signal  opl3_sound_s    : std_logic_vector( 15 downto 0 ) := (others => '0');
     signal  opl3_ce         : std_logic := '0';
     signal  opl3_enabled    : std_logic := '0';
+    signal  opl3_Int_n      : std_logic := '1';
 
     -- MIDI signals
 --  signal  midi_o          : std_logic;
@@ -1547,7 +1550,8 @@ begin
     pSltM1_n    <=  CpuM1_n;
     pSltRfsh_n  <=  CpuRfsh_n;
 
-    pSltInt_n   <=  '0' when( pVdpInt_n = '0' )else
+    pSltInt_n   <=  '0' when( pVdpInt_n = '0' ) or
+                            ( opl3_Int_n = '0' and use_opl3_g and opl3_enabled = '1' )else
                     'Z';
 
     pSltSltsl_n <=  '1' when( Scc1Type /= "00" )else
@@ -2902,24 +2906,27 @@ begin
             );
     end generate;
 
-    opl3_1 : opl3
-    generic map(
-        OPLCLK              => 86000000             -- opl_clk in Hz
-    )
-    port map(
-        clk                 => clk21m,
-        clk_opl             => memclk,              -- 86MHz
-        rst_n               => (not reset),
-        irq_n               => open,
+    opl3_u : if use_opl3_g generate
+        opl3_1 : opl3
+        generic map(
+            OPLCLK              => 86000000             -- opl_clk in Hz
+        )
+        port map(
+            clk                 => clk21m,
+            clk_opl             => memclk,              -- 86MHz
+            rst_n               => (not reset),
+            irq_n               => opl3_Int_n,
 
-        addr                => adr(1 downto 0),     -- OPL and OPL2 uses adr(0) only
-        dout                => opl3_dout_s,
-        din                 => dbo,
-        we                  => opl3_ce,
+            addr                => adr(1 downto 0),     -- OPL and OPL2 uses adr(0) only
+            dout                => opl3_dout_s,
+            din                 => dbo,
+            we                  => opl3_ce,
+            mono                => '1',
 
-        sample_l            => opl3_sound_s,
-        sample_r            => open
-    );
+            sample_l            => opl3_sound_s,
+            sample_r            => open
+        );
+    end generate;
 
     opl3_ce <= '1' when( adr(  7 downto 3 ) = "11000"   and pSltIorq_n = '0' and pSltWr_n = '0' )else   -- and opl3_enabled = '1' )else   -- OPL3 ports C0-C3h / C4-C7h
 --             '1' when( adr(  7 downto 1 ) = "0111110" and pSltIorq_n = '0' and pSltWr_n = '0'                                   )else   -- OPLL ports 7C-7Dh via OPL3
