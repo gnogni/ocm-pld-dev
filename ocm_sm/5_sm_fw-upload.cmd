@@ -10,9 +10,7 @@ if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cycloneive" goto err_quartus
 if not exist fw\recovery.jic goto err_msg
 if "%1"=="" echo.&echo Hardware Setup: %CABLE%&echo.&echo Press any key to start programming...&pause >nul 2>nul&cls
 echo.&echo Uploading...&echo.&echo Firmware: "%~dp0fw\recovery.jic"&echo.
-
 copy /Y fw\recovery.jic %PROJECT%.jic >nul 2>nul
-
 set QPGM=%QUARTUS_ROOTDIR%\bin64\quartus_pgm.exe
 if exist %QPGM% goto init
 set QPGM=%QUARTUS_ROOTDIR%\bin\quartus_pgm.exe

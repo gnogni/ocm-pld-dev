@@ -9,9 +9,10 @@ if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cyclone" goto err_quartus
 if not exist fw\recovery.pof goto err_msg
 if "%1"=="" echo.&echo Hardware Setup: %CABLE%&echo.&echo Press any key to start programming...&pause >nul 2>nul&cls
 echo.&echo Uploading...&echo.&echo Firmware: "%~dp0fw\recovery.pof"&echo.
-
 copy /Y fw\recovery.pof %PROJECT%.pof >nul 2>nul
-"%QUARTUS_ROOTDIR%\bin\quartus_pgm.exe" -c %CABLE% %PROJECT%.cdf >nul 2>nul
+set QPGM=%QUARTUS_ROOTDIR%\bin\quartus_pgm.exe
+if not exist %QPGM% goto err_quartus
+"%QPGM%" -c %CABLE% %PROJECT%.cdf >nul 2>nul
 if %ERRORLEVEL% == 0 (cls&echo.&echo PROGRAMMING SUCCEEDED!) else (color 4f&cls&echo.&echo PROGRAMMING FAILED!)
 del %PROJECT%.pof >nul 2>nul
 goto timer
