@@ -37,7 +37,7 @@ Here is how to flash the device after a failed update using a personal computer 
 
 1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
 
-2. Download and install Stand-Alone Quartus II Programmer 11.0sp1 (free):
+2. Download and install Stand-Alone Altera Quartus II Programmer 11.0sp1 (free):
 http://mega.nz/file/UMIBRawT#65w_Q1o5ZRJpghSjrZAyCSrc7IpdXIhVjnxaNLG6Vn4
 
 3. For 1chipMSX and Zemmix Neo, open the case and attach the cable on the JTAG connector with the pin-1 towards the front of device.
@@ -52,8 +52,8 @@ Here is how to flash the device after a failed update using a personal computer 
 
 1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
 
-2. Download and install Stand-Alone Quartus II Programmer 13.0sp1 (free):
-http://download.altera.com/akdlm/software/acdsinst/13.0sp1/232/ib_installers/QuartusProgrammerSetup-13.0.1.232.exe
+2. Download and install Stand-Alone Intel Quartus Prime Programmer and Tools 21.1.0 (free):
+https://cdrdv2.intel.com/v1/dl/getContent/684225/684230?filename=QuartusProgrammerSetup-21.1.0.842-windows.exe
 
 3. For SM-X (regular), go to the bottom and attach the cable on the JTAG connector with the pin-1 towards the front of device.
    For SM-X Mini and SX-2, check out the provided documentation or ask their respective manufacturers.
