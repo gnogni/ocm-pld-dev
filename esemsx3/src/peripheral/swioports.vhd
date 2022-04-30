@@ -39,6 +39,7 @@ entity switched_io_ports is
     port(
         clk21m          : in    std_logic;
         reset           : in    std_logic;
+        power_on_reset  : in    std_logic;
         req             : in    std_logic;
         ack             : out   std_logic;
         wrt             : in    std_logic;
@@ -178,9 +179,11 @@ begin
     DefKmap     <=  '1';                        -- Default Keyboard     0=Japanese Layout   1=Non-Japanese Layout
 --  =============================================================================================================
 
-    process( reset, clk21m )
+    process( reset, clk21m, power_on_reset )
     begin
-        if( clk21m'event and clk21m = '1' )then
+        if( power_on_reset = '0' )then
+            VDP_ID := "00010";                              -- Default VDP ID
+        elsif( clk21m'event and clk21m = '1' )then
             if( reset = '1' )then
 
                 swioRESET_n     <=  '1';                    -- End of Reset pulse

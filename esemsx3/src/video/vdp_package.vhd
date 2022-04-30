@@ -82,8 +82,9 @@ LIBRARY IEEE;
 PACKAGE VDP_PACKAGE IS
 
     -- VDP ID
---  SHARED VARIABLE VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00000";  -- V9938
-    SHARED VARIABLE VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00010";  -- V9958
+--  CONSTANT VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00000";  -- V9938
+--  CONSTANT VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 ) := "00010";  -- V9958
+    SHARED VARIABLE VDP_ID : STD_LOGIC_VECTOR(  4 DOWNTO 0 );      -- managed by Switched I/O ports
 
     -- display start position ( when adjust=(0,0) )
     -- [from V9938 Technical Data Book]
@@ -116,7 +117,8 @@ PACKAGE VDP_PACKAGE IS
 
     -- LEFT-TOP POSITION OF VISIBLE AREA
     CONSTANT OFFSET_X                           : STD_LOGIC_VECTOR(  6 DOWNTO 0 ) := "0110001"; -- 49
-    SHARED VARIABLE OFFSET_Y                    : STD_LOGIC_VECTOR(  6 DOWNTO 0 ) := "0010011"; -- 19 => managed by Switched I/O Ports
+--  CONSTANT OFFSET_Y                           : STD_LOGIC_VECTOR(  6 DOWNTO 0 ) := "0010011"; -- 19
+    SHARED VARIABLE OFFSET_Y                    : STD_LOGIC_VECTOR(  6 DOWNTO 0 );              -- managed by Switched I/O ports
 
     CONSTANT LED_TV_X_NTSC                      : INTEGER := -3;
     CONSTANT LED_TV_Y_NTSC                      : INTEGER := 1;

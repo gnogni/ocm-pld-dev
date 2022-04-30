@@ -549,6 +549,7 @@ architecture RTL of emsx_top is
         port(
             clk21m          : in    std_logic;
             reset           : in    std_logic;
+            power_on_reset  : in    std_logic;
             req             : in    std_logic;
             ack             : out   std_logic;
             wrt             : in    std_logic;
@@ -2790,6 +2791,7 @@ begin
         port map(
             clk21m          => clk21m           ,
             reset           => reset            ,
+            power_on_reset  => power_on_reset   ,
             req             => swio_req         ,
             ack             => open             ,
             wrt             => wrt              ,
