@@ -1519,7 +1519,7 @@ begin
                 end if;
             elsif( pSltIorq_n = '0' and jSltIorq_n = '1' )then          -- wait for external bus
                 if( ff_clksel = '1' )then
-                    count := "0111";                                    -- "0011" = original value, "0111" = better reading the pull-up states at 10.74MHz
+                    count := "0110";                                    -- "0011" = original value, "0110" = better reading the pull-up states at 10.74MHz
                 elsif( ff_clksel5m_n = '0' )then
                     count := "0110";                                    -- "0110" = calibrated to properly access the ADPCM unit (NMS-1205) at 5.37 MHz
                 end if;
