@@ -18,6 +18,7 @@ if not exist %QPGM% goto err_quartus
 
 :init
 "%QPGM%" -c %CABLE% %PROJECT%.cdf >nul 2>nul
+if not %ERRORLEVEL% == 0 "%QPGM%" -c %CABLE% %PROJECT%.cdf >nul 2>nul
 if %ERRORLEVEL% == 0 (cls&echo.&echo PROGRAMMING SUCCEEDED!) else (color 4f&cls&echo.&echo PROGRAMMING FAILED!)
 del %PROJECT%.jic >nul 2>nul
 goto timer
