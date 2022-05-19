@@ -77,7 +77,7 @@ DIP-SW and Special Keys
 =======================
 GAMING-SPACEBAR   <=  [WIN]
 GRAPH             <=  [F6] or [ALT]
-KANA/CODE         <=  [F7] or [APP/MENU]
+KANA/CODE         <=  [F7] or [MENU]
 SELECT            <=  [F8]
 CPU Clock         <=  [F12] or [DIP-SW1]
 Video Output      <=  [(SHIFT+)PRTSCR] or [DIP-SW2/3]
