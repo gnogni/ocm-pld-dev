@@ -31,3 +31,8 @@ echo.&echo 'fw\recovery.pof' not found!
 waitfor /T %TIMEOUT% pause >nul 2>nul
 
 :quit
+set EXITSTR=FW-UPLOAD for %PROJECT%  (%RANDOM%)
+if "%1"=="--auto-collect" set EXITSTR=AUTO-COLLECT for %PROJECT%  (%RANDOM%)
+title %EXITSTR%
+for /f "tokens=2" %%G in ('tasklist /v^|findstr "%EXITSTR%"') do set CURRPID=ParentProcessId=%%~G and Name='conhost.exe'
+for /f "usebackq" %%G in (`wmic process where "%CURRPID%" get ProcessId^,WindowsVersion^|findstr /r "[0-9]"`) do taskkill /f /fi "PID eq %%~G"

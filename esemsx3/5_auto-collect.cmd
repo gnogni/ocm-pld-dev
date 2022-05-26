@@ -67,5 +67,5 @@ echo.&echo 'src\' not found!
 waitfor /T %TIMEOUT% pause >nul 2>nul
 
 :quit
-rem --- if "%1"=="" call 6_fw-upload.cmd --no-wait
+rem --- if "%1"=="" call 6_fw-upload.cmd --auto-collect
 exit
