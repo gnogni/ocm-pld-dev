@@ -25,7 +25,7 @@ goto timer
 
 :err_init
 if "%1"=="" color f0
-echo.&echo Please initialize a device first!
+if "%1"=="" echo.&echo Please initialize a device first!
 goto timer
 
 :err_quartus
