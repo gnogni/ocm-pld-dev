@@ -37,7 +37,14 @@
 --
 -- 2018.12.16 modified by KdL
 -- Added MENU usable as an alternative to the F7 key for KANA/CODE.
--- Fixed scancode of SHIFT+F6 (GRAPH).
+-- Fixed the scancode of SHIFT+F6 (GRAPH).
+--
+-- 2022.05.22 modified by KdL
+-- Fixed the scancode of SHIFT+[9] (KEYPAD nr 9) on non-Japanese layouts.
+-- Fixed other scancodes combined with the SHIFT key.
+--
+-- 2022.05.24 modified by HRA!
+-- All LSHIFT and RSHIFT = $86 for non-Japanese layouts.
 --
 
 library ieee;
@@ -106,7 +113,7 @@ constant rom101 : rom_101 := (
 --             F10    F8     F6     F4     Tab    '/"
         X"7F", X"7F", X"67", X"26", X"07", X"37", X"D1", X"7F", -- 08..0F
 --             LAlt   LShft         LCtrl  Q      1/!
-        X"7F", X"26", X"06", X"7F", X"16", X"64", X"10", X"7F", -- 10..17
+        X"7F", X"26", X"86", X"7F", X"16", X"64", X"10", X"7F", -- 10..17
 --                    Z      S      A      W      2/@
         X"7F", X"7F", X"75", X"05", X"62", X"45", X"20", X"7F", -- 18..1F
 --             C      X      D      E      4/$    3/#
@@ -124,7 +131,7 @@ constant rom101 : rom_101 := (
 --             //?    ~/^           ´/`    =/+
         X"7F", X"42", X"B1", X"7F", X"7F", X"A1", X"7F", X"7F", -- 50..57
 --      CapLk  RShft  Enter  [/{           ]/}
-        X"36", X"06", X"77", X"61", X"7F", X"12", X"7F", X"7F", -- 58..5F
+        X"36", X"86", X"77", X"61", X"7F", X"12", X"7F", X"7F", -- 58..5F
 --             \/|                                BS
         X"7F", X"41", X"7F", X"7F", X"7F", X"7F", X"57", X"3B", -- 60..67
 --             [1]           [4]    [7]    [.]
@@ -239,7 +246,7 @@ constant rom101 : rom_101 := (
 --      [0]    [,]    [2]    [5]    [6]    [8]    Esc    NLock
         X"B9", X"EA", X"D9", X"8A", X"9A", X"BA", X"A7", X"EA", -- 70..77
 --      F11    [+]    [3]    [-]    [*]    [9]    ScrLk
-        X"FF", X"99", X"E9", X"DA", X"89", X"BA", X"FF", X"FF", -- 78..7F
+        X"FF", X"99", X"E9", X"DA", X"89", X"CA", X"FF", X"FF", -- 78..7F
 --                           F7
         X"FF", X"FF", X"FF", X"C6", X"FF", X"FF", X"FF", X"FF", -- 80..87
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 88..8F
@@ -281,11 +288,11 @@ constant rom101 : rom_101 := (
 --
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 40..47
 --                    [/]
-        X"FF", X"FF", X"29", X"FF", X"FF", X"FF", X"FF", X"FF", -- 48..4F
+        X"FF", X"FF", X"A9", X"FF", X"FF", X"FF", X"FF", X"FF", -- 48..4F
 --
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 50..57
 --                    [Enter]                     Wake
-        X"FF", X"FF", X"77", X"FF", X"FF", X"FF", X"FF", X"FF", -- 58..5F
+        X"FF", X"FF", X"F7", X"FF", X"FF", X"FF", X"FF", X"FF", -- 58..5F
 --
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 60..67
 --             End           Left   Home
@@ -339,7 +346,7 @@ constant rom106 : rom_106 := (
         X"FF", X"32", X"42", X"14", X"71", X"54", X"21", X"FF", -- 48
         X"FF", X"52", X"02", X"FF", X"51", X"31", X"FF", X"FF", -- 50
         X"36", X"06", X"77", X"61", X"FF", X"12", X"FF", X"FF", -- 58
-        X"FF", X"FF", X"FF", X"FF", X"1B", X"FF", X"57", X"3B", -- 60
+        X"FF", X"41", X"FF", X"FF", X"1B", X"FF", X"57", X"3B", -- 60
         X"FF", X"49", X"41", X"79", X"2A", X"FF", X"FF", X"FF", -- 68
         X"39", X"7A", X"59", X"0A", X"1A", X"3A", X"27", X"6A", -- 70
         X"FF", X"19", X"69", X"5A", X"09", X"4A", X"FF", X"FF", -- 78

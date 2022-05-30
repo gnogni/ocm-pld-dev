@@ -37,7 +37,14 @@
 --
 -- 2018.12.16 modified by KdL
 -- Added MENU usable as an alternative to the F7 key for KANA/CODE.
--- Fixed scancode of SHIFT+F6 (GRAPH).
+-- Fixed the scancode of SHIFT+F6 (GRAPH).
+--
+-- 2022.05.22 modified by KdL
+-- Fixed the scancode of SHIFT+[9] (KEYPAD nr 9) on non-Japanese layouts.
+-- Fixed other scancodes combined with the SHIFT key.
+--
+-- 2022.05.24 modified by HRA!
+-- All LSHIFT and RSHIFT = $86 for non-Japanese layouts.
 --
 
 library ieee;
@@ -71,9 +78,9 @@ constant rom101 : rom_101 := (
 
 -- 101 keyboard (set 2) / Shift = OFF
 
-        X"FF", X"7F", X"7F", X"17", X"76", X"56", X"66", X"7F", -- 00
+        X"7F", X"7F", X"7F", X"17", X"76", X"56", X"66", X"7F", -- 00
         X"7F", X"7F", X"67", X"26", X"07", X"37", X"D1", X"7F", -- 08
-        X"7F", X"26", X"06", X"46", X"16", X"64", X"10", X"7F", -- 10
+        X"7F", X"26", X"86", X"46", X"16", X"64", X"10", X"7F", -- 10
         X"7F", X"7F", X"75", X"05", X"62", X"45", X"20", X"7F", -- 18
         X"7F", X"03", X"55", X"13", X"23", X"40", X"30", X"7F", -- 20
         X"7F", X"08", X"35", X"33", X"15", X"74", X"50", X"7F", -- 28
@@ -82,7 +89,7 @@ constant rom101 : rom_101 := (
         X"7F", X"22", X"04", X"63", X"44", X"00", X"11", X"7F", -- 40
         X"7F", X"32", X"42", X"14", X"71", X"54", X"21", X"7F", -- 48
         X"7F", X"52", X"F0", X"7F", X"61", X"A1", X"7F", X"7F", -- 50
-        X"36", X"06", X"77", X"12", X"7F", X"41", X"7F", X"7F", -- 58
+        X"36", X"86", X"77", X"12", X"7F", X"41", X"7F", X"7F", -- 58
         X"7F", X"41", X"7F", X"7F", X"1B", X"7F", X"57", X"3B", -- 60
         X"7F", X"49", X"41", X"79", X"2A", X"7F", X"7F", X"7F", -- 68
         X"39", X"7A", X"59", X"0A", X"1A", X"3A", X"27", X"6A", -- 70
@@ -154,7 +161,7 @@ constant rom101 : rom_101 := (
         X"FF", X"C1", X"FF", X"FF", X"9B", X"FF", X"D7", X"BB", -- 60
         X"FF", X"C9", X"C1", X"F9", X"AA", X"FF", X"FF", X"FF", -- 68
         X"B9", X"FA", X"D9", X"8A", X"9A", X"BA", X"A7", X"EA", -- 70
-        X"FF", X"99", X"E9", X"DA", X"89", X"BA", X"FF", X"FF", -- 78
+        X"FF", X"99", X"E9", X"DA", X"89", X"CA", X"FF", X"FF", -- 78
         X"FF", X"FF", X"FF", X"C6", X"FF", X"FF", X"FF", X"FF", -- 80
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 88
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 90
@@ -181,9 +188,9 @@ constant rom101 : rom_101 := (
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 30
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 38
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 40
-        X"FF", X"FF", X"29", X"FF", X"FF", X"FF", X"FF", X"FF", -- 48
+        X"FF", X"FF", X"A9", X"FF", X"FF", X"FF", X"FF", X"FF", -- 48
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 50
-        X"FF", X"FF", X"77", X"FF", X"FF", X"FF", X"FF", X"FF", -- 58
+        X"FF", X"FF", X"F7", X"FF", X"FF", X"FF", X"FF", X"FF", -- 58
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 60
         X"FF", X"C7", X"FF", X"C8", X"98", X"FF", X"FF", X"FF", -- 68
         X"A8", X"B8", X"E8", X"FF", X"F8", X"D8", X"FF", X"FF", -- 70
@@ -234,7 +241,7 @@ constant rom106 : rom_106 := (
         X"FF", X"32", X"42", X"14", X"71", X"54", X"21", X"FF", -- 48
         X"FF", X"52", X"02", X"FF", X"51", X"31", X"FF", X"FF", -- 50
         X"36", X"06", X"77", X"61", X"FF", X"12", X"FF", X"FF", -- 58
-        X"FF", X"FF", X"FF", X"FF", X"1B", X"FF", X"57", X"3B", -- 60
+        X"FF", X"41", X"FF", X"FF", X"1B", X"FF", X"57", X"3B", -- 60
         X"FF", X"49", X"41", X"79", X"2A", X"FF", X"FF", X"FF", -- 68
         X"39", X"7A", X"59", X"0A", X"1A", X"3A", X"27", X"6A", -- 70
         X"FF", X"19", X"69", X"5A", X"09", X"4A", X"FF", X"FF", -- 78
