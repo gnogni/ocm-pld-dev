@@ -42,6 +42,8 @@ del zz0*.* >nul 2>nul
 :done
 set DEST=C:\Altera\multi-release\
 if exist %DEST% rd /S /Q %DEST% >nul 2>nul
+set DEST=C:\intelFPGA_lite\multi-release\
+if exist %DEST% rd /S /Q %DEST% >nul 2>nul
 if "%1"=="" echo.&echo Done!
 
 :quit

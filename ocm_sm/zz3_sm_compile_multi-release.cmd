@@ -3,7 +3,7 @@ rem --- 'zz3_sm_compile_multi-release.cmd' v2.7 by KdL (2021.08.23)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm
-set SRC=C:\Altera\multi-release\
+set SRC=C:\intelFPGA_lite\multi-release\
 if "%1"=="" color 87&title Multi-Release compiler tool for %PROJECT%
 if not exist %PROJECT%_device.env goto err_init
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cycloneive" goto err_quartus

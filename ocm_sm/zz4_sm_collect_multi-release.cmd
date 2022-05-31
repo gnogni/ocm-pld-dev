@@ -3,7 +3,7 @@ rem --- 'zz4_sm_collect_multi-release.cmd' v2.7 by KdL (2021.08.23)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm
-set SRC=C:\Altera\multi-release\
+set SRC=C:\intelFPGA_lite\multi-release\
 set DEST=..\firmware\
 set LOG=## BUILDING FAILED ##.log
 set FAIL=NO

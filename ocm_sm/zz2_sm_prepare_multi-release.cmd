@@ -5,7 +5,7 @@ set TIMEOUT=1
 set PROJECT=ocm_sm
 set SRC0=esemsx3\
 set SRC1=ocm_sm\
-set DEST=C:\Altera\multi-release\
+set DEST=C:\intelFPGA_lite\multi-release\
 if "%1"=="" color 1f&title Multi-Release preparing tool for %PROJECT%
 if not exist %PROJECT%_device.env goto err_init
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cycloneive" goto err_quartus
