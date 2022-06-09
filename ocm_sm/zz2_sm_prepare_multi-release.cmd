@@ -70,7 +70,6 @@ echo cd "%OUTDIR%%INPDIR%">>%DEST%sm_compile_multi-release.cmd
 echo start "compile" /d "%OUTDIR%%INPDIR%" /min 4_sm_auto-collect.cmd --no-wait>>%DEST%sm_compile_multi-release.cmd
 cd %~dp0
 
-
 rem --- JP layout
 cd ..
 set LAYOUT=jp
