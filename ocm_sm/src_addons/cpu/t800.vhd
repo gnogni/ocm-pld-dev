@@ -73,7 +73,7 @@ use work.T800_Pack.all;
 entity T800 is
     generic(
         Mode        : integer := 0;  -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
-        R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU 
+        R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU
         IOWait      : integer := 0;  -- 0 => Single I/O cycle, 1 => Std I/O cycle
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
@@ -755,7 +755,7 @@ begin
             end if;
         end if;
     end process;
-    
+
 ---------------------------------------------------------------------------
 --
 -- BC('), DE('), HL('), IX and IY
@@ -863,7 +863,7 @@ begin
     begin
         RegDIH <= Save_Mux;
         RegDIL <= Save_Mux;
-        
+
         if I_MULU = '1' then
             if T_Res = '1' then
                 RegDIH <= MULU_Prod32(31 downto 24);
@@ -873,7 +873,7 @@ begin
                 RegDIL <= MULU_tmp(7 downto 0);
             end if;
         end if;
-        
+
         if ExchangeDH = '1' and TState = 3 then
             RegDIH <= RegBusB(15 downto 8);
             RegDIL <= RegBusB(7 downto 0);

@@ -3,7 +3,7 @@ Collect the firmware using the scripts for SM-X, SM-X Mini and SX-2
 
 Prerequisites:
 --------------
-a.  Install Quartus II v13.0 SP1 on a Windows OS.
+a.  Install Quartus Prime v21.1 Lite Edition on a Windows OS.
 
 b.  Copy the full project in a folder (both 'esemsx3\' and 'ocm_sm\' subfolders).
 
@@ -12,13 +12,13 @@ How to:
 -------
 1.  Run one of the "!!-init-*.cmd" scripts to initialize the desired device.
 
-2.  Run '1_sm_compile.cmd' and go with 'Start Compilation' of Quartus II.
+2.  Run '1_sm_compile.cmd' and go with 'Start Compilation' of Quartus Prime.
     When done select 'Convert Programming Files...' from the 'File' menu,
     open your favorite '.cof' file and press the 'Generate' button.
     By jumping the conversion you obtain a PLD firmware without the EPBIOS:
     the machine will run using the SDBIOS only, useful for manufacturers.
 
-3.  Get out from Quartus II and run '2_sm_finalize.cmd'.
+3.  Get out from Quartus Prime and run '2_sm_finalize.cmd'.
 
 4.  And proceed with '3_sm_collect.cmd'.
     The firmware is stored in the 'fw\' subfolder.

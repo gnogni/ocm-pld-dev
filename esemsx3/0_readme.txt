@@ -3,7 +3,7 @@ Collect the firmware using the scripts for 1chipMSX and Zemmix Neo
 
 Prerequisites:
 --------------
-a.  Install Quartus II v11.0 SP1 on a Windows OS.
+a.  Install Quartus II v11.0 SP1 Web Edition on a Windows OS.
 
 b.  Copy the full project in a folder ('C:\Altera\esemsx3\' is suggested).
 

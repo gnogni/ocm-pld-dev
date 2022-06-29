@@ -30,7 +30,7 @@ goto timer
 
 :err_quartus
 if "%1"=="" color f0
-if "%1"=="" echo.&echo Quartus II was not found or unsupported device!
+if "%1"=="" echo.&echo Quartus Prime was not found or unsupported device!
 goto timer
 
 :err_msg

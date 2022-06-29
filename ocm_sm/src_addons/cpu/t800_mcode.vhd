@@ -101,7 +101,7 @@ entity T800_MCode is
                 Set_BusB_To : out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI,A,SP(L),SP(M),1,F,PC(L),PC(M),0
                 ALU_Op      : out std_logic_vector(3 downto 0);
                         -- ADD, ADC, SUB, SBC, AND, XOR, OR, CP, ROT, BIT, SET, RES, DAA, RLD, RRD, None
-                ALU_cpi     : out std_logic;    --for undoc XY-Flags       
+                ALU_cpi     : out std_logic;    --for undoc XY-Flags
                 Save_ALU    : out std_logic;
                 PreserveC   : out std_logic;
                 Arith16     : out std_logic;
@@ -1976,7 +1976,7 @@ begin
                                         Set_BusA_To(2 downto 0) <= "100";
                                     when others => null;
                                     end case;
-                                end if;    
+                                end if;
                         when "11000011"|"11110011" =>
                                 --R800 MULUW
                                 if R800_MULU=1 and R800_mode = '1' then
@@ -1999,7 +1999,7 @@ begin
                                         Set_BusA_To(2 downto 0) <= "100";
                                     when others => null;
                                     end case;
-                                end if;    
+                                end if;
                         end case;
 
                 end case;

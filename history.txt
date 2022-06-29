@@ -71,7 +71,7 @@
 --                http://mega.nz/file/FdJgSbDB#UL9W4iM1T9rx_FdcbCuBwgtiTp8P2tDoiClobiNTQnI
 --
 -- Intel Quartus Prime v21.1.0 Lite Edition (SM-X and SX-2)
---                https://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html
+--                http://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html
 -------------------------------------------------------------------------------------------------------------------
 --
 -- Special thanks to:
