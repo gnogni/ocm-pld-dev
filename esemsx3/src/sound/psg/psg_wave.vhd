@@ -138,9 +138,9 @@ begin
       PsgFreqChC   <= (others => '1');
       PsgFreqNoise <= (others => '1');
       PsgChanSel   <= (others => '1');
-      PsgVolChA    <= (others => '1');
-      PsgVolChB    <= (others => '1');
-      PsgVolChC    <= (others => '1');
+      PsgVolChA    <= (others => '0');
+      PsgVolChB    <= (others => '0');
+      PsgVolChC    <= (others => '0');
       PsgFreqEnv   <= (others => '1');
       PsgShapeEnv  <= (others => '1');
       PsgEnvReq    <= '0';
@@ -306,7 +306,7 @@ begin
       -- Envelope base frequency : 56kHz = 3.58MHz / 8 / 2
       if (PsgClkEna(4 downto 0) = "00000" and clkena = '1') then
 
-        -- Envelope preiod counter
+        -- Envelope period counter
         if (PsgCntEnv /= X"0000" and PsgEnvReq = PsgEnvAck) then
           PsgCntEnv := PsgCntEnv - 1;
         elsif (PsgFreqEnv /= X"0000") then

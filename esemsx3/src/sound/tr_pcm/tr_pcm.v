@@ -31,17 +31,20 @@
 //
 // ----------------------------------------------------------------------------
 //  Update history
-//  22nd,March,2021
+//  22nd, March, 2021
 //      Modified by KdL
 //      PreScaler with lfsr counter.
 //
-//  04th,December,2019
+//  04th, December, 2019
 //      Modified by t.hara
 //      Initial value of ff_da0 and ff_da1 changed to 127 (level=0).
 //
-//  30th,November,2019
+//  30th, November, 2019
 //      First release by t.hara
 //      But not implemented a digital filter (LPF) yet.
+//
+//  20th, July, 2022
+//      Bugfix. Remove NON blocking load by t.hara.
 //
 
 module tr_pcm (
@@ -129,7 +132,7 @@ module tr_pcm (
         end
         else begin
             if( w_counter_low_end ) begin
-                ff_counter = ff_counter + 2'd1;
+                ff_counter <= ff_counter + 2'd1;
             end
             else begin
                 //  hold
@@ -259,7 +262,7 @@ module tr_pcm (
             ff_wave_out <= 8'd0;
         end
         else begin
-            ff_wave_out = w_wave_out;
+            ff_wave_out <= w_wave_out;
         end
     end
 
