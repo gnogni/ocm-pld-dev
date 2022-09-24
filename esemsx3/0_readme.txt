@@ -31,8 +31,8 @@ How to:
 
 Note: 
 -----
-The 'zz*.cmd' scripts are used to get the multi-release in a short time.
+The 'zz*.cmd' scripts are used to get the Multi-Release in a short time.
 
 
 _______________________________________
-'0_readme.txt' v2.7 by KdL (2021.08.23)
+'0_readme.txt' v2.8 by KdL (2022.09.24)

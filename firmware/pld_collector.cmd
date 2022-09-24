@@ -1,8 +1,8 @@
 @echo off
-rem --- 'pld_collector.cmd' v3.9 by KdL (2021.08.23)
+rem --- 'pld_collector.cmd' v3.9.1 by KdL (2022.09.24)
 
-set VERSION=3.9
-set VER=390
+set VERSION=3.9.1
+set VER=391
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -38,18 +38,6 @@ call :create_XFLASH_BAT
 rem --- SM-X ---
 call :collect_all
 if not exist %DEST%*.PLD rd /S /Q %DEST% >nul 2>nul
-set DEVNAME=SM-X Mini
-set UNDERLN==========
-set FNAME=SMN
-set DEST=PLD%VER%.%FNAME%\
-if not exist smxflash.com goto err_SMXFLASH_COM
-rd /S /Q %DEST% >nul 2>nul
-md %DEST% >nul 2>nul
-copy smxflash.com %DEST%SMXFLASH.COM >nul 2>nul
-call :create_XFLASH_BAT
-rem --- SM-X Mini ---
-call :collect_all
-if not exist %DEST%*.PLD rd /S /Q %DEST% >nul 2>nul
 set DEVNAME=SX-2
 set UNDERLN=====
 set FNAME=SX2
@@ -73,6 +61,8 @@ set LAYOUT=ES
 call :collect_%FNAME%
 set LAYOUT=FR
 call :collect_%FNAME%
+set LAYOUT=IT
+call :collect_%FNAME%
 set LAYOUT=US
 call :collect_%FNAME%
 set YENSLASH=yen
@@ -81,8 +71,8 @@ call :collect_%FNAME%
 goto:eof
 
 :collect_OCM
+copy 1chipmsx_%LAYOUT%_layout\single_epbios_msxplusplus_%YENSLASH%\%PROJECT%.pld %DEST%%FNAME%PP-%LAYOUT%.PLD >nul 2>nul
 copy 1chipmsx_%LAYOUT%_layout\single_epbios_msx2plus_%YENSLASH%\%PROJECT%.pld %DEST%%FNAME%2P-%LAYOUT%.PLD >nul 2>nul
-copy 1chipmsx_%LAYOUT%_layout\single_epbios_msx3_%YENSLASH%\%PROJECT%.pld %DEST%%FNAME%X3-%LAYOUT%.PLD >nul 2>nul
 goto:eof
 
 :collect_SX1
@@ -134,8 +124,8 @@ echo.>>%OUTPUT%
 echo OCM-PLD UPDATE>>%OUTPUT%
 echo ==============>>%OUTPUT%
 echo.>>%OUTPUT%
+echo OCMPP-??.PLD ... 1chipMSX (MSX++ logo)>>%OUTPUT%
 echo OCM2P-??.PLD ... 1chipMSX (MSX2+ logo)>>%OUTPUT%
-echo OCMX3-??.PLD ... 1chipMSX (MSX3 logo)>>%OUTPUT%
 echo SX1ES-??.PLD ... SX-1 (regular)>>%OUTPUT%
 echo SX1MN-??.PLD ... SX-1 Mini/Mini+>>%OUTPUT%
 echo ZEMBR-??.PLD ... Zemmix Neo Brazilian>>%OUTPUT%
@@ -145,8 +135,8 @@ echo ?? = keyboard layouts>>%OUTPUT%
 echo.>>%OUTPUT%
 echo Examples:>>%OUTPUT%
 echo.>>%OUTPUT%
-echo FLASH OCM2P-JP.PLD>>%OUTPUT%
-echo FLASH OCMX3-US.PLD>>%OUTPUT%
+echo FLASH OCMPP-JP.PLD>>%OUTPUT%
+echo FLASH OCM2P-US.PLD>>%OUTPUT%
 echo.>>%OUTPUT%
 goto:eof
 

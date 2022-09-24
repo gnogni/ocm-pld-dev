@@ -1,6 +1,6 @@
 --
 -- top.vhd
--- SM-X (regular) / SM-X Mini TOP by Victor Trucco - Modified by KdL
+-- SM-X TOP by Victor Trucco - Modified by KdL
 --
 -- All rights reserved
 --
@@ -112,7 +112,7 @@ entity top is
         slot_CS2_o          : inout std_logic := 'Z';
         slot_CLOCK_o        : inout std_logic := 'Z';
         slot_M1_o           : inout std_logic := 'Z';
-        slot_MREQ_o         : inout std_logic := 'Z';
+        slot_MERQ_o         : inout std_logic := 'Z';
         slot_IOREQ_o        : inout std_logic := 'Z';
         slot_RD_o           : inout std_logic := 'Z';
         slot_WR_o           : inout std_logic := 'Z';
@@ -162,16 +162,12 @@ architecture Behavior of top is
         ps2mdat             : inout std_logic;                          -- mouse PS/2 data
         ps2mclk             : inout std_logic;                          -- mouse PS/2 clk
 
-        mou_emu             : in    std_logic_vector(  5 downto 0 );    -- mouse with joystick input
-        sof                 : in    std_logic;                          -- mouse joystick emulation enable bit
         zcount              : out   std_logic_vector(  7 downto 0 );    -- mouse Z counter
         ycount              : out   std_logic_vector(  7 downto 0 );    -- mouse Y counter
         xcount              : out   std_logic_vector(  7 downto 0 );    -- mouse X counter
         mleft               : out   std_logic;                          -- left mouse button output
         mthird              : out   std_logic;                          -- third (middle) mouse button output
         mright              : out   std_logic;                          -- right mouse button output
-        test_load           : in    std_logic;                          -- load test value to mouse counter
-        test_data           : in    std_logic_vector( 15 downto 0 );    -- mouse counter test value
         mouse_data_out      : out   std_logic                           -- mouse has data to present
     );
     end component;
@@ -219,8 +215,6 @@ architecture Behavior of top is
     -- reset signal
     signal reset_s          : std_logic;                                            -- global reset
     signal power_on_reset_s : std_logic := '0';
-    signal slow_s           : std_logic_vector( 20 downto 0 ) := (others => '1');
-    signal slow_reset_s     : std_logic := '1';
 
     -- DIPs
     signal dip_s            : std_logic_vector(  7 downto 0 ) := "00100001";        -- caution! inverted bits (0 = enabled)
@@ -270,9 +264,15 @@ architecture Behavior of top is
     signal mouse_data_out   : std_logic;
     signal mouse_idle       : std_logic := '1';
     signal mouse_present    : std_logic := '0';
-
-    type   mouse_states  is ( MOUSE_WAIT, MOUSE_START, MOUSE_HIGHX, MOUSE_LOWX, MOUSE_HIGHY, MOUSE_LOWY );
-    signal mouse_state      : mouse_states := MOUSE_WAIT;
+    signal joya_en          : std_logic := '1';
+    signal mouse_present_old: std_logic := '0';
+    signal clock_div_5      : std_logic := '0';
+    signal mouse_state      : std_logic_vector(  1 downto 0 ) := (others =>'0');
+    signal mouse_x_latch    : std_logic_vector(  7 downto 0 ) := (others =>'0');
+    signal mouse_y_latch    : std_logic_vector(  7 downto 0 ) := (others =>'0');
+    signal mouse_timeout    : std_logic_vector( 17 downto 0 ) := (others =>'0');
+    signal mouse_data_old   : std_logic := '0';
+    signal mouse_stra_old   : std_logic := '0';
 
     -- misc
     signal blink_s          : std_logic;
@@ -293,7 +293,8 @@ architecture Behavior of top is
     (
         use_wifi_g              => true,
         use_midi_g              => true,
-        use_opl3_g              => true
+        use_opl3_g              => true,
+        use_dualpsg_g           => true
     )
     port map(
         -- Clock, Reset ports
@@ -302,19 +303,19 @@ architecture Behavior of top is
         reset                   => reset_s,
         power_on_reset          => power_on_reset_s,
 
-        -- SD-RAM ports
-        pMemClk                 => clk_sdram,                   -- SD-RAM Clock
-        pMemCke                 => sdram_cke_o,                 -- SD-RAM Clock enable
-        pMemCs_n                => sdram_cs_o,                  -- SD-RAM Chip select
-        pMemRas_n               => sdram_ras_o,                 -- SD-RAM Row/RAS
-        pMemCas_n               => sdram_cas_o,                 -- SD-RAM /CAS
-        pMemWe_n                => sdram_we_o,                  -- SD-RAM /WE
-        pMemUdq                 => sdram_dqm_o(1),              -- SD-RAM UDQM
-        pMemLdq                 => sdram_dqm_o(0),              -- SD-RAM LDQM
-        pMemBa1                 => sdram_ba_o(1),               -- SD-RAM Bank select address 1
-        pMemBa0                 => sdram_ba_o(0),               -- SD-RAM Bank select address 0
-        pMemAdr                 => sdram_ad_o,                  -- SD-RAM Address
-        pMemDat                 => sdram_da_io,                 -- SD-RAM Data
+        -- SDRAM ports
+        pMemClk                 => clk_sdram,                   -- SDRAM Clock
+        pMemCke                 => sdram_cke_o,                 -- SDRAM Clock enable
+        pMemCs_n                => sdram_cs_o,                  -- SDRAM Chip select
+        pMemRas_n               => sdram_ras_o,                 -- SDRAM Row/RAS
+        pMemCas_n               => sdram_cas_o,                 -- SDRAM /CAS
+        pMemWe_n                => sdram_we_o,                  -- SDRAM /WE
+        pMemUdq                 => sdram_dqm_o(1),              -- SDRAM UDQM
+        pMemLdq                 => sdram_dqm_o(0),              -- SDRAM LDQM
+        pMemBa1                 => sdram_ba_o(1),               -- SDRAM Bank select address 1
+        pMemBa0                 => sdram_ba_o(0),               -- SDRAM Bank select address 0
+        pMemAdr                 => sdram_ad_o,                  -- SDRAM Address
+        pMemDat                 => sdram_da_io,                 -- SDRAM Data
 
         -- PS/2 keyboard ports
         pPs2Clk                 => ps2_clk_io,
@@ -425,7 +426,7 @@ architecture Behavior of top is
                        'Z';
 
     slot_IOREQ_o    <= cpu_ioreq_s;
-    slot_MREQ_o     <= cpu_mreq_s;
+    slot_MERQ_o     <= cpu_mreq_s;
     slot_RD_o       <= cpu_rd_s;
     slot_SLOT1_o    <= slot_SLOT1_s;
     slot_SLOT2_o    <= slot_SLOT2_s;
@@ -445,22 +446,6 @@ architecture Behavior of top is
     slot_DATA_DIR_o <= not cpu_rd_s;                            -- port A=SLOT, B=FPGA     DIR(1)=A to B
 
     sdram_clk_o     <= clk_sdram;
-
-    -- slow reset
-    process( clk21m, reset_s )
-    begin
-        if reset_s = '1' then
-            slow_s <= (others => '1');
-        elsif rising_edge( clk21m ) then
-            if slow_s /= x"00" then
-                slow_s <= slow_s - 1;
-                slow_reset_s <= '1';
-            else
-                slow_reset_s <= '0';
-            end if;
-
-        end if;
-    end process;
 
     vga_r_o         <= vga_r_out_s;
     vga_g_o         <= vga_g_out_s;
@@ -508,16 +493,32 @@ architecture Behavior of top is
     ---------------------------------
 
     process( clk21m )
+        variable port_a_disc_time  : std_logic_vector( 20 downto 0 ) := "000000000000000000000";
     begin
         if rising_edge( clk21m )then
             clock_div_q <= clock_div_q + 1;
+            if ( mouse_present_old /= mouse_present ) then
+                port_a_disc_time := "011000011010100000000";    -- about 1s disconnected
+                joya_en <= '0';
+            end if;
+
+            if ( clock_div_q(5) /= clock_div_5 ) then
+                if ( port_a_disc_time /= 0 ) then
+                    port_a_disc_time := port_a_disc_time - 1;
+                else
+                    joya_en <= '1';
+                end if;
+            end if;
+
+            mouse_present_old   <= mouse_present;
+            clock_div_5         <= clock_div_q(5);
         end if;
     end process;
 
     mousectrl: ps2mouse
     port map(
         clk             => clock_div_q(5),                      -- need a slower clock to avoid loosing data
-        reset           => slow_reset_s,                        -- slow reset
+        reset           => reset_s,                             -- reset
 
         ps2mdat         => ps2_mouse_data_io,                   -- mouse PS/2 data
         ps2mclk         => ps2_mouse_clk_io,                    -- mouse PS/2 clk
@@ -528,66 +529,58 @@ architecture Behavior of top is
         mleft           => mouse_bts_s(0),                      -- left mouse button output
         mright          => mouse_bts_s(1),                      -- right mouse button output
         mthird          => mouse_bts_s(2),                      -- third(middle) mouse button output
-
-        sof             => '0',                                 -- mouse joystick emulation enable bit
-        mou_emu         => (others => '0'),                     -- mouse with joystick input
-
-        test_load       => '0',                                 -- load test value to mouse counter
-        test_data       => (others => '0'),                     -- mouse counter test value
         mouse_data_out  => mouse_data_out                       -- mouse has data top present
     );
 
-    joymouse_s  <= mouse_bts_s(  1 downto 0 ) & mouse_dat_s     when( mouse_present = '1' )else
-                   joy1_p7_io & joy1_p6_io & joy1_right_io & joy1_left_io & joy1_down_io & joy1_up_io;
+    joymouse_s  <= mouse_bts_s(  1 downto 0 ) & mouse_dat_s                                                 when( mouse_present = '1' and joya_en = '1' )else
+                   joy1_p7_io & joy1_p6_io & joy1_right_io & joy1_left_io & joy1_down_io & joy1_up_io       when( joya_en = '1' )else
+                   "111111";
 
-    process( clk_sdram )
+    process( clk21m, reset_s )
     begin
+        if ( reset_s = '1' )then
+            mouse_state <= "00";
+            mouse_present <= '0';
+            mouse_timeout <= "001100001101010000";
+            mouse_dat_s <= "0000";
+        elsif rising_edge( clk21m )then
+            mouse_data_old <= mouse_data_out;
+            mouse_stra_old <= strA_s;
 
-        if rising_edge( clk_sdram )then
-
-            case mouse_state is
-                when MOUSE_WAIT =>
-                    mouse_dat_s <= "0000";
-                    if mouse_data_out = '1' then
-                        mouse_state <= MOUSE_START;
-                    end if;
-
-                when MOUSE_START =>
-                    mouse_present <= '1';
-                    if strA_s = '1' then
-                        mouse_state <= MOUSE_HIGHX;
-                    end if;
-
-                when MOUSE_HIGHX =>
-                    mouse_dat_s <= mouse_x_s(  7 downto 4 );
-                    if strA_s = '0' then
-                        mouse_state <= MOUSE_LOWX;
-                    end if;
-
-                when MOUSE_LOWX =>
-                    mouse_dat_s <= mouse_x_s(  3 downto 0 );
-                    if strA_s = '1' then
-                        mouse_state <= MOUSE_HIGHY;
-                    end if;
-
-                when MOUSE_HIGHY =>
-                    mouse_dat_s <= mouse_y_s(  7 downto 4 );
-                    if strA_s = '0' then
-                        mouse_state <= MOUSE_LOWY;
-                    end if;
-
-                when MOUSE_LOWY =>
-                    mouse_dat_s <= mouse_y_s(  3 downto 0 );
-                    if strA_s = '1' then
-                        mouse_state <= MOUSE_WAIT;
-                    end if;
-
-                when others =>
-                    mouse_state <= MOUSE_WAIT;
-            end case;
-
-            if( joy1_p7_io = '0' or joy1_p6_io = '0' or joy1_right_io = '0' or joy1_left_io = '0' or joy1_down_io = '0' or joy1_up_io = '0' )then
+            if ( mouse_data_out = '1' )then
+                mouse_present <= '1';
+            elsif ( joy1_p7_io = '0' or joy1_p6_io = '0' )then
                 mouse_present <= '0';
+            end if;
+
+            if ( mouse_data_old = '0' and mouse_data_out = '1' )then
+                mouse_x_latch <= mouse_x_s;
+                mouse_y_latch <= mouse_y_s;
+            end if;
+
+            if ( mouse_present = '1' ) then
+                if ( mouse_timeout /= "000000000000000000" )then
+                    if ( mouse_timeout = "000000000000000001") then mouse_state <= "00"; end if;
+                    mouse_timeout <= mouse_timeout - 1;
+                end if;
+
+                if ( mouse_stra_old /= strA_s ) then
+                    mouse_timeout <= "001100001101010000";
+                    mouse_state <= mouse_state + 1;
+
+                    case mouse_state is
+                        when "00" =>
+                            mouse_dat_s <= mouse_x_latch(  7 downto 4 );
+                        when "01" =>
+                            mouse_dat_s <= mouse_x_latch(  3 downto 0 );
+                        when "10" =>
+                            mouse_dat_s <= mouse_y_latch(  7 downto 4 );
+                        when "11" =>
+                            mouse_dat_s <= mouse_y_latch(  3 downto 0 );
+                            mouse_x_latch <= "00000000";
+                            mouse_y_latch <= "00000000";
+                    end case;
+                end if;
             end if;
 
         end if;

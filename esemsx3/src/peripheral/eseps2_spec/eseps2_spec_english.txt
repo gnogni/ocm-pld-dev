@@ -1,0 +1,80 @@
+ESEPS2 Specifications
+--------------------------------------------------------------------------------
+(1) Introductions
+    ESEPS2 has two built-in keymaps, one corresponding to the MSX native one-to-one 
+    keymap that corresponds one-to-one to MSX native. The other is a keymap that 
+    converts different layouts to MSX native MSX native keymaps.
+    These are switched by the Kmap signal.
+    
+        Kmap = 0: Keymap with one-to-one correspondence to MSX native.
+        Kmap = 1: Keymap with transformation.
+
+    The standard keymap.vhd is as follows.
+
+        Kmap = 0: Japanese keyboard layout.
+        Kmap = 1: English keyboard layout.
+
+    Using Kmap = 1 allows an English keyboard to be used in OCM can be used in OCM 
+    with Japanese MSX BIOS. You can type the characters as they are stamped on the keys.
+
+(2) Constraints
+    [1] Handling of multiple keys of the same type
+        The PS/2 keyboard has multiple CTRL and SHIFT keys.
+        The MSX also has one SHIFT key on each side, but the hardware configuration 
+        treats these keys as the same key.
+        ESEPS2 is configured to treat left CTRL/right CTRL and left SHIFT/right SHIFT 
+        as the same key regardless of the value of the Kmap signal, but as a PS/2 
+        keyboard it sends signals as separate keys.
+
+            (a) Left  SHIFT press
+            (b) Right SHIFT press
+            (c) Left  SHIFT unpress
+            (d) Right SHIFT unpress
+
+        When such a keystroke is performed, the real MSX finally recognizes that the 
+        SHIFT key is released at the point (d), but ESEPS2 recognizes that the SHIFT 
+        key is released at the point (c).
+
+    [2] Simultaneous push restrictions 1
+        Some PS/2 keyboard products have a limit to the number of keys that can be 
+        pressed simultaneously.
+        When such keyboards reach the limit, the next key that can be pressed at the 
+        same time sends a "released" signal even though the first key is not released.
+        This is a limitation of the PS/2 keyboard and cannot be remedied because the 
+        ESEPS2 cannot recognize it.
+
+    [3] Simultaneous push restrictions 2
+        Some PS/2 keyboard products have limitations on the key combinations that can 
+        be pressed simultaneously. For example, some keyboards do not support the 
+        simultaneous pressing of [←] + [↑] + [SPACE].
+        Such keyboards will either send a false code saying that the first key was 
+        "released" when the combination is not possible, or they will not send the key 
+        code in the first place.
+        This is a limitation of the PS/2 keyboard and cannot be remedied because ESEPS2 
+        cannot recognize it.
+        As for [←] + [↑] + [SPACE], since this combination is often used in games, the 
+        [Left WIN] and [Right WIN] keys can be used as [SPACE] as an alternative.
+        Pressing [←] + [↑] + [RIGHT WIN] will have the desired effect.
+
+    [4] Limitation of Kmap = 1
+        Because of the mapping realized by converting key codes, there are restrictions 
+        on key combinations that can be pressed at the same time.
+        For example, in the Japanese layout, the key corresponding to the symbol @ is [@].
+        On the other hand, in the English layout, the key corresponding to the symbol @ 
+        is [SHIFT] + [2].
+        On a Japanese layout keyboard, the symbol @ and the letter w can be entered 
+        simultaneously. Simply press [@][W] at the same time.
+        If you are using Japanese MSX-BASIC with a Japanese-layout keyboard, you can 
+        input the symbol @ and the letter w at the same time by pressing [@][W][W] at 
+        the same time.
+        Can input @w@w@w@w@w@w@w by pressing [@] and [W] at the same time.
+        However, when using an English layout keyboard with Kmap = 1, the simultaneous 
+        pressing of [SHIFT] + [2] and [W] results in the input of @W@W@W@W@W@W.
+        Since "w" and "W" are assigned to the same bit in the MSX key matrix, this is 
+        not a major problem in commercial games that directly handle the MSX key matrix, 
+        but in MSX-BASIC programs that accept input in INPUT, INPUT$, or INKEY$, 
+        this will have no effect. However, this is not a major problem for MSX-BASIC 
+        programs that accept input with INPUT, INPUT$, or INKEY$.
+        The SHIFT key in the Japanese layout and the English layout cannot be completely 
+        converted in principle because of the problem of the combination with the symbol 
+        keys, which are handled differently.

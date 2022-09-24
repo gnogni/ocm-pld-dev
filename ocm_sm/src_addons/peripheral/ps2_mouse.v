@@ -147,7 +147,7 @@ always @ (posedge clk) begin
             begin
               // xcount[7:0] <= #1 xcount[7:0] +  mreceive[8:1];
 
-              xcount[7:0] <= ((~mreceive[8:1])+1)*2;
+              xcount[7:0] <=  ((~mreceive[8:1])+1);
               mouse_data_out <= 1'b1;
             end
           else if (mpacket == 3'd3) // delta Y movement

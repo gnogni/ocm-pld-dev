@@ -71,10 +71,6 @@
 --   JP: 日本語のコメント行は JP:を頭に付ける事にする
 --
 -------------------------------------------------------------------------------
--- Todo
---   * support VdpCmdMXS, VdpCmdMXD bits in command engine
---
--------------------------------------------------------------------------------
 -- Revision History
 --
 -- 3rd,June,2018 modified by KdL
@@ -293,12 +289,15 @@ ENTITY VDP IS
 
         BLANK_O             : OUT   STD_LOGIC;
 
-        -- DISPLAY RESOLUTION (0=15KHZ, 1=31KHZ)
+        -- DISPLAY RESOLUTION (0=15kHz, 1=31kHz)
         DISPRESO            : IN    STD_LOGIC;
 
         NTSC_PAL_TYPE       : IN    STD_LOGIC;
         FORCED_V_MODE       : IN    STD_LOGIC;
-        LEGACY_VGA          : IN    STD_LOGIC
+        LEGACY_VGA          : IN    STD_LOGIC;
+
+        VDP_ID              : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 );
+        OFFSET_Y            : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
 
         -- DEBUG OUTPUT
     --  DEBUG_OUTPUT        : OUT   STD_LOGIC_VECTOR( 15 DOWNTO 0 ) -- ★
@@ -340,7 +339,8 @@ ARCHITECTURE RTL OF VDP IS
             REG_R25_MSK             : IN    STD_LOGIC;
             REG_R27_H_SCROLL        : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 );
             REG_R25_YJK             : IN    STD_LOGIC;
-            CENTERYJK_R25_N         : IN    STD_LOGIC
+            CENTERYJK_R25_N         : IN    STD_LOGIC;
+            OFFSET_Y                : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
         );
     END COMPONENT;
 
@@ -788,7 +788,8 @@ ARCHITECTURE RTL OF VDP IS
             VDPMODEISVRAMINTERLEAVE     : OUT   STD_LOGIC;
 
             -- SWITCHED I/O SIGNALS
-            FORCED_V_MODE               : IN    STD_LOGIC
+            FORCED_V_MODE               : IN    STD_LOGIC;
+            VDP_ID                      : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 )
         );
     END COMPONENT;
 
@@ -1020,7 +1021,7 @@ BEGIN
     ----------------------------------------------------------------
     -- DISPLAY COMPONENTS
     ----------------------------------------------------------------
-    DISPMODEVGA     <=  DISPRESO;   -- DISPLAY RESOLUTION (0=15KHZ, 1=31KHZ)
+    DISPMODEVGA     <=  DISPRESO;   -- DISPLAY RESOLUTION (0=15kHz, 1=31kHz)
 
 --  VDPR9PALMODE    <=  REG_R9_PAL_MODE     WHEN( NTSC_PAL_TYPE = '1' AND LEGACY_VGA = '0' )ELSE
     VDPR9PALMODE    <=  REG_R9_PAL_MODE     WHEN( NTSC_PAL_TYPE = '1' )ELSE
@@ -1172,7 +1173,8 @@ BEGIN
         REG_R25_MSK             => REG_R25_MSK              ,
         REG_R27_H_SCROLL        => REG_R27_H_SCROLL         ,
         REG_R25_YJK             => REG_R25_YJK              ,
-        CENTERYJK_R25_N         => CENTERYJK_R25_N
+        CENTERYJK_R25_N         => CENTERYJK_R25_N          ,
+        OFFSET_Y                => OFFSET_Y
     );
 
     -- GENERATE BWINDOW
@@ -1775,7 +1777,8 @@ BEGIN
         SPMODE2                     => SPMODE2                      ,
         VDPMODEISVRAMINTERLEAVE     => VDPMODEISVRAMINTERLEAVE      ,
 
-        FORCED_V_MODE               => FORCED_V_MODE
+        FORCED_V_MODE               => FORCED_V_MODE                ,
+        VDP_ID                      => VDP_ID
     );
 
     -- ★

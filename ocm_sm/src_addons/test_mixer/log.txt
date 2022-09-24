@@ -1,0 +1,8 @@
+add wave -position end vsim:/tb/u_emsx_top/*
+# Break key hit
+# Simulation stop requested.
+# Control-C interrupt
+# 
+# MACRO ./run.do PAUSED at line 2
+# End time: 08:45:42 on Sep 11,2022, Elapsed time: 0:07:46
+# Errors: 0, Warnings: 124

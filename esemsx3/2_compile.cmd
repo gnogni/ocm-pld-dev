@@ -1,11 +1,13 @@
 @echo off
-rem --- '2_compile.cmd' v2.7 by KdL (2021.08.23)
+rem --- '2_compile.cmd' v2.8 by KdL (2022.09.24)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
 set QPATH=C:\Altera\11.0sp1\quartus\
 if "%1"=="" color 87&title COMPILE for %PROJECT%
 if not exist %PROJECT%.qpf goto err_msg
+
+:compile
 if exist %QPATH%bin\quartus.exe (
     start %QPATH%bin\quartus.exe %PROJECT%.qpf
     goto init

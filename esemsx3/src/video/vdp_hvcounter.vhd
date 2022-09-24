@@ -78,7 +78,8 @@ ENTITY VDP_HVCOUNTER IS
 
         PAL_MODE                : IN    STD_LOGIC;
         INTERLACE_MODE          : IN    STD_LOGIC;
-        Y212_MODE               : IN    STD_LOGIC
+        Y212_MODE               : IN    STD_LOGIC;
+        OFFSET_Y                : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
     );
 END VDP_HVCOUNTER;
 

@@ -82,6 +82,8 @@
 -- Added the undocumented feature where R1 bit #2 change the blink counter
 -- clock source from VSYNC to HSYNC
 --
+-- 19th,July,2022 modified by t.hara
+-- Changed W_B_YJKP from rounding down to rounding up.
 -------------------------------------------------------------------------------
 -- Document
 --
@@ -382,8 +384,8 @@ BEGIN
     W_G_YJK <=  ("00" & W_Y) + (W_K(5) & W_K);                                      --  B (-32...62)
     W_B_Y   <=  ('0' & W_Y & "00") + ("000" & W_Y);                                 --  Y * 5               ( 0...155 )
     W_B_JK  <=  (W_J(5) & W_J & '0') + (W_K(5) & W_K(5) & W_K);                     --  J * 2 + K           ( -96...93 )
-    W_B_YJKP<=  ('0' & W_B_Y) - (W_B_JK(7) & W_B_JK);                               --  (Y * 5 - (J * 2 + K))   (-93...251)
-    W_B_YJK <=  W_B_YJKP( 8 DOWNTO 2 );                                             --  (Y * 5 - (J * 2 + K))/4 (-23...62)
+    W_B_YJKP<=  ('0' & W_B_Y) - (W_B_JK(7) & W_B_JK) + "000000010";                 --  (Y * 5 - (J * 2 + K) + 2)   (-91...253)
+    W_B_YJK <=  W_B_YJKP( 8 DOWNTO 2 );                                             --  (Y * 5 - (J * 2 + K) + 2)/4 (-22...63)
 
     W_R     <=  (OTHERS => '0')         WHEN( W_R_YJK(6) = '1' )ELSE    -- UNDER LIMIT
                 (OTHERS => '1')         WHEN( W_R_YJK(5) = '1' )ELSE    -- OVER LIMIT

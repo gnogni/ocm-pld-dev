@@ -143,6 +143,7 @@ opl3seq opl3seq
 );
 
 wire [15:0] A,B;
+
 compressor compressor
 (
  clk,

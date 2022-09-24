@@ -1,9 +1,11 @@
 @echo off
-rem --- '3_finalize.cmd' v2.7 by KdL (2021.08.23)
+rem --- '3_finalize.cmd' v2.8 by KdL (2022.09.24)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
 if "%1"=="" color 1f&title FINALIZE for %PROJECT%
+
+:finalize
 rem.>%PROJECT%.qpf
 rd /S /Q db\ >nul 2>nul
 rd /S /Q greybox_tmp\ >nul 2>nul
@@ -13,13 +15,11 @@ del *.done >nul 2>nul
 del *.map* >nul 2>nul
 del *.pin* >nul 2>nul
 del *.rpt* >nul 2>nul
-del *.map* >nul 2>nul
 del *.sta* >nul 2>nul
 del /S /Q *.bak >nul 2>nul
 if "%1"=="" if not exist %PROJECT%.pof goto err_msg
 pof2pld %PROJECT%.pof %PROJECT%.pld >nul 2>nul
-if exist %PROJECT%.pof del recovery.pof >nul 2>nul
-ren %PROJECT%.pof recovery.pof >nul 2>nul
+move %PROJECT%.pof recovery.pof >nul 2>nul
 if "%1"=="" echo.&echo Done!
 goto timer
 

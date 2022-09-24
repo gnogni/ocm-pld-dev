@@ -1,9 +1,11 @@
 @echo off
-rem --- '2_sm_finalize.cmd' v2.7 by KdL (2021.08.23)
+rem --- '2_sm_finalize.cmd' v2.8 by KdL (2022.09.24)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm
 if "%1"=="" color 1f&title FINALIZE for %PROJECT%
+
+:finalize
 rem.>%PROJECT%.qpf
 rd /S /Q db\ >nul 2>nul
 rd /S /Q greybox_tmp\ >nul 2>nul
@@ -16,8 +18,7 @@ del *.qws* >nul 2>nul
 del /S /Q *.bak >nul 2>nul
 if "%1"=="" if not exist %PROJECT%.jic goto err_msg
 jic2pld %PROJECT%.jic %PROJECT%.pld >nul 2>nul
-del recovery.jic >nul 2>nul
-ren %PROJECT%.jic recovery.jic >nul 2>nul
+move %PROJECT%.jic recovery.jic >nul 2>nul
 if "%1"=="" echo.&echo Done!
 goto timer
 

@@ -222,7 +222,6 @@ always @(posedge clk) begin
   end
   24: s_ram_CHindex <= s_ram_CHindex18 ? 5'd0 : s_ram_CHindex1;
   25: B <= limAcc;
-
 // advance
   27: cond <= phtest;
   28: r_volume <= tmp1[2] ? volume_attack : volume_dsr;

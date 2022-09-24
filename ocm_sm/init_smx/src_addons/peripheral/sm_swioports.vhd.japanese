@@ -1,7 +1,7 @@
 --
 -- sm_swioports.vhd
 --   Switched I/O ports ($40-$4F)
---   Revision 10
+--   Revision 11
 --
 -- Copyright (c) 2011-2022 KdL
 -- All rights reserved.
@@ -47,7 +47,7 @@ entity switched_io_ports is
         dbi             : out   std_logic_vector(  7 downto 0 );
         dbo             : in    std_logic_vector(  7 downto 0 );
         -- 'REGS' group
-        io40_n          : inout std_logic_vector(  7 downto 0 );            -- ID Manufacturers/Devices :   $08 (008), $D4 (212=1chipMSX), $FF (255=null)
+        io40_n          : inout std_logic_vector(  7 downto 0 );            -- ID Manufacturers/Devices :   $08 (008), $D4 (212=OCM ID, now MSX++ ID), $FF (255=null)
         io41_id212_n    : inout std_logic_vector(  7 downto 0 );            -- $41 ID212 states         :   Smart Commands
         io42_id212      : inout std_logic_vector(  7 downto 0 );            -- $42 ID212 states         :   Virtual DIP-SW states
         io43_id212      : inout std_logic_vector(  7 downto 0 );            -- $43 ID212 states         :   Lock Mask for port $42 functions, OPL3 and reset key
@@ -61,9 +61,9 @@ entity switched_io_ports is
         tPanaRedir      : inout std_logic;                                  -- tPana Redirection switch
         VdpSpeedMode    : inout std_logic;                                  -- VDP Speed Mode           :   0=Normal, 1=Fast
         V9938_n         : inout std_logic;                                  -- VDP core installed       :   0=V9938, 1=TH9958
-        Mapper_req      : inout std_logic;                                  -- Mapper req               :   Warm or Cold Reset are necessary to complete the request
+        Mapper_req      : inout std_logic;                                  -- Mapper req               :   Warm Reset is required to complete the request
         Mapper_ack      : out   std_logic;                                  -- Current Mapper state
-        MegaSD_req      : inout std_logic;                                  -- MegaSD req               :   Warm or Cold Reset are necessary to complete the request
+        MegaSD_req      : inout std_logic;                                  -- MegaSD req               :   Warm Reset is required to complete the request
         MegaSD_ack      : out   std_logic;                                  -- Current MegaSD state
         io41_id008_n    : inout std_logic;                                  -- $41 ID008 BIT-0 state    :   0=5.37MHz, 1=3.58MHz (write_n only)
         swioKmap        : inout std_logic;                                  -- Keyboard layout selector
@@ -101,25 +101,34 @@ entity switched_io_ports is
         JIS2_ena        : inout std_logic;                                  -- JIS2 enabler             :   0=JIS1 only (BIOS 384 kB), 1=JIS1+JIS2 (BIOS 512 kB)
         portF4_mode     : inout std_logic;                                  -- Port F4 mode             :   0=F4 Device Inverted (MSX2+), 1=F4 Device Normal (MSXtR)
         ff_ldbios_n     : in    std_logic;                                  -- OCM-BIOS loading status
+        bios_reload_ack : out   std_logic;                                  -- OCM-BIOS Reloading ack
         -- 'SPECIAL' group
         RatioMode       : inout std_logic_vector(  2 downto 0 );            -- Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)
         centerYJK_R25_n : inout std_logic;                                  -- Centering YJK Modes/R25 Mask (0=centered, 1=shifted to the right)
         legacy_sel      : inout std_logic;                                  -- Legacy Output selector   :   0=Assigned to VGA, 1=Assigned to VGA+
         iSlt1_linear    : inout std_logic;                                  -- Internal Slot1 Linear    :   0=Disabled, 1=Enabled
         iSlt2_linear    : inout std_logic;                                  -- Internal Slot2 Linear    :   0=Disabled, 1=Enabled
-        Slot0_req       : inout std_logic;                                  -- Slot0 Primary Mode req   :   Warm Reset is necessary to complete the request
+        Slot0_req       : inout std_logic;                                  -- Slot0 Primary Mode req   :   Warm Reset is required to complete the request
         Slot0Mode       : inout std_logic;                                  -- Current Slot0 state      :   0=Primary, 1=Expanded
         vga_scanlines   : inout std_logic_vector(  1 downto 0 );            -- VGA Scanlines 0%, 25%, 50% or 75% (default is 0%)
-        btn_scan        : in    std_logic                                   -- Scanlines button
+        btn_scan        : in    std_logic;                                  -- Scanlines button
+        Mapper0_req     : inout std_logic;                                  -- Extra-Mapper req         :   Warm Reset is required to complete the request
+        Mapper0_ack     : inout std_logic;                                  -- Current Extra-Mapper state
+        iPsg2_ena       : inout std_logic;                                  -- Internal PSG2 enabler
+        -- 'VARIABLES' group
+        SdrSize         : in    std_logic_vector(  1 downto 0 );
+        VDP_ID          : out   std_logic_vector(  4 downto 0 );
+        OFFSET_Y        : out   std_logic_vector(  6 downto 0 )
     );
 end switched_io_ports;
 
 architecture RTL of switched_io_ports is
 
-    signal  swio_ack    : std_logic;
-    signal  prev_scan   : std_logic_vector(  1 downto 0 ) := "11";
+    signal  swio_ack        : std_logic;
+    signal  prev_scan       : std_logic_vector(  1 downto 0 ) := "11";
+    signal  bios_reload_req : std_logic := '0';                             -- OCM-BIOS Reloading req
 
-    -- Machine Type ID (0-15)                                               -- 0=1chipMSX, 1=Zemmix Neo / SX-1, 2=SM-X, 3=SX-2, 4=SM-X Mini, 5=DE0CV, ..., 15=Unknown
+    -- Machine Type ID (0-15) : 0=1chipMSX, 1=Zemmix Neo / SX-1 and related, 2=SM-X (regular) / MC2P, 3=SX-2, 4=SM-X Mini / SMX-HB, 5=DE0CV, ..., 15=Unknown
     constant MachineID  : std_logic_vector(  3 downto 0 ) :=     "0010";    -- 2
 
     -- OCM-PLD version number (x \ 10).(y mod 10).(z[0~3])                  -- OCM-PLD version 0.0(.0) ~ 25.5(.3)
@@ -127,50 +136,68 @@ architecture RTL of switched_io_ports is
     constant ocm_pld_z  : std_logic_vector(  1 downto 0 ) :=       "01";    -- 1
 
     -- Switched I/O Ports revision number (0-31)                            -- Switched I/O ports Revision 0 ~ 31
-    constant swioRevNr  : std_logic_vector(  4 downto 0 ) :=    "01010";    -- 10
+    constant swioRevNr  : std_logic_vector(  4 downto 0 ) :=    "01011";    -- 11
 
 begin
     -- out assignment: 'ports $40-$4F'
-                -- $40 => read_n/write ($41 ID008 BIT-0 is not here, it's a write_n only signal)
-    dbi <=  io40_n                              when( (adr(3 downto 0) = "0000") )else
-                -- $43 ID008 for compatibility => read only
-            "00000000"                          when( (adr(3 downto 0) = "0011") and (io40_n = "11110111") )else
-                -- $41 ID212 smart commands => read_n/write
-            io41_id212_n                        when( (adr(3 downto 0) = "0001") and (io40_n = "00101011") )else
-                -- $42 ID212 states of virtual dip-sw => read/write_n
-            io42_id212                          when( (adr(3 downto 0) = "0010") and (io40_n = "00101011") )else
-                -- $43 ID212 lock mask => read/write_n
-                -- [MSB] megasd/mapper/resetkey/slot2/slot1/cmt/display/turbo [LSB]
-            io43_id212                          when( (adr(3 downto 0) = "0011") and (io40_n = "00101011") )else
-                -- $44 ID212 green leds mask of lights mode => read/write_n
-            io44_id212                          when( (adr(3 downto 0) = "0100") and (io40_n = "00101011") )else
-                -- $45 ID212 [MSB] master status & volume / psg status & volume [LSB] => read/write_n
-            (MstrVol(2) and MstrVol(1) and MstrVol(0)) & not MstrVol & (not (PsgVol(2) or PsgVol(1) or PsgVol(0))) & PsgVol when( (adr(3 downto 0) = "0101") and (io40_n = "00101011") )else
-                -- $46 ID212 [MSB] any scc-i status & volume / opll status & volume [LSB] => read/write_n
-            (not (SccVol(2) or SccVol(1) or SccVol(0))) & SccVol & (not (OpllVol(2) or OpllVol(1) or OpllVol(0))) & OpllVol when( (adr(3 downto 0) = "0110") and (io40_n = "00101011") )else
-                -- $47 ID212 [MSB] megasd_req/mapper_req/vdpspeedmode/tpana_redir/turbo_megasd/custom_speed_lev(1-7) [LSB] => read only
+            -- $40 => read_n/write
+    dbi <=  io40_n
+                when( (adr(3 downto 0) = "0000") )else
+            -- $41 ID008 for compatibility => bit7-1 : read_n only, bit0 : read_n/write_n
+            "1111101" & io41_id008_n
+                when( (adr(3 downto 0) = "0001") and (io40_n = "11110111") )else
+            -- $43 ID008 for compatibility => read_n only
+            "00000000"
+                when( (adr(3 downto 0) = "0011") and (io40_n = "11110111") )else
+            -- $41 ID212 smart commands => read_n/write
+            io41_id212_n
+                when( (adr(3 downto 0) = "0001") and (io40_n = "00101011") )else
+            -- $42 ID212 states of virtual dip-sw => read/write_n
+            io42_id212
+                when( (adr(3 downto 0) = "0010") and (io40_n = "00101011") )else
+            -- $43 ID212 lock mask => read/write_n
+            -- [MSB] megasd/mapper/resetkey/slot2/slot1/cmt/display/turbo [LSB]
+            io43_id212
+                when( (adr(3 downto 0) = "0011") and (io40_n = "00101011") )else
+            -- $44 ID212 green leds mask of lights mode => read/write_n
+            io44_id212
+                when( (adr(3 downto 0) = "0100") and (io40_n = "00101011") )else
+            -- $45 ID212 [MSB] master status & volume / psg status & volume [LSB] => read/write_n
+            (MstrVol(2) and MstrVol(1) and MstrVol(0)) & not MstrVol & (not (PsgVol(2) or PsgVol(1) or PsgVol(0))) & PsgVol
+                when( (adr(3 downto 0) = "0101") and (io40_n = "00101011") )else
+            -- $46 ID212 [MSB] any scc-i status & volume / opll status & volume [LSB] => read/write_n
+            (not (SccVol(2) or SccVol(1) or SccVol(0))) & SccVol & (not (OpllVol(2) or OpllVol(1) or OpllVol(0))) & OpllVol
+                when( (adr(3 downto 0) = "0110") and (io40_n = "00101011") )else
+            -- $47 ID212 [MSB] megasd_req/mapper_req/vdpspeedmode/tpana_redir/turbo_megasd/custom_speed_lev(1-7) [LSB] => read only
             MegaSD_req & Mapper_req & VdpSpeedMode & tPanaRedir & tMegaSD & ("001" - CustomSpeed(2 downto 0))
-                                                when( (adr(3 downto 0) = "0111") and (io40_n = "00101011") )else
-                -- $48 ID212 states as below => read only
+                when( (adr(3 downto 0) = "0111") and (io40_n = "00101011") )else
+            -- $48 ID212 states as below => read only
             Blink_ena & RstReq_sta & LastRst_sta & Red_sta & LightsMode & CmtScro & swioKmap & not io41_id008_n
-                                                when( (adr(3 downto 0) = "1000") and (io40_n = "00101011") )else
-                -- $49 ID212 states as below => read only
+                when( (adr(3 downto 0) = "1000") and (io40_n = "00101011") )else
+            -- $49 ID212 states as below => read only
             forced_v_mode & (ntsc_pal_type and (not io42_id212(1) or io42_id212(2))) & MachineID & extclk3m & pseudoStereo
-                                                when( (adr(3 downto 0) = "1001") and (io40_n = "00101011") )else
-                -- $4A ID212 states as below => read only
+                when( (adr(3 downto 0) = "1001") and (io40_n = "00101011") )else
+            -- $4A ID212 states as below => read only
             iSlt2_linear & iSlt1_linear & legacy_sel & not centerYJK_R25_n & (not RatioMode + 1) & right_inverse
-                                                when( (adr(3 downto 0) = "1010") and (io40_n = "00101011") )else
-                -- $4B ID212 states as below => read only
-            "000000" & vga_scanlines            when( (adr(3 downto 0) = "1011") and (io40_n = "00101011") )else
-                -- $4C ID212 states of physical dip-sw => read only
-            ff_dip_req                          when( (adr(3 downto 0) = "1100") and (io40_n = "00101011") )else
-                -- $4D ID212 VRAM Slot IDs => read/write_n
-            vram_slot_ids                       when( (adr(3 downto 0) = "1101") and (io40_n = "00101011") )else
-                -- $4E ID212 [MSB] ocm_pld_vers_xy(v0.0~v25.5) [LSB] => read only
-            ocm_pld_xy                          when( (adr(3 downto 0) = "1110") and (io40_n = "00101011") )else
-                -- $4F ID212 [MSB] def_keyb_layout/ocm_pld_vers_z(v0~v3)/swioports_rev_nr(0-15) [LSB] => read only
-            DefKmap & ocm_pld_z & swioRevNr     when( (adr(3 downto 0) = "1111") and (io40_n = "00101011") )else
-                -- Not found
+                when( (adr(3 downto 0) = "1010") and (io40_n = "00101011") )else
+--  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            -- $4B ID212 (dynamic port 4B) if $44 ID212 equ #000 states as below => read only
+            Slot0_req & Mapper0_req & bios_reload_req & SdrSize & iPsg2_ena & vga_scanlines
+                when( (adr(3 downto 0) = "1011") and (io40_n = "00101011") and (io44_id212 = "00000000") )else
+--  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            -- $4C ID212 states of physical dip-sw => read only
+            ff_dip_req
+                when( (adr(3 downto 0) = "1100") and (io40_n = "00101011") )else
+            -- $4D ID212 VRAM Slot IDs => read/write_n
+            vram_slot_ids
+                when( (adr(3 downto 0) = "1101") and (io40_n = "00101011") )else
+            -- $4E ID212 [MSB] ocm_pld_vers_xy(v0.0~v25.5) [LSB] => read only
+            ocm_pld_xy
+                when( (adr(3 downto 0) = "1110") and (io40_n = "00101011") )else
+            -- $4F ID212 [MSB] def_keyb_layout/ocm_pld_vers_z(v0~v3)/swioports_rev_nr(0-15) [LSB] => read only
+            DefKmap & ocm_pld_z & swioRevNr
+                when( (adr(3 downto 0) = "1111") and (io40_n = "00101011") )else
+            -- not available
             "11111111";
 
     ack <=  swio_ack;
@@ -182,17 +209,19 @@ begin
     process( reset, clk21m, power_on_reset )
     begin
         if( power_on_reset = '0' )then
-            VDP_ID := "00010";                              -- Default VDP ID
+            VDP_ID <= "00010";                              -- Default VDP ID
         elsif( clk21m'event and clk21m = '1' )then
             if( reset = '1' )then
 
                 swioRESET_n     <=  '1';                    -- End of Reset pulse
                 io40_n          <=  "11111111";             -- Override Port $40 after any reboot
                 vram_slot_ids   <=  "00010000";             -- Restore VRAM Slot ID after any reboot
+                bios_reload_req <=  '0';                    -- OCM-BIOS Reloading is Off (default)
+                bios_reload_ack <=  '0';                    -- End of OCM-BIOS Reloading
                 RatioMode       <=  "000";                  -- Restore Pixel Ratio 1:1 for LED Display after any reboot
                 if( warmRESET /= '1' )then
                     -- Cold Reset
-                    OFFSET_Y        :=  "0010011";          -- Default Vertical Offset
+                    OFFSET_Y        <=  "0010011";          -- Default Vertical Offset
 --                  io41_id212_n    <=  "00000000";         -- Smart Commands will be zero at 1st boot
                     io42_id212      <=  ff_dip_req;         -- Virtual DIP-SW are DIP-SW
                     ff_dip_ack      <=  ff_dip_req;         -- Sync to its req
@@ -228,6 +257,9 @@ begin
                     iSlt2_linear    <=  '0';                -- Internal Slot2 Linear is Off
                     Slot0_req       <=  '1';                -- Set Slot0 Expanded Mode
                     Slot0Mode       <=  '1';                -- Prevent system crash using Reset Key
+                    Mapper0_req     <=  '0';                -- Set Extra-Mapper state is Off
+                    Mapper0_ack     <=  '0';                -- Prevent system crash using a toggle
+                    iPsg2_ena       <=  '0';                -- Internal PSG2 is Off
                 else
                     -- Warm Reset
                     io42_id212(6)   <=  Mapper_req;         -- Set Mapper state to last required
@@ -236,6 +268,7 @@ begin
                     MegaSD_ack      <=  MegaSD_req;         -- Confirm the last MegaSD state
                     LastRst_sta     <=  not WarmMSXlogo;    -- Warm state
                     Slot0Mode       <=  Slot0_req;          -- Set Slot0 state to last required
+                    Mapper0_ack     <=  Mapper0_req;        -- Confirm the last Extra-Mapper state
                 end if;
 
             else
@@ -246,7 +279,7 @@ begin
                     -- in assignment: 'Green Level Enabler'
                     GreenLvEna  <=  '0';
                     -- in assignment: 'Reset Request State' (internal signal)
-                    if( (Mapper_req /= io42_id212(6)) or (MegaSD_req /= io42_id212(7)) or (Slot0_req /= Slot0Mode) )then
+                    if( (Mapper_req /= io42_id212(6)) or (MegaSD_req /= io42_id212(7)) or (Slot0_req /= Slot0Mode) or (Mapper0_req /= Mapper0_ack) )then
                         RstReq_sta  <=  '1';                                    -- Yes
                     else
                         RstReq_sta  <=  '0';                                    -- No
@@ -474,7 +507,7 @@ begin
                     if( req = '1' and wrt = '1' and (adr(3 downto 0) = "0000") )then
                         case dbo is
                             when "00001000" =>  io40_n  <=  "11110111";         -- ID 008 => $08
-                            when "11010100" =>  io40_n  <=  "00101011";         -- ID 212 => $D4 => 1chipMSX
+                            when "11010100" =>  io40_n  <=  "00101011";         -- ID 212 => $D4 => OCM ID, now MSX++ ID
                             when others     =>  io40_n  <=  "11111111";         -- invalid ID
                         end case;
                     end if;
@@ -576,13 +609,13 @@ begin
                             when "00010110" =>                                  -- Non-Japanese Keyboard Layout
                                 swioKmap        <=  '1';
                             -- SMART CODES  #023, #024, #025, #026
-                            when "00010111" =>                                  -- Display Mode 15KHz Composite or S-Video
+                            when "00010111" =>                                  -- Display Mode 15kHz Composite or S-Video
                                 io42_id212(2 downto 1)  <=  "00";
-                            when "00011000" =>                                  -- Display Mode 15KHz RGB + Audio (Mono)
+                            when "00011000" =>                                  -- Display Mode 15kHz RGB + Audio (Mono)
                                 io42_id212(2 downto 1)  <=  "10";
-                            when "00011001" =>                                  -- Display Mode 31Khz VGA for LED TV or LED Display (50Hz+60Hz)
+                            when "00011001" =>                                  -- Display Mode 31kHz VGA for LED TV or LED Display (50Hz+60Hz)
                                 io42_id212(2 downto 1)  <=  "01";
-                            when "00011010" =>                                  -- Display Mode 31Khz VGA+ for CRT Monitor (legacy output) (50Hz+60Hz)
+                            when "00011010" =>                                  -- Display Mode 31kHz VGA+ for CRT Monitor (legacy output) (50Hz+60Hz)
                                 io42_id212(2 downto 1)  <=  "11";
                             -- SMART CODES  #027, #028
                             when "00011011" =>                                  -- VDP Speed Mode is Normal (default)
@@ -590,9 +623,9 @@ begin
                             when "00011100" =>                                  -- VDP Speed Mode is Fast (TH9958 only)
                                 VdpSpeedMode    <=  '1' and V9938_n;
                             -- SMART CODES  #029, #030
-                            when "00011101" =>                                  -- MegaSD Off       (warm reset to go)
+                            when "00011101" =>                                  -- MegaSD Off (warm reset to go)
                                 MegaSD_req      <=  '0';
-                            when "00011110" =>                                  -- MegaSD On        (warm reset to go)
+                            when "00011110" =>                                  -- MegaSD On (warm reset to go)
                                 MegaSD_req      <=  '1';
                             -- SMART CODES  #031, #032, #033, #034, #035
                             when "00011111" =>                                  -- MegaSD Blink Off + DIP-SW8 State On
@@ -623,7 +656,7 @@ begin
                                 SccVol          <=  "100";
                                 PsgVol          <=  "100";
                                 MstrVol         <=  "000";
-                            -- SMART CODES  #039, #040 (not available on this machine)
+--                          -- SMART CODES  #039, #040  (not available on this machine)
 --                          when "00100111" =>
 --                              if( portF4_mode = '0' )then
 --                                  swioCmt         <=  '0';                    -- CMT Off (default)
@@ -727,33 +760,51 @@ begin
                                 MstrVol         <=  "000";
                             -- SMART CODES  #071, #072, #073, #074, #075, #076, #077, #078, #079
                             when "01000111" =>                                  -- Vertical Offset 16 (useful for Ark-A-Noah)
-                                OFFSET_Y := "0010000";
+                                OFFSET_Y        <=  "0010000";
                             when "01001000" =>                                  -- Vertical Offset 17
-                                OFFSET_Y := "0010001";
+                                OFFSET_Y        <=  "0010001";
                             when "01001001" =>                                  -- Vertical Offset 18
-                                OFFSET_Y := "0010010";
+                                OFFSET_Y        <=  "0010010";
                             when "01001010" =>                                  -- Vertical Offset 19 (default)
-                                OFFSET_Y := "0010011";
+                                OFFSET_Y        <=  "0010011";
                             when "01001011" =>                                  -- Vertical Offset 20
-                                OFFSET_Y := "0010100";
+                                OFFSET_Y        <=  "0010100";
                             when "01001100" =>                                  -- Vertical Offset 21
-                                OFFSET_Y := "0010101";
+                                OFFSET_Y        <=  "0010101";
                             when "01001101" =>                                  -- Vertical Offset 22
-                                OFFSET_Y := "0010110";
+                                OFFSET_Y        <=  "0010110";
                             when "01001110" =>                                  -- Vertical Offset 23
-                                OFFSET_Y := "0010111";
+                                OFFSET_Y        <=  "0010111";
                             when "01001111" =>                                  -- Vertical Offset 24 (useful for Space Manbow)
-                                OFFSET_Y := "0011000";
+                                OFFSET_Y        <=  "0011000";
                             -- SMART CODES  #080, #081, #082, #083
                             when "01010000" =>                                  -- VGA Scanlines 0% (default)
-                                vga_scanlines <= "00";
+                                vga_scanlines   <=  "00";
                             when "01010001" =>                                  -- VGA Scanlines 25%
-                                vga_scanlines <= "01";
+                                vga_scanlines   <=  "01";
                             when "01010010" =>                                  -- VGA Scanlines 50%
-                                vga_scanlines <= "10";
+                                vga_scanlines   <=  "10";
                             when "01010011" =>                                  -- VGA Scanlines 75%
-                                vga_scanlines <= "11";
-                            -- SMART CODES  #084, #..., #126                    -- Free Group
+                                vga_scanlines   <=  "11";
+                            -- SMART CODES  #084, #085
+                            when "01010100" =>                                  -- Internal PSG2 Off (default)
+                                iPsg2_ena       <=  '0';
+                            when "01010101" =>                                  -- Internal PSG2 On (this second PSG acts as an external PSG)
+                                iPsg2_ena       <=  '1';
+                            -- SMART CODES  #086, #087
+                            when "01010110" =>                                  -- Extra-Mapper 4096 kB Off (warm reset to go) (default)
+                                if( SdrSize /= "00" )then
+                                    Mapper0_req     <=  '0';
+                                else
+                                    io41_id212_n    <=  "11111111";             -- Not available when SDRAM size is 8 MB
+                                end if;
+                            when "01010111" =>                                  -- Extra-Mapper 4096 kB On (warm reset to go)
+                                if( SdrSize /= "00" )then
+                                    Mapper0_req     <=  '1';
+                                else
+                                    io41_id212_n    <=  "11111111";             -- Not available when SDRAM size is 8 MB
+                                end if;
+                            -- SMART CODES  #088, #..., #126                    -- Free Group
                             -- SMART CODE   #127
                             when "01111111" =>                                  -- Pixel Ratio 1:1 for LED Display
                                 RatioMode       <=  RatioMode - 1;
@@ -762,24 +813,25 @@ begin
                                 null;
                             -- SMART CODES   #129, #130
                             when "10000001" =>                                  -- Legacy Output is assigned to VGA
-                                legacy_sel <=  '0';
+                                legacy_sel      <=  '0';
                             when "10000010" =>                                  -- Legacy Output is assigned to VGA+ (default)
-                                legacy_sel <=  '1';
+                                legacy_sel      <=  '1';
                             -- SMART CODES   #131, #132, #133, #134
                             when "10000011" =>                                  -- Internal Slot1 Linear Off (default)
-                                iSlt1_linear <=  '0';
+                                iSlt1_linear    <=  '0';
                             when "10000100" =>                                  -- Internal Slot1 Linear On (requires SCC-I preset)
-                                iSlt1_linear <=  io42_id212(3);
+                                iSlt1_linear    <=  io42_id212(3);
                             when "10000101" =>                                  -- Internal Slot2 Linear Off (default)
-                                iSlt2_linear <=  '0';
+                                iSlt2_linear    <=  '0';
                             when "10000110" =>                                  -- Internal Slot2 Linear On (requires SCC-I or ASCII-8K/16K preset)
-                                iSlt2_linear <=  io42_id212(4) or io42_id212(5);
+                                iSlt2_linear    <=  io42_id212(4) or io42_id212(5);
                             -- SMART CODES  #135, #136
                             when "10000111" =>
-                                swioCmt         <=  '0';                        -- Internal OPL3    is Off (default)
+                                swioCmt         <=  '0';                        -- Internal OPL3 Off (default)
                             when "10001000" =>
-                                swioCmt         <=  '1';                        -- Internal OPL3    is On
-                            -- SMART CODES  #137, #..., #175                    -- Free Group
+                                swioCmt         <=  '1';                        -- Internal OPL3 On
+                            -- SMART CODES  #137, #..., #143                    -- Reserved (Ducasp)
+                            -- SMART CODES  #144, #..., #175                    -- Free Group
                             -- SMART CODES  #176, #177, #178, #179, #180, #181, #182, #183
                             when "10110000" =>                                  -- Master Volume 0 (mute)
                                 MstrVol         <=  "111";
@@ -878,7 +930,11 @@ begin
                                 centerYJK_R25_n <=  '1';
                             when "11010111" =>                                  -- Centering YJK Modes/R25 Mask On
                                 centerYJK_R25_n <=  '0';
-                            -- SMART CODES  #216, #..., #248                    -- Free Group
+                            -- SMART CODES  #216, #..., #247                    -- Free Group
+                            -- SMART CODE   #248
+                            when "11111000" =>                                  -- OCM-BIOS Reloading (cold reset or warm reset to go)
+                                bios_reload_req <=  '1';
+                                WarmMSXlogo     <=  not portF4_mode;
                             -- SMART CODE   #249
                             when "11111001" =>                                  -- Slot0 Primary Mode (warm reset to go) (internal OPLL disabled)
                                 Slot0_req       <=  '0';
@@ -887,22 +943,26 @@ begin
                                 WarmMSXlogo     <=  not portF4_mode;
                             -- SMART CODES  #251, #252, #253, #254
                             when "11111011" =>                                  -- Cold Reset (Volume will be reset)
+                                bios_reload_ack <=  bios_reload_req;
                                 swioRESET_n     <=  '0';
                             when "11111100" =>                                  -- Mapper 2048 kB   + Warm Reset (Volume will not reset)
                                 Mapper_req      <=  '0';
                                 warmRESET       <=  '1';
+                                bios_reload_ack <=  bios_reload_req;
                                 swioRESET_n     <=  '0';
                             when "11111101" =>                                  -- Warm Reset (Volume will not reset)
                                 warmRESET       <=  '1';
+                                bios_reload_ack <=  bios_reload_req;
                                 swioRESET_n     <=  '0';
                             when "11111110" =>                                  -- Mapper 4096 kB   + Warm Reset (Volume will not reset)
                                 Mapper_req      <=  '1';
                                 warmRESET       <=  '1';
+                                bios_reload_ack <=  bios_reload_req;
                                 swioRESET_n     <=  '0';
                             -- SMART CODE   #255
                             when "11111111" =>                                  -- System Restore
                                 RatioMode       <=  "000";
-                                OFFSET_Y        :=  "0010011";
+                                OFFSET_Y        <=  "0010011";
                                 io42_id212(5 downto 0)  <=  ff_dip_req(5 downto 0);
                                 ff_dip_ack(5 downto 0)  <=  ff_dip_req(5 downto 0);
                                 io43_id212      <=  "00000000";
@@ -928,14 +988,17 @@ begin
                                 ntsc_pal_type   <=  '1';
                                 forced_v_mode   <=  '0';
                                 right_inverse   <=  '0';
+                                bios_reload_req <=  '0';
                                 centerYJK_R25_n <=  '1';
                                 legacy_sel      <=  '1';
                                 iSlt1_linear    <=  '0';
                                 iSlt2_linear    <=  '0';
                                 Slot0_req       <=  '1';
+                                Mapper0_req     <=  '0';
+                                iPsg2_ena       <=  '0';
                             -- NULL CODES
                             when others     =>
-                                io41_id212_n    <=  "11111111";                 -- Not found
+                                io41_id212_n    <=  "11111111";                 -- Not available
                         end case;
                     end if;
                     -- in assignment: 'Port $42 ID212 [Virtual DIP-SW]' (read/write_n, always unlocked)
@@ -968,9 +1031,9 @@ begin
                     -- in assignment: 'Port $4C ID212 [VDP ID selector]' [Reserved to IPL-ROM]' (write only) (0-1=MSX1 or MSX2 BIOS, 2-255=any other BIOS)
                     if( req = '1' and wrt = '1' and (adr(3 downto 0) = "1100")  and (io40_n = "00101011") and ff_ldbios_n = '0' )then
                         if( dbo(7 downto 1) = "0000000" )then
-                            VDP_ID          :=  "00000";                        -- Set VDP ID = 0 (V9938)
+                            VDP_ID          <=  "00000";                        -- Set VDP ID = 0 (V9938)
                         else
-                            VDP_ID          :=  "00010";                        -- Set VDP ID = 2 (V9958) (default)
+                            VDP_ID          <=  "00010";                        -- Set VDP ID = 2 (V9958) (default)
                         end if;
                     end if;
                     -- in assignment: 'Port $4D ID212 [VRAM Slot IDs]' (read/write_n)

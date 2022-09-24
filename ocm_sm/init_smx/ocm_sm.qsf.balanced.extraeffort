@@ -2,7 +2,7 @@
 # ========================
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "10:46:23  OCTOBER 14, 2013"
-set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name VHDL_FILE ../esemsx3/src/video/vdp.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/video/vdp_colordec.vhd
@@ -51,12 +51,9 @@ set_global_assignment -name VHDL_FILE ../esemsx3/src/sound/lpf/lpf.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/sound/filter/esefir5.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/sound/filter/tapram.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/sound/dac/esepwm.vhd
-set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/eseps2.vhd
-set_global_assignment -name VHDL_FILE src_addons/peripheral/iplrom_512k.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/kanji.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/keymap.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/mapper.vhd
-set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/megasd.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/midi.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/ram.vhd
 set_global_assignment -name VHDL_FILE src_addons/peripheral/sm_swioports.vhd
@@ -69,12 +66,15 @@ set_global_assignment -name VHDL_FILE src_addons/cpu/T800_Pack.vhd
 set_global_assignment -name VHDL_FILE src_addons/cpu/T800_Reg.vhd
 set_global_assignment -name VHDL_FILE src_addons/cpu/T800a.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/fifo.vhd
-set_global_assignment -name VHDL_FILE src_addons/peripheral/sm_wifi.vhd
+set_global_assignment -name VHDL_FILE src_addons/peripheral/sm_wifi_lite.vhd
 set_global_assignment -name VHDL_FILE src_addons/sys/debounce.vhd
 set_global_assignment -name VHDL_FILE src_addons/sm_emsx_top.vhd
 set_global_assignment -name VHDL_FILE src_addons/top.vhd
 set_global_assignment -name SYSTEMVERILOG_FILE src_addons/sys/hdmi_config.sv
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/autofire.v
+set_global_assignment -name VERILOG_FILE ../esemsx3/src/peripheral/eseps2.v
+set_global_assignment -name VERILOG_FILE src_addons/peripheral/iplrom_512k.v
+set_global_assignment -name VERILOG_FILE ../esemsx3/src/peripheral/megasd.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/ps2_mouse.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/sm_rtc.v
 set_global_assignment -name VERILOG_FILE src_addons/sys/i2c.v
@@ -192,7 +192,7 @@ set_location_assignment PIN_D1 -to slot_CS1_o
 set_location_assignment PIN_C2 -to slot_CS2_o
 set_location_assignment PIN_E6 -to slot_BUSDIR_i
 set_location_assignment PIN_E7 -to slot_M1_o
-set_location_assignment PIN_F8 -to slot_MREQ_o
+set_location_assignment PIN_F8 -to slot_MERQ_o
 set_location_assignment PIN_L3 -to slot_RD_o
 set_location_assignment PIN_K1 -to slot_RESET_io
 set_location_assignment PIN_L4 -to slot_IOREQ_o
@@ -269,12 +269,10 @@ set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULA
 set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to dac_l_o
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to dac_r_o
 
 # EDA Netlist Writer Assignments
 # ==============================
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
+set_global_assignment -name EDA_SIMULATION_TOOL "Questa Intel FPGA (VHDL)"
 
 # Assembler Assignments
 # =====================
@@ -350,7 +348,7 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_RD_o
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_WR_o
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_M1_o
-    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_MREQ_o
+    set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_MERQ_o
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_IOREQ_o
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_WAIT_i
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to slot_INT_i
@@ -374,6 +372,8 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
     set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to vga_vsync_n_o
     set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to dac_l_o
     set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to dac_r_o
+    set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to dac_l_o
+    set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to dac_r_o
 
 # end ENTITY(top)
 # ---------------

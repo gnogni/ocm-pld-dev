@@ -1941,7 +1941,7 @@ begin
     begin
         if( clk21m'event and clk21m = '1' )then
             case DisplayMode is
-            when "00" =>                                            -- TV 15KHz
+            when "00" =>                                            -- TV 15kHz
                 pDac_VR     <= videoC;                              -- Chrominance of S-Video Out
                 pDac_VG     <= videoY;                              -- Luminance of S-Video Out
                 pDac_VB     <= videoV;                              -- Composite Video Out

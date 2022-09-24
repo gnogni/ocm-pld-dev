@@ -32,19 +32,20 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 -------------------------------------------------------------------------------------------------------------------
--- OCM-PLDs modified, compiled and tested by KdL 2006-2021
+-- OCM-PLDs modified, compiled and tested by KdL 2006-2022
 -------------------------------------------------------------------------------------------------------------------
 --
 -- Dedicated firmware for the following 1st Gen machines based on Altera Cyclone I:
 --                1chipMSX, Zemmix Neo (KR), Zemmix Neo BR, SX-1 (regular) and [SX-1 Mini/Mini+].
 --
 -- Dedicated firmware for the following 2nd Gen machines based on Altera Cyclone IV-E:
---                SM-X (regular), [SM-X Mini] and SX-2.
+--                SM-X (regular) and SX-2. [!] SM-X Mini is no longer supported by me.
 --
 -- [!] ATTENTION: the machines in square brackets have not been tested directly by me as I do not own them.
 -------------------------------------------------------------------------------------------------------------------
 --
 -- KdL Index!     https://gnogni.altervista.org
+-- ocm-pld-dev    https://github.com/gnogni/ocm-pld-dev
 --
 -- HRA!           http://hraroom.s602.xrea.com  &  http://www5d.biglobe.ne.jp/hra/note/onechipmsx
 -- caro           http://www.caro.su/msx/ocm_de0.htm  &  http://www.caro.su/msx/ocm_de1.htm
@@ -59,18 +60,19 @@
 -- XL2S           http://www.xl2s.tk
 -- TobiFlex       http://www.cpcwiki.eu/index.php/TobiFlex  &  http://www.symbos.de
 -- Sebbeug        http://www.sebbeug.fr/msx/1chipMSX
--- Konamiman      http://www.konamiman.com  &  http://github.com/Konamiman/Nextor/releases
--- ducasp         http://github.com/ducasp
+-- Konamiman      http://www.konamiman.com/msx/msx-e.html  &  http://github.com/Konamiman/Nextor/releases
+-- Ducasp         http://github.com/ducasp/MSX-Development/releases
 --
 -- MRC thread     http://www.msx.org/forum/msx-talk/revival/one-chip-msx-improvement-project?page=999
 -- TASM32ud       http://www.msx.org/forum/development/cross-development/chaos-assembler-z80-undocumented-features
 --
 -- Notepad++      http://notepad-plus-plus.org
+-- OpenOffice     http://www.openoffice.org
 --
 -- Altera Quartus II v11.0sp1 Web Edition (1chipMSX, Zemmix Neo and SX-1)
 --                http://mega.nz/file/FdJgSbDB#UL9W4iM1T9rx_FdcbCuBwgtiTp8P2tDoiClobiNTQnI
 --
--- Intel Quartus Prime v21.1.0 Lite Edition (SM-X and SX-2)
+-- Intel Quartus Prime v21.1.1 Lite Edition (SM-X and SX-2)
 --                http://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html
 -------------------------------------------------------------------------------------------------------------------
 --
@@ -89,11 +91,90 @@
 --                Maarten Loor, Andre Ruiz and Emiliano Olea Lucas.
 -------------------------------------------------------------------------------------------------------------------
 --
+-- OCM-PLD is the "MSX++ Official Firmware" from 2022/Jul/21st 11:10AM (CEST) thanks to 西 和彦 [Mr. Kazuhiko Nishi]
+--                https://twitter.com/nishikazuhiko/status/1550045661974110208?ref_src=twsrc%5Etfw
+-------------------------------------------------------------------------------------------------------------------
+--
 
 
-__________________________________
-v3.x KdL/HRA's Unofficial Release \________________________________________________________________________________
+________________________________
+v3.x KdL/HRA's Official Release \__________________________________________________________________________________
 
+
+v3.9.1 [2022.09.24] [KdL's Updates!]
+
+- This is the first official firmware for MSX++ machines, the MSX++ logo is now the default logo for the 1chipMSX
+  and replace the previous unofficial MSX3 logo. The other homebrew machines will continue to show their own logo.
+- Updated Switched I/O ports ($40-$4F) module to Revision 11:
+  new Dynamic Port 4B that extends the I/O capacity by an additional 254 sub-ports based on the value of port $44;
+  new smart command "Reserve OCM-BIOS Reloading" useful for managing several SDBIOS without turning off the power;
+  new Extra-Mapper 4096kB on Slot0-1 actionable by GETRESET or SETSMART commands for all machines with at least
+  16MB SDRAM, the size of system RAM can now be selected from 2048kB, 4096kB, 6144kB and 8192kB;
+  new Internal PSG2 (acting as an external PSG) for 2nd Gen machines only, PSG2 logic was implemented by Ducasp;
+  improved access to tPANA on port $41 ID $08, so that the 5.37 MHz cpu clock is handled properly by most programs.
+- Updated documentation in the [docs\] folder, added the "startup processing v3.9.1" by HRA!, which explains
+  the meaning of the new icons that appear at pre-boot: by reading it you can have a better user experience!
+- Updated 'mglocm.com' v2.3b (2022.09.11) in the [msxtools\mglunch\] folder with the Internal PSG2, by ToughkidCST.
+- Updated 'vgmplay.com' v1.3 (final release) in the [msxtools\vgmplay\] folder, by Grauw.
+- Updated 'mpcm.com' v1.07 in the [msxtools\mpcm\] folder which officially includes a new OCM patch, by Niga.
+  For those who prefer to use their own external memory mappers, the previous MPCM v1.06 is recommended.
+- Updated and revised all the scripts to compile and collect firmware, improving reliability and performance.
+- New 'testinap.asc' tool in the [msxtools\diags\] folder, allows you to test pull-up resistors of external slots.
+- New and improved MegaSD (SD controller) in Verilog with support for initialization in fast or slow mode, by HRA!
+- New IPL-ROM 3.00, the Initial Program Loader has changed and includes the new pre-boot icons, there is a new way
+  of loading SDBIOS which is now based on the filename, the possibility of activating multiple SDBIOS on the same
+  SD card, better error checking, many months of testing and modification by HRA! with my collaboration.
+- New PS/2 keyboard controller in Verilog by HRA!, improved stability and recognition of keyboards but in some
+  cases a hardware patch will be needed on 2nd Gen machines (SM-X and SX-2), see documentation.
+- Improved and revised keymap ROM tables, the new Italian layout is only precompiled for 2nd Gen machines, I fixed
+  each layout by creating a spreadsheet that you can find in the [esemsx3\src\peripheral\keymap_work\] folder.
+- Improved the Internal OPL3 for the 2nd Gen machines, IRQ and scaler timer have been fixed, and in addition,
+  mono audio has been reprogrammed to achieve small space in the FPGA, by Ducasp.
+- Improved SDRAM controller to support chips smaller than 32MB, this changes made the design more flexible and
+  extensible, the request came from Ducasp to implement his custom firmware.
+- Improved I/O access times on the external bus at 10.74 MHz and fixed PS/2 mouse movement on the horizontal axis.
+- Improved the reset button timer and fixed the logo speed limiter, the timings was reanalyzed and adjusted.
+- Fixed some issues on PSG wave, turboR PCM Device, 5 Tap FIR low-pass filter, VDP R#8 and YJK modes, by HRA!
+- Fixed the sound spikes on the speakers when pressing the reset button (at last!), the cause was the PWM reset.
+- Optimizations and code cleanup, all shared variables were converted to logical signals, as suggested by uniabis.
+- Quartus II v13.0sp1 Web Edition was updated to Intel Quartus Prime v21.1.1 Lite Edition for the 2nd Gen machines.
+- This version of OCM-PLD includes a total of fifty-four precompiled firmware variants.
+  Firmware interchangeability groups are highlighted in the 'details.txt' of the [firmware\] folder, as usual.
+  SM-X Mini firmware will no longer be available because I do not have the opportunity to test that machine myself.
+  For those who want to venture into compilation, the code has been archived in [ocm_sm\legacy-smxmini391-src.zip].
+
+Notes and warnings:
+- To get the best out of these firmware, IT IS STRONGLY RECOMMENDED TO USE THE MOST UP-TO-DATE OCM-EXTRA TOOLS.
+  An example of a bug fixed: the first version of the FIRMINFO command displayed the wrong I/O revision number 31.
+- Nextor kernel is unable to flash the PLD firmware using the old 'pldload.com' and the machine can be BRICKED!!
+  The current 'pldflash.com' and 'smxflash.com' are the only ones to do this, be very careful when using them.
+- Nextor can now automatically mount the SD card even if it has not been inserted into the slot before system boot.
+- The most of Microcabin games can run better with the 'runit.com' tool, with 'ep.com' two drives are required.
+  If you experience issues using SofaRun, you may need to increase the loading delay from the game settings.
+- Most of the features of the MSX turboR have not yet been developed and are for testing purposes only. The MULU
+  opcodes and System Timer (S1990) are no longer available on the 1st Gen machines due to the space limit reached.
+- Currently, the MIDI interface is limited to the operation of the MIDRY software and very few others.
+- Philips Music Module does not support the tMegaSD function and only works at 3.58MHz, run SETSMART -030B40 to go.
+- The main cause of instability in the 1st Gen machines is the option "Force Use of Synchronous Clear Signals".
+  This option was introduced in OCM-PLD v2.4 and currently cannot be disabled due to running out of resources.
+  In the 2nd Gen machines this option has been disabled and will not be used, so they are much more stable.
+  Since this new generation does not need more space yet, the compression of the SOF has also been disabled.
+  If necessary, it will still be possible to activate it by modifying the structure of the COF in this way:
+  "<sof_filename>output_files/ocm_sm.sof<compress_bitstream>1</compress_bitstream></sof_filename>".
+- On the 1st Gen machines the hard reset lock function does not work with cartridges due to a hardware limitation.
+  A hardware patch can be made by isolating pin 15 of the slots from the reset button and connecting it to pin 16.
+  This patch also requires custom firmware with the appropriate changes, so I do NOT recommend its use.
+- The ESP8266 Wi-Fi BIOS has NOT been integrated into EPBIOS because its full maturity has not yet been reached.
+- When Extra-Mapper 4096kB is enabled, you may encounter anomalies or system crashes with some software, as is the
+  case with Micro Music v3.1, but this depends on how they were programmed. MPCM can handle all that RAM.
+
+Some known issues:
+- The sprites disable and enable after three lines instead of after one line, reported by Grauw and Andre.
+- Some PSG sounds are not played accurately and sometimes the OPLL drum kit sounds too loud.
+- The current version of MSX turboR BIOS can be started with Internal Mapper 4096kB only using Nextor kernel
+  and generates some issues with the PSG output (simply just listen to the beep sound to confirm it).
+- DIX game won't start due to INT_n inaccuracy, a temporary patch can run it by changing 00293h from C8h to 00h.
+- The CMT input on 1st Gen machines causes an increase in video noise of VGA modes, slightly affecting luminance.
 
 v3.9 [2021.08.23] [KdL's Updates!]
 
@@ -107,12 +188,12 @@ v3.9 [2021.08.23] [KdL's Updates!]
   is used on the 1st Gen machines to generate random variants needed to re-enter when space limits are exceeded.
   Using this script also allows you to find better solutions than others, thus achieving system stability.
 - New RESET model rewritten and parsed from zero. The new method improves the compatibility of external cartridges.
-  Three actions are available: a simple click <1s for a quick reset; a long click >1s that reloads SDBIOS; a click
-  during the initial flashing allows you to cancel SDBIOS and force the use of EPBIOS without removing the SD card.
+  Three actions are available: a short click <1s for a quick reset; a long click >1s that reloads SDBIOS; a click
+  during the initial blinking allows you to cancel SDBIOS and force the use of EPBIOS without removing the SD card.
 - New Autofire module, a function suggested by Konamiman currently only available for 2nd Gen machines, by HRA!
   The list of special keys has been updated as usual in the 'details.txt' of the [firmware\] folder.
-- New F2 device designed by me to manage the operating states of the ESP8266 Wi-Fi BIOS implemented by ducasp.
-- Improved Wi-Fi module with Quick Receive support by ducasp, LFSR counter and some minor optimizations.
+- New F2 device designed by me to manage the operating states of the ESP8266 Wi-Fi BIOS implemented by Ducasp.
+- Improved Wi-Fi module with Quick Receive support by Ducasp, LFSR counter and some minor optimizations.
 - Improved System Timer (S1990) module with LFSR counter and reset command, based on the HRA! project.
 - Improved and fixed RTC module by HRA! with some changes made by me like LFSR counter and rtcena signal.
 - Improved some critical counters, now they are programmed separately if XTAL is 21.47727MHz or 50.00000MHz.
@@ -129,38 +210,6 @@ v3.9 [2021.08.23] [KdL's Updates!]
 - Cleaned up the source code from parts of unused code and countless optimizations to reduce space.
 - The firmware list has reached a total of sixty builds with the new SX-1 Mini/Mini+, SX-2 and SM-X Mini machines.
   Firmware interchangeability groups are now highlighted in the 'details.txt' of the [firmware\] folder.
-
-Notes and warnings:
-- Nextor kernel is unable to flash the PLD firmware using 'pldload.com' and the machine can be BRICKED!!
-  The current 'pldflash.com' and 'smxflash.com' are the only ones to do this, be very careful when using them.
-- In case the SD card is not detected after a hard reset, simply reinsert it on the fly or hold the reset for 2s.
-  Nextor can now automatically mount the SD card even if it has not been inserted into the slot before system boot.
-- Some firmware may not be as stable as others. When necessary, I suggest trying another keyboard layout.
-- The most of Microcabin games can run better with the 'runit.com' tool, with 'ep.com' two drives are required.
-  If you experience issues using SofaRun, you may need to increase the loading delay from the game settings.
-- Most of the features of the MSX turboR have not yet been developed and are for testing purposes only. The MULU
-  opcodes and System Timer (S1990) are no longer available on the 1st Gen machines due to the space limit reached.
-- Currently, the MIDI interface is limited to the operation of the MIDRY software and very few others.
-- Philips Music Module does not support the tMegaSD function and only works at 3.58MHz, run SETSMART -030B40 to go.
-- The main cause of instability in the 1st Gen machines is the option "Force Use of Synchronous Clear Signals".
-  This option was introduced in OCM-PLD v2.4 and currently cannot be disabled due to running out of resources.
-  In the 2nd Gen machines this option has been disabled and will not be used, so they are much more stable.
-  Since this new generation does not need more space yet, the compression of the SOF has also been disabled.
-  If necessary, it will still be possible to activate it by modifying the structure of the COF in this way:
-  "<sof_filename>output_files/ocm_sm.sof<compress_bitstream>1</compress_bitstream></sof_filename>".
-- On the 1st Gen machines the hard reset lock function does not work with cartridges due to a hardware limitation.
-  A hardware patch can be made by isolating pin 15 of the slots from the reset button and connecting it to pin 16.
-  This patch is not supported by firmware prior to v3.9 nor by third parties, so I do NOT recommend using it.
-- The ESP8266 Wi-Fi BIOS has NOT been integrated into EPBIOS because its full maturity has not yet been reached.
-
-Some known issues:
-- The sprites disable and enable after three lines instead of after one line, reported by Grauw and Andre.
-- Some PSG sounds are not played accurately and sometimes the OPLL drum kit sounds too loud.
-- The 'Break' command of ESE-PS2 module do not work during the hard reset or if you unplug the keyboard at warm.
-- The current version of MSX turboR BIOS can be started with Internal Mapper 4096kB only using Nextor kernel
-  and generates some issues with the PSG output (simply just listen to the beep sound to confirm it).
-- DIX game won't start due to INT_n inaccuracy, a temporary patch can run it by changing 00293h from C8h to 00h.
-- Internal OPL3 does not work with VGMPlay v1.3 final version but it is still possible to use VGMPlay v1.3-rc5.
 
 
 v3.8.1 [2020.05.23] [KdL's Updates!]
@@ -186,7 +235,7 @@ v3.8 [2020.01.09] [KdL's Updates!]
 - Improved tMegaSD function to be able to start "Xak Precious Package: The Tower of Gazzel" with SofaRunIt.
 - Improved compatibility for some PS/2 keyboards, by uniabis.
 - Fixed FIELD statement in DISK BASIC version 2.01 of MegaSDHC kernel, by uniabis.
-- Fixed the lack of page flipping (VDP R#13) capability and the undocumented "Cadari" bit, by ducasp.
+- Fixed the lack of page flipping (VDP R#13) capability and the undocumented "Cadari" bit, by Ducasp.
 - Fixed an issue with OPLL at the amplitude modulation frequency when tremulo is turned on, by GreyRogue.
 - Fixed the WAIT_n signal of external slots that was wrong, by Victor Trucco.
 - Cleaned up the source code in general and converted the ANSI files to the UTF-8 format.
@@ -259,10 +308,10 @@ v3.6.1 [2018.06.03] [KdL's Updates!]
 
 v3.6 [2018.05.14] [KdL's Updates!]
 - Updated Switched I/O ports ($40-$4F) module to Revision 7:
-  new audio presets "Emphasis PSG Sound", "Emphasis SCC-I Sound" and "Emphasis OPLL Sound" (scmd-$44/$45/$46),
-  new [SHIFT+PGUP/PGDOWN] keys to do the fast switch of master volume from max level to middle, min and mute,
+  new audio presets "Emphasis PSG Sound", "Emphasis SCC-I Sound" and "Emphasis OPLL Sound" (scmd-$44/$45/$46);
+  new [SHIFT+PGUP/PGDOWN] keys to do the fast switch of master volume from max level to middle, min and mute;
   new "Pixel Ratio 1:1 for VGA Output" (scmd-$7F) a trick to get the correct pixel ratio on a non-CRT display
-  (e.g. A:\>SETSMART -7F7F7F7F is fine for a VX2835WM), fixed scmd-$F9 to allow the use of an external FM-PAC,
+  (e.g. A:\>SETSMART -7F7F7F7F is fine for a VX2835WM); fixed scmd-$F9 to allow the use of an external FM-PAC;
   new scmd-$D6/D7 that allow to force the centering of YJK modes and VDP R#25 mask (useful for MSX2+ games).
 - Updated DIP-SW User Manual in the [docs\] folder.
 - New 'mglocm.com' and 'mglunch.com' (2017.11.18) in the [msxtools\mglunch\] folder.
@@ -302,7 +351,7 @@ v3.4.1 [2017.09.22] [KdL's Updates!]
 - Added and updated some scripts to compile and collect firmware.
 - Improved Switched I/O ports module, CMT will be disabled if MSX turboR BIOS is detected.
 - Improved DACout signal, run SETAUDIO.COM /S to separate the external audio cartridges from the internal sound.
-- Regression in luminance calibration of RGB 15KHz to improve audio SNR (Zemmix Neo only), thanks to Alex Mena.
+- Regression in luminance calibration of RGB 15kHz to improve audio SNR (Zemmix Neo only), thanks to Alex Mena.
 
 v3.4 [2017.09.18] [KdL's Updates!]
 - Updated Switched I/O ports ($40-$4F) module to Revision 5:
@@ -396,7 +445,7 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - Fixed the black screen event with MegaSD Off, by caro.
 - Fixed various bug on H-Sync and V-Sync of VDP TH9958.
 - Increased VRAM to 1024kB, a full control of 16 pages by 64kB is allowed.
-- Increased the boot speed with CPU clock at 3.58MHz.
+- Increased the boot speed with cpu clock at 3.58MHz.
 - Improved the hard reset rules and increased the stability of system.
 - Restored [SHIFT+UP/DOWN] toggles to the original master volume.
 - Replaced [PAUSE] key with Lights On/Off control to prevent any data corruption.

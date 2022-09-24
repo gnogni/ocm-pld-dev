@@ -1,8 +1,9 @@
 @echo off
-rem --- 'zz4_collect_multi-release.cmd' v2.7 by KdL (2021.08.23)
+rem --- 'zz4_collect_multi-release.cmd' v2.8 by KdL (2022.09.24)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
+set PARKING=fw
 set SRC=C:\Altera\multi-release\
 set DEST=..\firmware\
 set LOG=## BUILDING FAILED ##.log
@@ -10,7 +11,7 @@ set FAIL=NO
 if "%1"=="" color 1f&title Multi-Release collector tool for %PROJECT%
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cyclone" goto err_quartus
 if not exist %SRC% goto err_msg
-if "%1"=="" echo.&echo NOTICE: the '%DEST%' folder will be updated!
+if "%1"=="" echo.&echo ### NOTICE: the '%DEST%' folder will be updated!
 if "%1"=="" echo.&echo Press any key to proceed...&pause >nul
 cls&if "%1"=="" echo.&echo Please wait...
 rem ---------------cleanup----------------
@@ -66,42 +67,40 @@ call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
 rem ---------------cleanup----------------
-rd /S /Q %SRC% >nul 2>nul
+if "%FAIL%"=="NO" rd /S /Q %SRC% >nul 2>nul
 rem --------------------------------------
-if "%FAIL%"=="YES" set TIMEOUT=2&cls&echo.&echo Multi-Release building failed!&if "%1"=="" color f0
 if "%FAIL%"=="NO" if "%1"=="" cls&echo.&echo All done!
+if "%FAIL%"=="YES" set TIMEOUT=2&cls&echo.&echo Multi-Release building failed!&if "%1"=="" color f0
 goto timer
 
 :collect_1chipmsx
 set INPDIR=%SRC%esemsx3_%LAYOUT%_1chipmsx\
-if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%fw\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
+if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%%PARKING%\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
 if exist "%INPDIR%%LOG%" set FAIL=YES&echo Task failed "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
-set OUTDIR=%DEST%1chipmsx_%LAYOUT%_layout\single_epbios_msx2plus_%YENSLASH%\
+set OUTDIR=%DEST%1chipmsx_%LAYOUT%_layout\single_epbios_msxplusplus_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 cd %INPDIR%
-del %PROJECT%_304k.hex >nul 2>nul
-ren %PROJECT%_304k.hex.%YENSLASH%.msx3 %PROJECT%_304k.hex >nul 2>nul
+move %PROJECT%_304k.hex.%YENSLASH%.msx2plus %PROJECT%_304k.hex >nul 2>nul
 "%QUARTUS_ROOTDIR%\bin\quartus_cpf.exe" -c %PROJECT%_304k.cof >nul 2>nul
 call 3_finalize.cmd --no-wait
 call 4_collect.cmd --no-wait
 cd %~dp0
-set OUTDIR=%DEST%1chipmsx_%LAYOUT%_layout\single_epbios_msx3_%YENSLASH%\
+set OUTDIR=%DEST%1chipmsx_%LAYOUT%_layout\single_epbios_msx2plus_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 goto:eof
 
 :collect_sx1mini
 set INPDIR=%SRC%esemsx3_%LAYOUT%_sx1mini\
-if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%fw\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
+if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%%PARKING%\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
 if exist "%INPDIR%%LOG%" set FAIL=YES&echo Task failed "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
 cd %INPDIR%
-del %PROJECT%_304k.hex >nul 2>nul
-ren %PROJECT%_304k.hex.%YENSLASH%.sx1 %PROJECT%_304k.hex >nul 2>nul
+move %PROJECT%_304k.hex.%YENSLASH%.sx1 %PROJECT%_304k.hex >nul 2>nul
 "%QUARTUS_ROOTDIR%\bin\quartus_cpf.exe" -c %PROJECT%_304k.cof >nul 2>nul
 call 3_finalize.cmd --no-wait
 call 4_collect.cmd --no-wait
@@ -109,22 +108,21 @@ cd %~dp0
 set OUTDIR=%DEST%sx1mini_%LAYOUT%_layout\single_epbios_sx1_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 goto:eof
 
 :collect_zemmixneo
 set INPDIR=%SRC%esemsx3_%LAYOUT%_zemmixneo\
-if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%fw\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
+if not exist "%INPDIR%%LOG%" if not exist "%INPDIR%%PARKING%\" set FAIL=YES&echo Task canceled "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
 if exist "%INPDIR%%LOG%" set FAIL=YES&echo Task failed "%INPDIR%%PROJECT%.qpf">>"%LOG%"&goto:eof
 set OUTDIR=%DEST%zemmixneo_%LAYOUT%_layout\single_epbios_zemmixneo_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 cd %INPDIR%
-del %PROJECT%_304k.hex >nul 2>nul
-ren %PROJECT%_304k.hex.%YENSLASH%.zemmixneobr %PROJECT%_304k.hex >nul 2>nul
+move %PROJECT%_304k.hex.%YENSLASH%.zemmixneobr %PROJECT%_304k.hex >nul 2>nul
 "%QUARTUS_ROOTDIR%\bin\quartus_cpf.exe" -c %PROJECT%_304k.cof >nul 2>nul
 call 3_finalize.cmd --no-wait
 call 4_collect.cmd --no-wait
@@ -132,11 +130,10 @@ cd %~dp0
 set OUTDIR=%DEST%zemmixneo_%LAYOUT%_layout\single_epbios_zemmixneobr_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 cd %INPDIR%
-del %PROJECT%_304k.hex >nul 2>nul
-ren %PROJECT%_304k.hex.%YENSLASH%.sx1 %PROJECT%_304k.hex >nul 2>nul
+move %PROJECT%_304k.hex.%YENSLASH%.sx1 %PROJECT%_304k.hex >nul 2>nul
 "%QUARTUS_ROOTDIR%\bin\quartus_cpf.exe" -c %PROJECT%_304k.cof >nul 2>nul
 call 3_finalize.cmd --no-wait
 call 4_collect.cmd --no-wait
@@ -144,8 +141,8 @@ cd %~dp0
 set OUTDIR=%DEST%zemmixneo_%LAYOUT%_layout\single_epbios_sx1_%YENSLASH%\
 md %OUTDIR% >nul 2>nul
 if not "%OPTMODE%"=="" rem.>"%OUTDIR%%OPTMODE%"
-move %INPDIR%fw\%PROJECT%.pld %OUTDIR% >nul 2>nul
-move %INPDIR%fw\recovery.pof %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\%PROJECT%.pld %OUTDIR% >nul 2>nul
+copy /Y %INPDIR%%PARKING%\recovery.pof %OUTDIR% >nul 2>nul
 goto:eof
 
 :err_quartus

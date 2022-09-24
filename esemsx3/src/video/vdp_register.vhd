@@ -197,7 +197,8 @@ ENTITY VDP_REGISTER IS
         VDPMODEISVRAMINTERLEAVE     : OUT   STD_LOGIC;
 
         -- SWITCHED I/O SIGNALS
-        FORCED_V_MODE               : IN    STD_LOGIC
+        FORCED_V_MODE               : IN    STD_LOGIC;
+        VDP_ID                      : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 )
     );
 END VDP_REGISTER;
 

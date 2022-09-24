@@ -1,14 +1,19 @@
 @echo off
-rem --- '!!-cleanup.cmd' v2.7 by KdL (2021.08.23)
+rem --- '!!-cleanup.cmd' v2.8 by KdL (2022.09.24)
 
 set PROJECT1=emsx_top
 set PROJECT2=ocm_sm
+set DEST1=C:\Altera\multi-release\
+set DEST2=C:\intelFPGA_lite\multi-release\
+set CAUTION=### CAUTION: a Multi-Release is still in progress!
 if "%1"=="" color 1f&title ### WARNING !! ###
 for %%I in (.) do set DIR=%%~nxI
 if "%1"=="" echo.&echo Current folder: %DIR%\
-if "%1"=="" echo.&echo The cleanup tool is ready to proceed, press any key...
-if "%1"=="" pause >nul 2>nul
-if "%1"=="" cls
+if exist "%DEST1%" set MULTI=1
+if exist "%DEST2%" set MULTI=1
+if "%1"=="--no-wait" if "%MULTI%"=="1" echo.&echo %CAUTION%&echo.&echo Press any key to proceed...&pause >nul 2>nul&cls
+if "%1"=="" if "%MULTI%"=="1" echo.&echo %CAUTION%
+if "%1"=="" echo.&echo The cleanup tool is ready to proceed, press any key...&pause >nul 2>nul&cls
 if "%1"=="" echo.&echo Cleaning up...
 if exist %PROJECT1%.qpf goto %PROJECT1%
 if exist %PROJECT2%.qpf goto %PROJECT2%
@@ -30,19 +35,19 @@ set OUTPUT=output_files\
 rd /S /Q %OUTPUT% >nul 2>nul
 del src_addons\peripheral\sm_swioports.vhd* >nul 2>nul
 del src_addons\sys\pll.vhd >nul 2>nul
-del src_addons\top.vhd >nul 2>nul
+del src_addons\top.* >nul 2>nul
 del "__*__" >nul 2>nul
-del *.cdf >nul 2>nul
+del %PROJECT%.cdf >nul 2>nul
 del *.qsf* >nul 2>nul
 del *.cof >nul 2>nul
-del *.hex >nul 2>nul
+del %PROJECT%*.hex >nul 2>nul
 del %PROJECT%_device.env >nul 2>nul
 del zz0*.* >nul 2>nul
 
 :done
-set DEST=C:\Altera\multi-release\
+set DEST=%DEST1%
 if exist %DEST% rd /S /Q %DEST% >nul 2>nul
-set DEST=C:\intelFPGA_lite\multi-release\
+set DEST=%DEST2%
 if exist %DEST% rd /S /Q %DEST% >nul 2>nul
 if "%1"=="" echo.&echo Done!
 
