@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz3_sm_compile_multi-release.cmd' v2.9 by KdL (2022.11.27)
+rem --- 'zz3_sm_compile_multi-release.cmd' v3.0 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm

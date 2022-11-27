@@ -1,5 +1,5 @@
 @echo off
-rem --- '3_sm_collect.cmd' v2.9 by KdL (2022.11.27)
+rem --- '3_sm_collect.cmd' v3.0 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm

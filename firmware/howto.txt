@@ -52,8 +52,8 @@ Here is how to flash the device after a failed update using a personal computer 
 
 1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
 
-2. Download and install Stand-Alone Intel Quartus Prime Programmer and Tools 21.1.1 (free):
-http://downloads.intel.com/akdlm/software/acdsinst/21.1std.1/850/ib_installers/QuartusProgrammerSetup-21.1.1.850-windows.exe
+2. Download and install Stand-Alone Intel Quartus Prime Programmer and Tools 22.1std.0.915 (free):
+http://downloads.intel.com/akdlm/software/acdsinst/22.1std/915/ib_installers/QuartusProgrammerSetup-22.1std.0.915-windows.exe
 
 3. For SM-X (regular), go to the bottom and attach the cable on the JTAG connector with the pin-1 towards the front of device.
    For SX-2, check out the provided documentation or ask their respective manufacturers.

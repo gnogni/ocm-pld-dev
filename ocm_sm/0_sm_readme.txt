@@ -3,7 +3,7 @@ Collect the firmware using the scripts for SM-X and SX-2
 
 Prerequisites:
 --------------
-a.  Install Quartus Prime v21.1.1 Lite Edition on a Windows OS.
+a.  Install Quartus Prime v22.1 Lite Edition on a Windows OS.
 
 b.  Copy the full project in a folder (both 'esemsx3\' and 'ocm_sm\' subfolders).
 
@@ -34,4 +34,4 @@ The 'zz*.cmd' scripts are used to get the Multi-Release in a short time.
 
 
 __________________________________________
-'0_sm_readme.txt' v2.9 by KdL (2022.11.27)
+'0_sm_readme.txt' v3.0 by KdL (2022.11.27)

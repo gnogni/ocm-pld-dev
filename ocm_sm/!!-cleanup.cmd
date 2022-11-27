@@ -1,5 +1,5 @@
 @echo off
-rem --- '!!-cleanup.cmd' v2.9 by KdL (2022.11.27)
+rem --- '!!-cleanup.cmd' v3.0 by KdL (2022.11.27)
 
 set PROJECT1=emsx_top
 set PROJECT2=ocm_sm
@@ -40,6 +40,7 @@ del "__*__" >nul 2>nul
 del %PROJECT%.cdf >nul 2>nul
 del *.qsf* >nul 2>nul
 del *.cof >nul 2>nul
+del *.rpt >nul 2>nul
 del %PROJECT%*.hex >nul 2>nul
 del %PROJECT%_device.env >nul 2>nul
 del zz0*.* >nul 2>nul

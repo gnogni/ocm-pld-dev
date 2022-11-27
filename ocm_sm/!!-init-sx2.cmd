@@ -1,5 +1,5 @@
 @echo off
-rem --- '!!-init-sx2.cmd' v2.9 by KdL (2022.11.27)
+rem --- '!!-init-sx2.cmd' v3.0 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set FOLDER=init_

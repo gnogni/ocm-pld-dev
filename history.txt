@@ -72,7 +72,7 @@
 -- Altera Quartus II v11.0sp1 Web Edition (1chipMSX, Zemmix Neo and SX-1)
 --                http://mega.nz/file/FdJgSbDB#UL9W4iM1T9rx_FdcbCuBwgtiTp8P2tDoiClobiNTQnI
 --
--- Intel Quartus Prime v21.1.1 Lite Edition (SM-X and SX-2)
+-- Intel Quartus Prime v22.1 Lite Edition (SM-X and SX-2)
 --                http://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html
 -------------------------------------------------------------------------------------------------------------------
 --
@@ -100,6 +100,9 @@
 ________________________________
 v3.x KdL/HRA's Official Release \__________________________________________________________________________________
 
+
+v3.9.2 [2022.11.27] [KdL's Updates!] [ALPHA0]
+- Updated Intel Quartus Prime Lite Edition to version 22.1
 
 v3.9.1 [2022.11.27] [KdL's Updates!] [REPACK]
 
