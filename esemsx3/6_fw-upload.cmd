@@ -1,5 +1,5 @@
 @echo off
-rem --- '6_fw-upload.cmd' v2.8 by KdL (2022.09.24)
+rem --- '6_fw-upload.cmd' v2.9 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -48,4 +48,3 @@ title %EXITSTR%
 for /f "tokens=2" %%G in ('tasklist /v^|findstr "%EXITSTR%"') do set CURRPID=ParentProcessId=%%~G and Name='conhost.exe'
 for /f "usebackq" %%G in (`wmic process where "%CURRPID%" get ProcessId^,WindowsVersion^|findstr /r "[0-9]"`) do taskkill /f /fi "PID eq %%~G"
 pause >nul 2>nul
-

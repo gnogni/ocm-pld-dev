@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12nd  t.hara  Overall revision.
+;   2021/Aug/12th  t.hara  Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -89,6 +89,6 @@ loop2:
 			out			[c], d
 			out			[c], e
 			dec			c
-			ld			b, icon_pattern_end - icon_pattern
+			ld			b, ((icon_pattern_end - icon_pattern) % 256)
 			otir
 			endscope

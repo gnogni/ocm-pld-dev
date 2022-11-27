@@ -34,4 +34,4 @@ The 'zz*.cmd' scripts are used to get the Multi-Release in a short time.
 
 
 __________________________________________
-'0_sm_readme.txt' v2.8 by KdL (2022.09.24)
+'0_sm_readme.txt' v2.9 by KdL (2022.11.27)

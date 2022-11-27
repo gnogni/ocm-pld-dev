@@ -30,7 +30,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 ---------------------------------------------------------------------------------
--- OCM-PLD Pack v3.9.1 by KdL (2022.09.24)
+-- OCM-PLD Pack v3.9.1 by KdL (2022.11.27)
 -- MSX2+ Stable Release for SM-X (regular) and SX-2 / MSXtR Experimental
 -- Special thanks to t.hara, caro, mygodess & all MRC users (http://www.msx.org)
 ---------------------------------------------------------------------------------

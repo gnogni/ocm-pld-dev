@@ -94,7 +94,7 @@ load_block_loop::
 			inc			hl
 			cp			a, 0x40							; 0...63 : load bios image
 			jr			c, load_bios_images
-			jr			z, fill_ff_or_c9
+			jp			z, fill_ff_or_c9
 			cp			a, 0xFE - 1
 			jr			nc, exit_load_bios				; Return with Zf=0 and Cy=0, when finish code 0xFF/0xFE.
 fill_zero:
@@ -113,6 +113,9 @@ exit_load_bios:
 			rrca										; 0xFF ==> 0xFF, 0xFE ==> 0x7F
 			cpl											; 0xFF ==> 0x00, 0x7F ==> 0x80
 			out			[0x4E], a
+
+			ld			a, [animation_id]				; clear the animation
+			call		vdp_put_icon
 
 			; set_f4_device
 set_f4_device::
@@ -269,6 +272,18 @@ fill_bank::
 ; ------------------------------------------------------------------------------
 			scope		set_bank
 set_bank::
+			ld			a, [animation_id + 1]
+			push		af
+			ld			a, [animation_id + 2]
+			ld			[animation_id + 1], a
+			push		bc
+			push		hl
+			; make the animation
+			call		vdp_put_animation
+			pop			hl
+			pop			bc
+			pop			af
+			ld			[animation_id + 2], a
 			; set ESE-RAM bank ID for Bank2 and Bank3
 			ld			a, [bank_id]
 			ld			[eseram8k_bank2], a

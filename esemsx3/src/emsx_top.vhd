@@ -30,7 +30,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 ---------------------------------------------------------------------------------
--- OCM-PLD Pack v3.9.1 by KdL (2022.09.24) / MSX2+ Stable Release for 1chipMSX
+-- OCM-PLD Pack v3.9.1 by KdL (2022.11.27) / MSX2+ Stable Release for 1chipMSX
 -- Special thanks to t.hara, caro, mygodess & all MRC users (http://www.msx.org)
 ---------------------------------------------------------------------------------
 -- Setup for XTAL 21.47727MHz

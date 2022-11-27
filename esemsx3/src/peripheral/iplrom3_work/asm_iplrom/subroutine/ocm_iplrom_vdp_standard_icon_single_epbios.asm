@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12nd  t.hara  Overall revision.
+;   2021/Aug/12th  t.hara  Overall revision.
 ; ==============================================================================
 
 			; VDP port 99h [set register]
@@ -92,6 +92,21 @@ icon_pattern::								; ※vdp_msx1_palette_regs_end と連続
 			db		0x80, 0xC0, 0x60, 0x30, 0xB0, 0xB0, 0x30, 0x60
 			db		0x1F, 0x0F, 0x00, 0x00, 0x02, 0x07, 0x0F, 0x1F
 			db		0xC0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0
+			; EPCS1 Anim. (21) : Fuzzy LED
+			db		0xFF, 0x49, 0x49, 0x00, 0x00, 0x0A, 0x05, 0x0A
+			db		0xF0, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
+			db		0xFF, 0x49, 0x49, 0x00, 0x00, 0x05, 0x0A, 0x05
+			db		0xF0, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
+			; EPCS2 Anim. (25) : Fuzzy LED
+			db		0xFF, 0x49, 0x49, 0x00, 0x00, 0x0A, 0x05, 0x0A
+			db		0xF0, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
+			db		0xFF, 0x49, 0x49, 0x00, 0x00, 0x05, 0x0A, 0x05
+			db		0xF0, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
+			; SD card Anim. (29) : Slip Ring
+			db		0xFF, 0xF3, 0x00, 0x00, 0x02, 0x08, 0x01, 0x04
+			db		0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+			db		0xFF, 0xF3, 0x00, 0x00, 0x04, 0x01, 0x08, 0x02
+			db		0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 icon_pattern_end::
 
 vdp_msx2_palette_regs::						; MSX2 colors
@@ -133,16 +148,26 @@ vdp_msx2_palette_regs_end::
 ;			ret
 ;			endscope
 
+; ====================================================================
+NO_EPCS_ICON		:= 0;		ECPS Icon:		0 = Shown,	1 = Hidden
+NO_SD_ICON			:= 0;		SD card Icon:	0 = Shown,	1 = Hidden
+EPCS_ANI_ENABLER	:= 1;		EPCS Anim.:		0 = Off,	1 = On
+SD_ANI_ENABLER		:= 1;		SD card Anim.:	0 = Off,	1 = On
+; ====================================================================
 ICON_ERROR			:= 1;
-ICON_EPCS1			:= 5;
-ICON_EPCS2			:= 9;
-ICON_SD_CARD		:= 13;
+ICON_EPCS1			:= 32 * NO_EPCS_ICON + 5;
+ICON_EPCS2			:= 32 * NO_EPCS_ICON + 9;
+ICON_SD_CARD		:= 32 * NO_SD_ICON + 13;
 ICON_LOOP			:= 17;
+ICON_EPCS1_ANI		:= 16 * EPCS_ANI_ENABLER + ICON_EPCS1;
+ICON_EPCS2_ANI		:= 16 * EPCS_ANI_ENABLER + ICON_EPCS2;
+ICON_SD_ANI			:= 16 * SD_ANI_ENABLER + ICON_SD_CARD;
 
 ; --------------------------------------------------------------------
 ;	Put icon
 ;	input:
-;		A .... ICON Number 1: Err., 5: EPCS1, 9: EPCS2, 13: SD card, 17: Loop Err.
+;		A .... ICON Number	1: Err., 5: EPCS1, 9: EPCS2, 13: SD card, 17: Loop Err.,
+;							21: EPCS1 Anim., 25: EPCS2 Anim., 29: SD card Anim.
 ;	output:
 ;		none
 ;	break:
@@ -154,7 +179,8 @@ ICON_LOOP			:= 17;
 vdp_put_icon::
 			ld		hl, 0x1801 | 0x4000
 			call	sub_code
-			ld		l, 33
+vdp_put_animation::
+			ld		hl, 0x1821 | 0x4000
 sub_code:
 			ld		c, vdp_port1
 			out		[c], l

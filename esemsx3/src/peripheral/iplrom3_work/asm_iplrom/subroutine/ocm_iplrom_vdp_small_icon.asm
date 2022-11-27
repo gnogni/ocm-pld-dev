@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12nd  t.hara  Overall revision.
+;   2021/Aug/12th  t.hara  Overall revision.
 ; ==============================================================================
 
 			; VDP port 99h [set register]
@@ -67,10 +67,10 @@ vdp_msx1_palette_regs::						; MSX1 like colors		※vdp_control_regs_end と連�
 vdp_msx1_palette_regs_end::
 
 icon_pattern::								; ※vdp_msx1_palette_regs_end と連続
-			; EPCS1 (1)
-			db		0x54, 0x54, 0xFE, 0xFE, 0xBE, 0xFE, 0x54, 0x54
-			; SD card (2)
+			; SD card (1)
 			db		0xFF, 0xCB, 0xBD, 0xCD, 0xE9, 0x93, 0xFC, 0x00
+			; EPCS1 (2)
+;			db		0x54, 0x54, 0xFE, 0xFE, 0xBE, 0xFE, 0x54, 0x54
 icon_pattern_end::
 
 vdp_msx2_palette_regs::						; MSX2 colors
@@ -112,13 +112,13 @@ vdp_msx2_palette_regs_end::
 ;			ret
 ;			endscope
 
-ICON_EPCS1			:= 1;
-ICON_SD_CARD		:= 2;
+ICON_SD_CARD		:= 1;
+ICON_EPCS1			:= 2;
 
 ; --------------------------------------------------------------------
 ;	Put icon
 ;	input:
-;		A .... ICON Number 1: EPCS1, 2: SD card
+;		A .... ICON Number 1: SD card, 2: EPCS1
 ;	output:
 ;		none
 ;	break:

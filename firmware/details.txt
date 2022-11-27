@@ -97,4 +97,4 @@ Autofire Status LED <=  [PAUSE]  The main LED blinks if Autofire is ON, otherwis
 
 
 ______________
-KdL 2022.09.24
+KdL 2022.11.27

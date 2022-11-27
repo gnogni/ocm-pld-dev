@@ -73,10 +73,10 @@
 --   - Insert the license text.
 --   - Add the document part below.
 --
--- 12nd,August,2006 created by Kunihiko Ohnaka
+-- 12th,August,2006 created by Kunihiko Ohnaka
 -- JP: VDPのコアの実装とスクリーンモードの実装を分離した
 --
--- 13rd,March,2008
+-- 13th,March,2008
 -- Fixed Blink by caro
 --
 -- 22nd,March,2008

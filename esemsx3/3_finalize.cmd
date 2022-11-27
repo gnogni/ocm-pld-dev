@@ -1,5 +1,5 @@
 @echo off
-rem --- '3_finalize.cmd' v2.8 by KdL (2022.09.24)
+rem --- '3_finalize.cmd' v2.9 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=emsx_top

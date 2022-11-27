@@ -73,16 +73,16 @@
 --   - Insert the license text.
 --   - Add the document part below.
 --
--- 12nd,August,2006 created by Kunihiko Ohnaka
+-- 12th,August,2006 created by Kunihiko Ohnaka
 -- JP: VDPのコアの実装とスクリーンモードの実装を分離した
 --
--- 13rd,March,2008
+-- 13th,March,2008
 -- Fixed Blink by caro
 --
 -- 22nd,March,2008
 -- JP: タイミング緩和と、リファクタリング by t.hara
 --
--- 11st, September,2019 modified by Oduvaldo Pavan Junior
+-- 11th,September,2019 modified by Oduvaldo Pavan Junior
 -- Fixed the lack of page flipping (R13) capability
 --
 -- Added the undocumented feature where R1 bit #2 change the blink counter

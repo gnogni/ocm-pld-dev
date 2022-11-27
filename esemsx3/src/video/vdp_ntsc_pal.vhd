@@ -63,7 +63,7 @@
 -------------------------------------------------------------------------------
 -- Revision History
 --
--- 13rd,October,2003 created by Kunihiko Ohnaka
+-- 13th,October,2003 created by Kunihiko Ohnaka
 -- JP: VDPのコアの実装と表示デバイスへの出力を別ソースにした．
 --
 -- ??th,August,2006 modified by Kunihiko Ohnaka

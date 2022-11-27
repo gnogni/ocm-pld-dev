@@ -61,7 +61,12 @@ dir_entry_size					:= dir_next_entry
 load_from_sdcard::
 ;			ld			hl, sd_read_sector
 ;			ld			[read_sector_cbr], hl
+			ld			a, ICON_SD_ANI + 2 * (1 - SD_ANI_ENABLER)
+			ld			[animation_id + 2], a
+			ld			a, ICON_SD_ANI + 2
+			ld			[animation_id + 1], a
 			ld			a, ICON_SD_CARD
+			ld			[animation_id], a
 			call		vdp_put_icon
 sd_first_process:
 			;	Read Sector#0 (MBR)

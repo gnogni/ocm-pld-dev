@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz2_prepare_multi-release.cmd' v2.8 by KdL (2022.09.24)
+rem --- 'zz2_prepare_multi-release.cmd' v2.9 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -7,11 +7,14 @@ set SRC=esemsx3\
 set DEST1=C:\Altera\multi-release\
 set DEST2=C:\intelFPGA_lite\multi-release\
 set DEST=%DEST1%
+set SEEDENV=%PROJECT%_synthesis_seed.env
 if "%1"=="" color 1f&title Multi-Release preparing tool for %PROJECT%
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cyclone" goto err_quartus
 if not exist src\ goto err_msg
 if "%1"=="" echo.&echo A copy of the "%PROJECT%" project will be prepared
 if "%1"=="" echo to compile several variants in parallel.
+if exist %SEEDENV% set /P CURSEED=<%SEEDENV%
+if "%1"=="" if defined CURSEED echo.&echo Current Synthesis Seed = %CURSEED%
 if "%1"=="" echo.&echo Destination path: %DEST%
 if exist "%DEST1%" set MULTI=1
 if exist "%DEST2%" set MULTI=1
@@ -26,7 +29,7 @@ md %DEST% >nul 2>nul
 rem --------------------------------------
 echo %~dp0>%DEST%source_path.txt
 echo @echo off>%DEST%compile_multi-release.cmd
-echo rem --- 'compile_multi-release.cmd' v2.8 by KdL (2022.09.24)>>%DEST%compile_multi-release.cmd
+echo rem --- 'compile_multi-release.cmd' v2.9 by KdL (2022.11.27)>>%DEST%compile_multi-release.cmd
 echo.>>%DEST%compile_multi-release.cmd
 
 rem --- BR layout

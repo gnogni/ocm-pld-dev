@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12nd  t.hara  Overall revision.
+;   2021/Aug/12th  t.hara  Overall revision.
 ; ==============================================================================
 
 			; VDP port 99h [set register]

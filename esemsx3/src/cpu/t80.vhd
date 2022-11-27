@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250_T80 (+k04)
+-- Version : 0250_T80 (+k05)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -63,6 +63,7 @@
 --  +k02 : Added R800_mode signal by KdL 2018.05.14
 --  +k03 : Version alignment by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01
+--  +k05 : Fixed a bug in which the flag register was not changing in "LD A,I" and "LD A,R". by t.hara 2022.11.05
 --
 
 library IEEE;
@@ -612,9 +613,25 @@ begin
                     when "00" =>
                         ACC <= I;
                         F(Flag_P) <= IntE_FF2;
+                        F(Flag_N) <= '0';           -- Added by t.hara, 2022/Nov/05th
+                        F(Flag_H) <= '0';           -- Added by t.hara, 2022/Nov/05th
+                        F(Flag_S) <= I(7);          -- Added by t.hara, 2022/Nov/05th
+                        if I = "00000000" then      -- Added by t.hara, 2022/Nov/05th
+                            F(Flag_Z) <= '1';
+                        else
+                            F(Flag_Z) <= '0';
+                        end if;
                     when "01" =>
                         ACC <= std_logic_vector(R);
                         F(Flag_P) <= IntE_FF2;
+                        F(Flag_N) <= '0';                           -- Added by t.hara, 2022/Nov/05th
+                        F(Flag_H) <= '0';                           -- Added by t.hara, 2022/Nov/05th
+                        F(Flag_S) <= std_logic_vector(R)(7);        -- Added by t.hara, 2022/Nov/05th
+                        if std_logic_vector(R) = "00000000" then    -- Added by t.hara, 2022/Nov/05th
+                            F(Flag_Z) <= '1';
+                        else
+                            F(Flag_Z) <= '0';
+                        end if;
                     when "10" =>
                         I <= ACC;
                     when others =>

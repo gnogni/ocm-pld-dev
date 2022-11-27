@@ -1,5 +1,5 @@
 @echo off
-rem --- '5_auto-collect.cmd' v2.8 by KdL (2022.09.24)
+rem --- '5_auto-collect.cmd' v2.9 by KdL (2022.11.27)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -65,7 +65,11 @@ if "%1"=="" color f0
 echo.&echo Building failed!
 if exist %PARKING% if not exist %PARKING%\ ren %PARKING% "## BUILDING FAILED ##.log" >nul 2>nul
 rem.>>"## BUILDING FAILED ##.log"
-goto timer
+if "%1"=="" goto timer
+
+:killall
+taskkill /f /im conhost.exe>nul 2>nul
+exit
 
 :err_quartus
 if "%1"=="" color f0

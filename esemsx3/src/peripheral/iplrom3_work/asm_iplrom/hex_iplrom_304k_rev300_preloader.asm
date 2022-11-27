@@ -38,11 +38,11 @@
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
-;   2022/Sep/20th	v3.00	t.hara	Overall revision.
+;   2022/Oct/13th	v3.00	t.hara	Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
-;	IPL-ROM PRELOADER v1.00 for EPCS4
+;	IPL-ROM PRELOADER v1.01 for EPCS4
 ; --------------------------------------------------------------------
 IPLROM_BANK								:= 0xFF			; last ESE-RAM block (8 kB)
 loading_attempts						:= 0x10			; number of attempts before showing the error icon
@@ -52,15 +52,19 @@ loading_attempts						:= 0x10			; number of attempts before showing the error ic
 ; --------------------------------------------------------------------
 target_sector_number					:= 0x019A		; EPCS start address 33400h / 512 bytes
 destination_address						:= 0xB400		; B400h~BFFFh, 3072 bytes
-number_of_sectors						:= 0x03			; the current length of the IPL-ROM is < 1536 bytes, max value is 0x06
+number_of_sectors						:= 0x06			; the current length of the IPL-ROM is < 1536 bytes, max value is 0x06
 
 ; --------------------------------------------------------------------
 ;	MegaSD Information
 ; --------------------------------------------------------------------
 megasd_sd_register						:= 0x4000		; Command register for read/write access of SD/SDHC/MMC/EPCS Controller (4000h-57FFh)
 megasd_mode_register					:= 0x5800		; Mode register for write access of SD/SDHC/MMC/EPCS Controller (5800h-5FFFh)
+megasd_status_register					:= 0x5800		; status register for read access of SD/SDHC/MMC/EPCS Controller (5800h-5BFFh)
+megasd_last_data_register				:= 0x5C00		; last data register for read access of SD/SDHC/MMC/EPCS Controller (5C00h-5FFFh)
 
 eseram8k_bank0							:= 0x6000		; 4000h~5FFFh bank selector
+eseram8k_bank1							:= 0x6800		; 6000h~7FFFh bank selector
+eseram8k_bank2							:= 0x7000		; 8000h~9FFFh bank selector
 eseram8k_bank3							:= 0x7800		; A000h~BFFFh bank selector
 
 ; --------------------------------------------------------------------

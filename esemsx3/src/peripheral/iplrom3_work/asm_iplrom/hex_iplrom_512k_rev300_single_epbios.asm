@@ -38,7 +38,7 @@
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
-;   2022/Sep/24th	v3.00	t.hara	Overall revision.
+;   2022/Oct/13th	v3.00	t.hara	Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -82,12 +82,20 @@ dram_code_address						:= 0xF000		; program code address on DRAM (!! Expect the 
 			org			dram_code_address
 begin_of_code:											; !!!! Address 0xB400 and ROM !!!!
 
-self_copy::
 			di
+;			ld			a, 0x40							; commented out if handled by the preloader
+;			ld			[eseram8k_bank0], a				; BANK 40h
+;			ld			a, [megasd_status_register]
+			rrca										; Is the activation this time PowerOnReset?
+			jr			nc, not_power_on_reset
+			ld			[bios_updating], a				; Delete the bios_updating flag.
+not_power_on_reset:
+
+self_copy::
 			ld			sp, 0xFFFF
 			ld			bc, end_of_code - init_stack
 			ld			de, init_stack
-			ld			hl, init_stack - begin_of_code + 0xB400		; HL = B411h
+			ld			hl, init_stack - begin_of_code + 0xB400		; HL = B417h
 			push		de
 			ldir
 			ret											; jump to PAGE3
@@ -97,17 +105,8 @@ init_stack::
 			include		"../subroutine/ocm_iplrom_vdp.asm"
 
 init_switch_io::
-			ld			a, exp_io_1chipmsx_id
-			out			[exp_io_vendor_id_port], a
-
-			ld			a, 0x40
-			ld			[eseram8k_bank0], a				; BANK 40h
-
-			ld			a, [megasd_status_register]
-			rrca										; Is the activation this time PowerOnReset?
-			jr			nc, not_power_on_reset
-			ld			[bios_updating], a				; Delete the bios_updating flag.
-not_power_on_reset:
+;			ld			a, exp_io_1chipmsx_id			; commented out if handled by the preloader
+;			out			[exp_io_vendor_id_port], a
 
 			call		sd_initialize
 
@@ -143,7 +142,6 @@ stop_with_error::
 			out			[0x41], a
 			ld			a, 0x23							; Set Lights Mode ON + Red Led ON
 			out			[0x41], a
-			xor			a, a
 			ld			[bios_updating], a				; Delete the bios_updating flag.
 			halt										; stop
 
@@ -160,13 +158,14 @@ sdbios_image_table::
 			include		"../subroutine/ocm_iplrom_serial_rom_512k.asm"		; Assuming load_bios is immediately next.
 			include		"../subroutine/ocm_iplrom_load_bios.asm"
 			include 	"../subroutine/ocm_iplrom_sd_driver.asm"
-			include		"../subroutine/ocm_iplrom_vdp_standard_icon_512k_single_epbios.asm"
+			include		"../subroutine/ocm_iplrom_vdp_standard_icon_single_epbios.asm"
 end_of_code:
 	remain_fat_sectors	:= $							; 2bytes
 	root_entries		:= $ + 2						; 3bytes
 	data_area			:= $ + 5						; 3bytes
 	bank_id				:= $ + 8						; 1byte
 	bios_updating		:= $ + 9						; 1byte: 0xD4: Updating now, the others: Not loaded
+	animation_id		:= $ + 10						; 3bytes
 
 			if (end_of_code - begin_of_code) > 3072
 				error "The size is too BIG. (" + (end_of_code - begin_of_code) + "byte)"

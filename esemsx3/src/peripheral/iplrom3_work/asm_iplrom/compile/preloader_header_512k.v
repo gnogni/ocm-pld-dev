@@ -31,7 +31,7 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-// IPL-ROM PRELOADER v1.00 for EPCS16 or higher
+// IPL-ROM PRELOADER v1.01 for EPCS16 or higher
 
 module iplrom (
 	input			clk,

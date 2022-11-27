@@ -59,12 +59,21 @@ dummy_read:
 			ld			de, epcs_bios1_start_address
 			in			a, [0x4C]
 			and			a, 0b01000000
+			ld			a, ICON_EPCS1_ANI + 2 * (1 - EPCS_ANI_ENABLER)
+			ld			[animation_id + 2], a
+			ld			a, ICON_EPCS1_ANI + 2
+			ld			[animation_id + 1], a
 			ld			a, ICON_EPCS1						; no flag change
 			jr			z, load_epbios_start
 
+			ld			a, ICON_EPCS2_ANI + 2 * (1 - EPCS_ANI_ENABLER)
+			ld			[animation_id + 2], a
+			ld			a, ICON_EPCS2_ANI + 2
+			ld			[animation_id + 1], a
 			ld			a, ICON_EPCS2
 			ld			d, epcs_bios2_start_address >> 8
 load_epbios_start::
+			ld			[animation_id], a
 			call		vdp_put_icon
 			ld			hl, epbios_image_table
 ;			jp			load_bios							; Assuming load_bios is immediately next.

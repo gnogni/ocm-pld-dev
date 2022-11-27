@@ -63,7 +63,7 @@
 -------------------------------------------------------------------------------
 -- Revision History
 --
--- 12nd,August,2006 created by Kunihiko Ohnaka
+-- 12th,August,2006 created by Kunihiko Ohnaka
 -- JP: VDPのコアの実装とスクリーンモードの実装を分離した
 --
 -- 29th,October,2006 modified by Kunihiko Ohnaka

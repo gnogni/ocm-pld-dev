@@ -194,7 +194,7 @@ begin
             -- $4E ID212 [MSB] ocm_pld_vers_xy(v0.0~v25.5) [LSB] => read only
             ocm_pld_xy
                 when( (adr(3 downto 0) = "1110") and (io40_n = "00101011") )else
-            -- $4F ID212 [MSB] def_keyb_layout/ocm_pld_vers_z(v0~v3)/swioports_rev_nr(0-15) [LSB] => read only
+            -- $4F ID212 [MSB] def_keyb_layout/ocm_pld_vers_z(v0~v3)/swioports_rev_nr(0-31) [LSB] => read only
             DefKmap & ocm_pld_z & swioRevNr
                 when( (adr(3 downto 0) = "1111") and (io40_n = "00101011") )else
             -- not available

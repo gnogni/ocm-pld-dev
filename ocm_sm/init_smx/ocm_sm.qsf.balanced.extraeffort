@@ -72,7 +72,7 @@ set_global_assignment -name VHDL_FILE src_addons/sm_emsx_top.vhd
 set_global_assignment -name VHDL_FILE src_addons/top.vhd
 set_global_assignment -name SYSTEMVERILOG_FILE src_addons/sys/hdmi_config.sv
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/autofire.v
-set_global_assignment -name VERILOG_FILE ../esemsx3/src/peripheral/eseps2.v
+set_global_assignment -name VERILOG_FILE src_addons/peripheral/sm_eseps2.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/iplrom_512k.v
 set_global_assignment -name VERILOG_FILE ../esemsx3/src/peripheral/megasd.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/ps2_mouse.v

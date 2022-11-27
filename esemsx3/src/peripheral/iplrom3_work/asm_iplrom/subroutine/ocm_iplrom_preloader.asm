@@ -29,11 +29,15 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2022/Sep/20th  KdL  Overall revision.
+;   2022/Oct/10th  KdL  Overall revision.
 ; ==============================================================================
 
 			scope		init_preloader
 init_preloader::
+			ld			a, 0x40
+			ld			[eseram8k_bank0], a					; BANK 40h
+			ld			a, [megasd_status_register]
+			ld			c, a								; save megasd status register
 			; Change to EPCS access bank, and change to High speed and data disable mode
 			ld			a, 0x60
 			ld			[eseram8k_bank0], a					; init ESE-RAM Bank#0
@@ -62,6 +66,7 @@ new_attempt:
 			ld			a, [destination_address]
 			cp			a, 0xF3								; DI opcode?
 			jr			nz, loading_error					; No, loading error
+			ld			a, c								; restore megasd status register
 			jp			destination_address					; Yes, start IPL-ROM
 loading_error:
 			djnz		new_attempt

@@ -168,28 +168,11 @@ wait_command_accept:
 ;		Zf .... 0: error, 0: others
 ; --------------------------------------------------------------------
 		scope	sd_initialize
-sd_initialize::
-		;	ブロックリードの途中でリセットされた場合、/CS=1にしてもブロックリード状態が維持されるカードがある
-		;	その場合、CMD0等の各コマンドを正常に処理できないので、まずは 1ブロック分空読みして読み捨てる。
-		xor		a, a								; High speed and data enable mode
-		ld		[megasd_mode_register], a
-		ld		b, a
-		ld		hl, megasd_sd_register				;	/CS = 0 (bit12)
-dummy_read1:
-		cp		a, [hl]								; read 256bytes
-		djnz	dummy_read1
-dummy_read2:
-		cp		a, [hl]								; read 256bytes
-		djnz	dummy_read2
-
-		;	"/CS=1,DI=1"
-		xor		a, a								; High speed and data enable mode
-		ld		[megasd_mode_register], a
-
+send_cmd0:
 		;	"/CS=1, DI=1" is input for a period of 74 clocks or more.
 		;	"/CS=1, DI=1" の状態で 74clock 以上クロックを投入する.
 		ld		b, 10
-wait_cs:
+	wait_cs:
 		ld		a, [ megasd_sd_register | (1 << 12) ]	;	/CS = 1 (bit12)
 		djnz	wait_cs									; B = 0
 
@@ -201,15 +184,45 @@ wait_cs:
 		ld		[hl], b								; CMD0 parameter 3rd
 		ld		[hl], b								; CMD0 parameter 4th
 		ld		[hl], 0x95							; CMD0 CRC
+		ret
+
+sd_initialize::
+		ld		a, 0x40
+		ld		[eseram8k_bank0], a					; BANK 40h
+
+		;	ブロックリードの途中でリセットされた場合、/CS=1にしてもブロックリード状態が維持されるカードがある
+		;	その場合、CMD0等の各コマンドを正常に処理できないので、まずは 1ブロック分空読みして読み捨てる。
+		xor		a, a								; High speed and data enable mode
+		ld		[megasd_mode_register], a
+		ld		b, a
+		ld		hl, megasd_sd_register				;	/CS = 0 (bit12)
+	dummy_read1:
+		cp		a, [hl]								; read 256bytes
+		djnz	dummy_read1
+	dummy_read2:
+		cp		a, [hl]								; read 256bytes
+		djnz	dummy_read2
+
+		;	"/CS=1,DI=1"
+		xor		a, a								; High speed and data enable mode
+		ld		[megasd_mode_register], a
+
+		; dummy send (If there is a command halfway through before reset, this command can force termination.)
+		; Result signal may not return properly. The result signal is not acquired.
+		call	send_cmd0
+		; The original CMD0 is issued again.
+		; This one checks the result signal.
+		call	send_cmd0
+		; Result signal check on CMD0
 		ld		b, 16
-get_r1_wait:
+	get_r1_wait:
 		ld		a, [hl]								; read R1
 		cp		a, 0xFF
 		jr		c, skip
 		djnz	get_r1_wait
 		scf
 		ret											; error
-skip:
+	skip:
 
 		;	Check R1 Response
 		and		a, 0xF3

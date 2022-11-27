@@ -57,7 +57,12 @@ dummy_read:
 
 			; set EPBIOS1 address
 			ld			de, epcs_bios1_start_address
+			ld			a, ICON_EPCS1_ANI + 2 * (1 - EPCS_ANI_ENABLER)
+			ld			[animation_id + 2], a
+			ld			a, ICON_EPCS1_ANI + 2
+			ld			[animation_id + 1], a
 			ld			a, ICON_EPCS1
+			ld			[animation_id], a
 			call		vdp_put_icon
 			ld			hl, epbios_image_table
 ;			jp			load_bios							; Assuming load_bios is immediately next.

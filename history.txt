@@ -41,7 +41,7 @@
 -- Dedicated firmware for the following 2nd Gen machines based on Altera Cyclone IV-E:
 --                SM-X (regular) and SX-2. [!] SM-X Mini is no longer supported by me.
 --
--- [!] ATTENTION: the machines in square brackets have not been tested directly by me as I do not own them.
+-- [*] ATTENTION: the machines in square brackets have not been tested directly by me as I do not own them.
 -------------------------------------------------------------------------------------------------------------------
 --
 -- KdL Index!     https://gnogni.altervista.org
@@ -100,6 +100,16 @@
 ________________________________
 v3.x KdL/HRA's Official Release \__________________________________________________________________________________
 
+
+v3.9.1 [2022.11.27] [KdL's Updates!] [REPACK]
+
+- Updated some scripts, now the entire multi-release group is aborted if a single task fails.
+- Improved IPL-ROM to use many more brands of SD cards, new animated icons and minor fixes, by HRA! and me.
+- Improved PS/2 keyboard controller for the 2nd Gen machines with expanded compatibility, by HRA!
+  ### NOTICE: some keyboards that did not work previously can now be used, but without the use of LEDs.
+  ### This condition is normal for SM-X and SX-2 machines that do not yet have the hardware patch on the PS/2 port.
+- Improved T80 core in which a bug that prevented the Lilly's Saga game from working properly was fixed, by HRA!
+- Careful SEED selection for the 1st Gen machines was carried out through the collaboration of Emiliano Olea Lucas.
 
 v3.9.1 [2022.09.24] [KdL's Updates!]
 
@@ -321,7 +331,7 @@ v3.6 [2018.05.14] [KdL's Updates!]
 - Improved timings of VDP command engine, the intros of Fray and Space Manbow are okay now but I emphasize that
   the wait control does not calculate the actual times of the VDP commands, which still makes it inaccurate.
 - Improved VGA output to help directly set a pixel ratio 1:1 on a LED TV at 60Hz (also w/o the trick scmd-$7F).
-- Added MULUB and MULUW opcodes inside T80 Core: MSX turboR BIOS is required to use them, by TobiFlex.
+- Added MULUB and MULUW opcodes in the T80 core: MSX turboR BIOS is required to use them, by TobiFlex.
 - Fixed random sprites during the blank screen (ref. Manbow 2) and fixed H-SYNC signal (ref. Unknown Reality).
 - Fixed the border color of YJK modes (SCREEN 10, 11 and 12) that should has been palettized.
 - Fixed the horizontal position of YJK modes by +4 pixels on the right.
@@ -441,7 +451,7 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - Added F4 Device Inverted support, also for Warm Reset function.
 - Added PAL 50Hz support for VGA modes, by caro.
 - Added RWIN and LWIN as alternatives to the space-bar, useful for the players.
-- Added CPI(R)CPD(R) undocumented flags inside T80 Core, by TobiFlex.
+- Added undocumented XY-Flags for CPI/CPD in the T80 core, by TobiFlex.
 - Fixed the black screen event with MegaSD Off, by caro.
 - Fixed various bug on H-Sync and V-Sync of VDP TH9958.
 - Increased VRAM to 1024kB, a full control of 16 pages by 64kB is allowed.
@@ -453,7 +463,7 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - There are many PLDs in this package: choose the one you like from the [firmware\] folder.
 
 Note:
-- The T80 Core is fully approved by ZEXALL tool from this release.
+- The T80 core is fully approved by ZEXALL tool from this release.
 
 Some known issues:
 - MIDI-IN of Music Module do not work properly with VDP TH9958.
@@ -537,7 +547,7 @@ A known issue:
 
 
 v2.3 [2010.04.13] [KdL's Updates!]
-- Fixed a bug inside of "vm2413.vhd" source code.
+- Fixed a minor bug in the "vm2413.vhd" source code.
 - Modified DIP-SW4 original function with 2MB/4MB memory mapper selection.
 - There is a separated PLD file for every keyboard layout.
   These files have been optimized with Quartus II 9.1sp2 Wed Edition.

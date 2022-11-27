@@ -77,7 +77,7 @@
 --        even field  -> even line (odd  line is black)
 --        odd  field  -> odd line  (even line is black)
 --
--- 13rd,October,2003 created by Kunihiko Ohnaka
+-- 13th,October,2003 created by Kunihiko Ohnaka
 -- JP: VDPのコアの実装と表示デバイスへの出力を別ソースにした．
 --
 -------------------------------------------------------------------------------

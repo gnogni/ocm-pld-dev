@@ -174,29 +174,13 @@ wait_busy::
 		jr		c, wait_busy
 		ret
 
-sd_initialize::
-		;	ブロックリードの途中でリセットされた場合、/CS=1にしてもブロックリード状態が維持されるカードがある
-		;	その場合、CMD0等の各コマンドを正常に処理できないので、まずは 1ブロック分空読みして読み捨てる。
-		xor		a, a									; High speed and data enable mode
-		ld		[megasd_mode_register], a
-				ld		b, a
-				ld		hl, megasd_sd_register			;	/CS = 0 (bit12)
-		dummy_read1:
-				cp		a, [hl]							; read 256bytes
-				djnz	dummy_read1
-		dummy_read2:
-				cp		a, [hl]							; read 256bytes
-				djnz	dummy_read2
-
-		;	"/CS=1,DI=1"
-		ld		a, 0x80									; Low speed and data enable mode
-		ld		[megasd_mode_register], a
-
+send_cmd0:
 		;	"/CS=1, DI=1" is input for a period of 74 clocks or more.
 		;	"/CS=1, DI=1" の状態で 74clock 以上クロックを投入する.
 		ld		b, 10
-wait_cs:
+	wait_cs:
 		ld		a, [ megasd_sd_register | (1 << 12) ]	;	/CS = 1 (bit12)
+		call	wait_busy
 		djnz	wait_cs									; B = 0
 
 		;	send SDCMD_GO_IDLE_STATE (CMD0)
@@ -214,27 +198,65 @@ wait_cs:
 		call	wait_busy
 		ld		[hl], 0x95							; CMD0 CRC
 		call	wait_busy
+		ret
+
+error_exit:
+		xor		a, a								; High speed and data enable mode
+		ld		[megasd_mode_register], a
+		scf
+		ret
+
+sd_initialize::
+		ld		a, 0x40
+		ld		[eseram8k_bank0], a					; BANK 40h
+
+		;	ブロックリードの途中でリセットされた場合、/CS=1にしてもブロックリード状態が維持されるカードがある
+		;	その場合、CMD0等の各コマンドを正常に処理できないので、まずは 1ブロック分空読みして読み捨てる。
+		xor		a, a								; High speed and data enable mode
+		ld		[megasd_mode_register], a
+		ld		b, a
+		ld		hl, megasd_sd_register				;	/CS = 0 (bit12)
+	dummy_read1:
+		cp		a, [hl]								; read 256bytes
+		djnz	dummy_read1
+	dummy_read2:
+		cp		a, [hl]								; read 256bytes
+		djnz	dummy_read2
+
+		;	"/CS=1,DI=1"
+		ld		a, 0x80								; Low speed and data enable mode
+		ld		[megasd_mode_register], a
+
+		; dummy send (If there is a command halfway through before reset, this command can force termination.)
+		; Result signal may not return properly. The result signal is not acquired.
+		call	send_cmd0
+		ld		a, [hl]								; read R1
+		call	wait_busy
+		; The original CMD0 is issued again.
+		; This one checks the result signal.
+		call	send_cmd0
+		; Result signal check on CMD0
 		ld		b, 16
-get_r1_wait:
+	get_r1_wait:
 		ld		a, [hl]								; read R1
 		call	wait_busy
 		ld		a, [megasd_last_data_register]
 		cp		a, 0xFF
 		jr		c, skip
 		djnz	get_r1_wait
-		scf
-		ret											; error
-skip:
+		jr		error_exit
+	skip:
 
 		;	Check R1 Response
 		and		a, 0xF3
 		sub		a, 0x01								;	bit0 - in idle state?
-		ret		nz									;	error (SD is not idle state when bit0 is zero.)
+		jr		nz, error_exit						;	error (SD is not idle state when bit0 is zero.)
 
 		ld		[card_type], a
 
 		xor		a, a								; High speed and data enable mode
 		ld		[megasd_mode_register], a
+
 
 		; ---------------------------------------------------------------------
 		; CMD8 (Voltage Check Command)
