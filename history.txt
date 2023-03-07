@@ -88,7 +88,8 @@
 --                Pedro Prado, Fabio Augusto Carmelita Rodrigues Dos Santos, Emerson Cavallari, Sandro Singer,
 --                Alexandre Da Silva Oliveira, Fabio Ritter, Mauricio Ferreira Cresti, Benjamin Wiley Sittler,
 --                Mario Cavalcanti, Danilo Angelo, Patrick van Arkel, Massimiliano Privato, Jacco Bot, Ferrerico,
---                Maarten Loor, Andre Ruiz, Emiliano Olea Lucas, Miguel Colom Barco, Thomas Budsa and Marco Casali.
+--                Maarten Loor, Andre Ruiz, Emiliano Olea Lucas, Miguel Colom Barco, Thomas Budsa, Marco Casali
+--                and Francisco J. Estévez.
 -------------------------------------------------------------------------------------------------------------------
 --
 -- OCM-PLD is the "MSX++ Official Firmware" from 2022/Jul/21st 11:10AM (CEST) thanks to 西 和彦 [Mr. Kazuhiko Nishi]
