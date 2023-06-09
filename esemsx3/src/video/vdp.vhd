@@ -405,7 +405,8 @@ ARCHITECTURE RTL OF VDP IS
             -- JP: 描画する事もできるので、このビットが必要
             SPCOLOROUT                  : OUT   STD_LOGIC;
             -- OUTPUT COLOR
-            SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 )
+            SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 );
+            REG_R9_Y_DOTS               : IN    STD_LOGIC
         );
     END COMPONENT;
 
@@ -1664,7 +1665,8 @@ BEGIN
         PRAMDAT                     => PRAMDAT,
         PRAMADR                     => PRAMADRSPRITE,
         SPCOLOROUT                  => SPRITECOLOROUT,
-        SPCOLORCODE                 => COLORCODESPRITE
+        SPCOLORCODE                 => COLORCODESPRITE,
+        REG_R9_Y_DOTS               => REG_R9_Y_DOTS
     );
 
     -----------------------------------------------------------------------------
