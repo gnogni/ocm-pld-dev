@@ -252,6 +252,8 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
 
     SIGNAL FF_SP_EN                 : STD_LOGIC;
     SIGNAL FF_CUR_Y                 : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+    SIGNAL FF_PREV_CUR_Y            : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+    SIGNAL SPLIT_SCRN               : STD_LOGIC; 
 
     SIGNAL FF_VDPS0RESETACK         : STD_LOGIC;
     SIGNAL FF_VDPS5RESETACK         : STD_LOGIC;
@@ -474,6 +476,18 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+
+    PROCESS( CLK21M )
+    BEGIN
+        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
+            IF( (DOTSTATE = "01") AND (DOTCOUNTERX = 0) )THEN
+                FF_PREV_CUR_Y <= FF_CUR_Y;
+            END IF;
+        END IF;
+    END PROCESS;
+
+    -- detect a split screen
+    SPLIT_SCRN <= '0' WHEN (FF_CUR_Y = (FF_PREV_CUR_Y + 1)) ELSE '1';
 
     -----------------------------------------------------------------------------
     -- VRAM ADDRESS GENERATOR
@@ -945,7 +959,7 @@ BEGIN
                         --
                         IF( DOTCOUNTERX = 0 ) THEN
                             SPPREDRAWLOCALPLANENUM <= (OTHERS => '0');
-                            SPPREDRAWEND <= '0';
+                            SPPREDRAWEND <= SPLIT_SCRN;
                             LASTCC0LOCALPLANENUMV := (OTHERS => '0');
                             SPCC0FOUNDV := '0';
                         ELSIF( DOTCOUNTERX(4 DOWNTO 0) = 0 ) THEN
