@@ -959,7 +959,7 @@ BEGIN
                         --
                         IF( DOTCOUNTERX = 0 ) THEN
                             SPPREDRAWLOCALPLANENUM <= (OTHERS => '0');
-                            SPPREDRAWEND <= SPLIT_SCRN;
+                            SPPREDRAWEND <= SPLIT_SCRN OR REG_R8_SP_OFF;
                             LASTCC0LOCALPLANENUMV := (OTHERS => '0');
                             SPCC0FOUNDV := '0';
                         ELSIF( DOTCOUNTERX(4 DOWNTO 0) = 0 ) THEN
