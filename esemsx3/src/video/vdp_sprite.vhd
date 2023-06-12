@@ -138,24 +138,24 @@
 -- JP:    推測されています。8ドット、つまり32クロックのどうさをメモリ
 -- JP:    の帯域から推測すると、以下のようになります。
 -- JP:
--- JP:   　　ドット　：<=0=><=1=><=2=><=3=><=4=><=5=><=6=><=7=>
+-- JP:     ドット ：<=0=><=1=><=2=><=3=><=4=><=5=><=6=><=7=>
 -- JP:   通常アクセス： A0   A1   A2   A3   A4  (A5)  A6  (A7)
 -- JP: インターリーブ： B0   B1   B2   B3
 -- JP:
 -- JP:    - 描画中
--- JP:   　　・A0～A3 (B0～B3)
+-- JP:     ・A0～A3 (B0～B3)
 -- JP:        画面描画のために使用。B0～B3はインターリーブで同時に
 -- JP:        読み出せるデータで、GRAPHIC6,7でしか使わない。
--- JP:   　　・A4     スプライトY座標検査
--- JP:   　　・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
+-- JP:     ・A4     スプライトY座標検査
+-- JP:     ・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
 -- JP:
 -- JP:     - 非描画中(スプライト準備中)
--- JP:    　　・A0     スプライトX座標リード
--- JP:    　　・A1     スプライトパターン番号リード
--- JP:    　　・A2     スプライトパターン左リード
--- JP:    　　・A3     スプライトパターン右リード
--- JP:    　　・A4     スプライトカラーリード
--- JP:    　　・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
+-- JP:      ・A0     スプライトX座標リード
+-- JP:      ・A1     スプライトパターン番号リード
+-- JP:      ・A2     スプライトパターン左リード
+-- JP:      ・A3     スプライトパターン右リード
+-- JP:      ・A4     スプライトカラーリード
+-- JP:      ・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
 -- JP:
 -- JP:   A5とA7のスロットは実際には使用することもできるのですが、
 -- JP:   これを使ってしまうと実機よりも帯域が増えてしまうので、
@@ -225,7 +225,7 @@ ENTITY VDP_SPRITE IS
         SPCOLOROUT                  : OUT   STD_LOGIC;
         -- OUTPUT COLOR
         SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 );
-		REG_R9_Y_DOTS               : IN    STD_LOGIC
+        REG_R9_Y_DOTS               : IN    STD_LOGIC
     );
 END VDP_SPRITE;
 
@@ -253,7 +253,7 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
     SIGNAL FF_SP_EN                 : STD_LOGIC;
     SIGNAL FF_CUR_Y                 : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
     SIGNAL FF_PREV_CUR_Y            : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
-    SIGNAL SPLIT_SCRN               : STD_LOGIC; 
+    SIGNAL SPLIT_SCRN               : STD_LOGIC;
 
     SIGNAL FF_VDPS0RESETACK         : STD_LOGIC;
     SIGNAL FF_VDPS5RESETACK         : STD_LOGIC;
@@ -1059,4 +1059,3 @@ BEGIN
     END PROCESS;
 
 END RTL;
-
