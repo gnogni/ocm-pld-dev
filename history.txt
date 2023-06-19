@@ -32,7 +32,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 -------------------------------------------------------------------------------------------------------------------
--- OCM-PLDs modified, compiled and tested by KdL 2006-2022
+-- OCM-PLDs modified, compiled and tested by KdL 2006-2023
 -------------------------------------------------------------------------------------------------------------------
 --
 -- Dedicated firmware for the following 1st Gen machines based on Altera Cyclone I:
@@ -72,7 +72,7 @@
 -- Altera Quartus II v11.0sp1 Web Edition (1chipMSX, Zemmix Neo and SX-1)
 --                http://mega.nz/file/FdJgSbDB#UL9W4iM1T9rx_FdcbCuBwgtiTp8P2tDoiClobiNTQnI
 --
--- Intel Quartus Prime v22.1 Lite Edition (SM-X and SX-2)
+-- Intel Quartus Prime v22.1.1 Lite Edition (SM-X and SX-2)
 --                http://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html
 -------------------------------------------------------------------------------------------------------------------
 --
@@ -102,8 +102,18 @@ ________________________________
 v3.x KdL/HRA's Official Release \__________________________________________________________________________________
 
 
-v3.9.2 [2022.11.27] [KdL's Updates!] [ALPHA0]
-- Updated Intel Quartus Prime Lite Edition to version 22.1
+v3.9.2 [2023.06.19] [KdL's Updates!] [ALPHA9]
+- Updated Intel Quartus Prime Lite Edition to version 22.1.1
+- New PS/2 keyboard interface for OCM-PLD/OCM-Kai, by HRA! (2022.12.24) ### TODO: MICE NEEDS IMPROVEMENT ###
+- Added an alternate source code to have VGA Scanlines on 1chipMSX instead of the MIDI device. (2023.02.24)
+- Fixed the ability to disable some modules like Wi-Fi, MIDI, OPL3 and the Intenal PSG2. (2023.02.25)
+- Replaced the T800 core of the 2nd Gen machines with the T80 core of the MSX MiST project. (2023.04.04)
+- Reverted the separation of the T800 and T80 cores since a parameter was adopted to disable MULUs. (2023.05.15)
+- Improved Autofire toggle and interaction of LEDs with OCM indicator. (2023.05.16)
+- Added the key combination CTRL+SHIFT+F12 to perform Cold Reset from the keyboard. (2023.05.17)
+- Fixed IPL-ROM on VDP initialization. Updated the '*_no_epcs_icon.hex' that did not show the SD icon. (2023.05.29)
+- Sprite multiplex fix and sprite fixes on split-screen by Luis Felipe Antoniosi. (2023.06.11)
+- New M File Manager v4.0 (2023.03.18) in the [msxtools\] folder. (2023.06.13)
 
 v3.9.1 [2022.11.27] [KdL's Updates!] [REPACK]
 

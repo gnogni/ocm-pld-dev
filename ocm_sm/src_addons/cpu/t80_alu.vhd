@@ -1,10 +1,26 @@
+--------------------------------------------------------------------------------
+-- ****
+-- T80(c) core. Attempt to finish all undocumented features and provide
+--              accurate timings.
+-- Version 350.
+-- Copyright (c) 2018 Sorgelig
+--  Test passed: ZEXDOC, ZEXALL, Z80Full(*), Z80memptr
+--  (*) Currently only SCF and CCF instructions aren't passed X/Y flags check as
+--      correct implementation is still unclear.
 --
+-- ****
+-- T80(b) core. In an effort to merge and maintain bug fixes ....
+--
+-- Ver 301 parity flag is just parity for 8080, also overflow for Z80, by Sean Riddle
+-- Ver 300 started tidyup
+-- MikeJ March 2005
+-- Latest version from www.fpgaarcade.com (original www.opencores.org)
+--
+-- ****
 -- Z80 compatible microprocessor core
 --
--- Version : 0250_T800 (+k04)
---
+-- Version : 0247
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
---
 -- All rights reserved
 --
 -- Redistribution and use in source and synthezised forms, with or without
@@ -38,109 +54,112 @@
 -- you have the latest version of this file.
 --
 -- The latest version of this file can be found at:
---  http://www.opencores.org/cvsweb.shtml/t80/
+--      http://www.opencores.org/cvsweb.shtml/t80/
 --
 -- Limitations :
 --
 -- File history :
 --
---  0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
---  0238 : Fixed zero flag for 16 bit SBC and ADC
---  0240 : Added GB operations
---  0242 : Cleanup
---  0247 : Cleanup
---  0249 : Added undocumented XY-Flags for CPI/CPD by TobiFlex 2012.07.22
---  0250 : Version alignment by KdL 2017.10.23
---
---  +k01 : Version alignment by KdL 2010.10.25
---  +k02 : Version alignment by KdL 2018.05.14
---  +k03 : Version alignment by KdL 2019.05.20
---  +k04 : Separation of T800 from T80 by KdL 2021.02.01
+--      0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
+--      0238 : Fixed zero flag for 16 bit SBC and ADC
+--      0240 : Added GB operations
+--      0242 : Cleanup
+--      0247 : Cleanup
 --
 
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity T800_ALU is
+entity T80_ALU is
     generic(
-        Mode        : integer := 0;
-        Flag_C      : integer := 0;
-        Flag_N      : integer := 1;
-        Flag_P      : integer := 2;
-        Flag_X      : integer := 3;
-        Flag_H      : integer := 4;
-        Flag_Y      : integer := 5;
-        Flag_Z      : integer := 6;
-        Flag_S      : integer := 7
+        Mode : integer := 0;
+        Flag_C : integer := 0;
+        Flag_N : integer := 1;
+        Flag_P : integer := 2;
+        Flag_X : integer := 3;
+        Flag_H : integer := 4;
+        Flag_Y : integer := 5;
+        Flag_Z : integer := 6;
+        Flag_S : integer := 7
     );
     port(
-        Arith16     : in std_logic;
-        Z16         : in std_logic;
-        ALU_cpi     : in std_logic;
-        ALU_Op      : in std_logic_vector(3 downto 0);
-        IR          : in std_logic_vector(5 downto 0);
-        ISet        : in std_logic_vector(1 downto 0);
-        BusA        : in std_logic_vector(7 downto 0);
-        BusB        : in std_logic_vector(7 downto 0);
-        F_In        : in std_logic_vector(7 downto 0);
-        Q           : out std_logic_vector(7 downto 0);
-        F_Out       : out std_logic_vector(7 downto 0)
+        Arith16         : in  std_logic;
+        Z16             : in  std_logic;
+        WZ              : in  std_logic_vector(15 downto 0);
+        XY_State            : in  std_logic_vector(1 downto 0);
+        ALU_Op          : in  std_logic_vector(3 downto 0);
+        Rot_Akku        : in  std_logic;
+        IR              : in  std_logic_vector(5 downto 0);
+        ISet            : in  std_logic_vector(1 downto 0);
+        BusA            : in  std_logic_vector(7 downto 0);
+        BusB            : in  std_logic_vector(7 downto 0);
+        F_In            : in  std_logic_vector(7 downto 0);
+        Q               : out std_logic_vector(7 downto 0);
+        F_Out           : out std_logic_vector(7 downto 0)
     );
-end T800_ALU;
+end T80_ALU;
 
-architecture rtl of T800_ALU is
+architecture rtl of T80_ALU is
 
-    procedure AddSub(A : std_logic_vector;
-                    B : std_logic_vector;
-                    Sub : std_logic;
-                    Carry_In : std_logic;
-                    signal Res : out std_logic_vector;
-                    signal Carry : out std_logic) is
-        variable B_i        : unsigned(A'length - 1 downto 0);
-        variable Res_i      : unsigned(A'length + 1 downto 0);
+    procedure AddSub(A        : std_logic_vector;
+                     B        : std_logic_vector;
+                     Sub      : std_logic;
+                     Carry_In : std_logic;
+              signal Res      : out std_logic_vector;
+              signal Carry    : out std_logic) is
+
+        variable B_i          : unsigned(A'length - 1 downto 0);
+        variable Res_i        : unsigned(A'length + 1 downto 0);
     begin
         if Sub = '1' then
             B_i := not unsigned(B);
         else
-            B_i := unsigned(B);
+            B_i :=     unsigned(B);
         end if;
+
         Res_i := unsigned("0" & A & Carry_In) + unsigned("0" & B_i & "1");
         Carry <= Res_i(A'length + 1);
         Res <= std_logic_vector(Res_i(A'length downto 1));
     end;
 
     -- AddSub variables (temporary signals)
-    signal  UseCarry        : std_logic;
-    signal  Carry7_v        : std_logic;
-    signal  Overflow_v      : std_logic;
-    signal  HalfCarry_v     : std_logic;
-    signal  Carry_v         : std_logic;
-    signal  Q_v             : std_logic_vector(7 downto 0);
-    signal  Q_cpi           : std_logic_vector(4 downto 0);
+    signal UseCarry                : std_logic;
+    signal Carry7_v                : std_logic;
+    signal Overflow_v              : std_logic;
+    signal HalfCarry_v             : std_logic;
+    signal Carry_v                 : std_logic;
+    signal Q_v                     : std_logic_vector(7 downto 0);
 
-    signal  BitMask         : std_logic_vector(7 downto 0);
+    signal BitMask                 : std_logic_vector(7 downto 0);
 
 begin
 
     with IR(5 downto 3) select BitMask <= "00000001" when "000",
-                                    "00000010" when "001",
-                                    "00000100" when "010",
-                                    "00001000" when "011",
-                                    "00010000" when "100",
-                                    "00100000" when "101",
-                                    "01000000" when "110",
-                                    "10000000" when others;
+                                          "00000010" when "001",
+                                          "00000100" when "010",
+                                          "00001000" when "011",
+                                          "00010000" when "100",
+                                          "00100000" when "101",
+                                          "01000000" when "110",
+                                          "10000000" when others;
 
     UseCarry <= not ALU_Op(2) and ALU_Op(0);
     AddSub(BusA(3 downto 0), BusB(3 downto 0), ALU_Op(1), ALU_Op(1) xor (UseCarry and F_In(Flag_C)), Q_v(3 downto 0), HalfCarry_v);
     AddSub(BusA(6 downto 4), BusB(6 downto 4), ALU_Op(1), HalfCarry_v, Q_v(6 downto 4), Carry7_v);
     AddSub(BusA(7 downto 7), BusB(7 downto 7), ALU_Op(1), Carry7_v, Q_v(7 downto 7), Carry_v);
-    OverFlow_v <= Carry_v xor Carry7_v;
 
-    AddSub(BusA(3 downto 0), BusB(3 downto 0), '1', HalfCarry_v, Q_cpi(3 downto 0), Q_cpi(4));
+    -- bug fix - parity flag is just parity for 8080, also overflow for Z80
+    process (Carry_v, Carry7_v, Q_v)
+    begin
+        if(Mode=2) then
+            OverFlow_v <= not (Q_v(0) xor Q_v(1) xor Q_v(2) xor Q_v(3) xor
+                       Q_v(4) xor Q_v(5) xor Q_v(6) xor Q_v(7));  else
+            OverFlow_v <= Carry_v xor Carry7_v;
+        end if;
+    end process;
 
-    process (Arith16, ALU_OP, ALU_cpi, F_In, BusA, BusB, IR, Q_v, Q_cpi, Carry_v, HalfCarry_v, OverFlow_v, BitMask, ISet, Z16)
+    process (Arith16, ALU_OP, F_In, BusA, BusB, IR, Q_v, Carry_v, HalfCarry_v, OverFlow_v, BitMask, ISet, Z16, Rot_Akku, WZ, XY_State)
         variable Q_t : std_logic_vector(7 downto 0);
         variable DAA_Q : unsigned(8 downto 0);
     begin
@@ -174,13 +193,8 @@ begin
                 F_Out(Flag_H) <= '0';
             end case;
             if ALU_Op(2 downto 0) = "111" then -- CP
-                if ALU_cpi='1' then --CPI
-                    F_Out(Flag_X) <= Q_cpi(3);
-                    F_Out(Flag_Y) <= Q_cpi(1);
-                else
-                    F_Out(Flag_X) <= BusB(3);
-                    F_Out(Flag_Y) <= BusB(5);
-                end if;
+                F_Out(Flag_X) <= BusB(3);
+                F_Out(Flag_Y) <= BusB(5);
             else
                 F_Out(Flag_X) <= Q_t(3);
                 F_Out(Flag_Y) <= Q_t(5);
@@ -188,7 +202,7 @@ begin
             if Q_t(7 downto 0) = "00000000" then
                 F_Out(Flag_Z) <= '1';
                 if Z16 = '1' then
-                    F_Out(Flag_Z) <= F_In(Flag_Z);  -- 16 bit ADC,SBC
+                    F_Out(Flag_Z) <= F_In(Flag_Z);      -- 16 bit ADC,SBC
                 end if;
             else
                 F_Out(Flag_Z) <= '0';
@@ -207,35 +221,64 @@ begin
             end if;
         when "1100" =>
             -- DAA
-            F_Out(Flag_H) <= F_In(Flag_H);
-            F_Out(Flag_C) <= F_In(Flag_C);
-            DAA_Q(7 downto 0) := unsigned(BusA);
-            DAA_Q(8) := '0';
-            if F_In(Flag_N) = '0' then
-                -- After addition
-                -- Alow > 9 or H = 1
-                if DAA_Q(3 downto 0) > 9 or F_In(Flag_H) = '1' then
-                    if (DAA_Q(3 downto 0) > 9) then
-                        F_Out(Flag_H) <= '1';
-                    else
-                        F_Out(Flag_H) <= '0';
+            if Mode = 3 then
+                F_Out(Flag_H) <= '0';
+                F_Out(Flag_C) <= F_In(Flag_C);
+                DAA_Q(7 downto 0) := unsigned(BusA);
+                DAA_Q(8) := '0';
+                if F_In(Flag_N) = '0' then
+                    -- After addition
+                    -- Alow > 9 or H = 1
+                    if DAA_Q(3 downto 0) > 9 or F_In(Flag_H) = '1' then
+                            DAA_Q := DAA_Q + 6;
                     end if;
-                    DAA_Q := DAA_Q + 6;
-                end if;
-                -- new Ahigh > 9 or C = 1
-                if DAA_Q(8 downto 4) > 9 or F_In(Flag_C) = '1' then
-                    DAA_Q := DAA_Q + 96; -- 0x60
+                    -- new Ahigh > 9 or C = 1
+                    if DAA_Q(8 downto 4) > 9 or F_In(Flag_C) = '1' then
+                        DAA_Q := DAA_Q + 96; -- 0x60
+                    end if;
+                else
+                    -- After subtraction
+                    if F_In(Flag_H) = '1' then
+                        DAA_Q := DAA_Q - 6;
+                        if F_In(Flag_C) = '0' then
+                            DAA_Q(8) := '0';
+                        end if;
+                    end if;
+                    if F_In(Flag_C) = '1' then
+                        DAA_Q := DAA_Q - 96; -- 0x60
+                    end if;
                 end if;
             else
-                -- After subtraction
-                if DAA_Q(3 downto 0) > 9 or F_In(Flag_H) = '1' then
-                    if DAA_Q(3 downto 0) > 5 then
-                        F_Out(Flag_H) <= '0';
+                F_Out(Flag_H) <= F_In(Flag_H);
+                F_Out(Flag_C) <= F_In(Flag_C);
+                DAA_Q(7 downto 0) := unsigned(BusA);
+                DAA_Q(8) := '0';
+                if F_In(Flag_N) = '0' then
+                    -- After addition
+                    -- Alow > 9 or H = 1
+                    if DAA_Q(3 downto 0) > 9 or F_In(Flag_H) = '1' then
+                        if (DAA_Q(3 downto 0) > 9) then
+                            F_Out(Flag_H) <= '1';
+                        else
+                            F_Out(Flag_H) <= '0';
+                        end if;
+                        DAA_Q := DAA_Q + 6;
                     end if;
-                    DAA_Q(7 downto 0) := DAA_Q(7 downto 0) - 6;
-                end if;
-                if unsigned(BusA) > 153 or F_In(Flag_C) = '1' then
-                    DAA_Q := DAA_Q - 352; -- 0x160
+                    -- new Ahigh > 9 or C = 1
+                    if DAA_Q(8 downto 4) > 9 or F_In(Flag_C) = '1' then
+                        DAA_Q := DAA_Q + 96; -- 0x60
+                    end if;
+                else
+                    -- After subtraction
+                    if DAA_Q(3 downto 0) > 9 or F_In(Flag_H) = '1' then
+                        if DAA_Q(3 downto 0) > 5 then
+                            F_Out(Flag_H) <= '0';
+                        end if;
+                        DAA_Q(7 downto 0) := DAA_Q(7 downto 0) - 6;
+                    end if;
+                    if unsigned(BusA) > 153 or F_In(Flag_C) = '1' then
+                        DAA_Q := DAA_Q - 352; -- 0x160
+                    end if;
                 end if;
             end if;
             F_Out(Flag_X) <= DAA_Q(3);
@@ -283,9 +326,10 @@ begin
             end if;
             F_Out(Flag_H) <= '1';
             F_Out(Flag_N) <= '0';
-            F_Out(Flag_X) <= '0';
-            F_Out(Flag_Y) <= '0';
-            if IR(2 downto 0) /= "110" then
+            if IR(2 downto 0) = "110" or XY_State /= "00" then
+                F_Out(Flag_X) <= WZ(11);
+                F_Out(Flag_Y) <= WZ(13);
+            else
                 F_Out(Flag_X) <= BusB(3);
                 F_Out(Flag_Y) <= BusB(5);
             end if;
@@ -354,10 +398,12 @@ begin
                 F_Out(Flag_S) <= F_In(Flag_S);
                 F_Out(Flag_Z) <= F_In(Flag_Z);
             end if;
+            if Mode = 3 and Rot_Akku = '1'  then
+                    F_Out(Flag_Z) <= '0';
+            end if;
         when others =>
             null;
         end case;
         Q <= Q_t;
     end process;
-
 end;

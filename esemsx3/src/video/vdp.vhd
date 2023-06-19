@@ -1000,7 +1000,6 @@ ARCHITECTURE RTL OF VDP IS
 
     SIGNAL HSYNC                        : STD_LOGIC;
     SIGNAL ENAHSYNC                     : STD_LOGIC;
-    SIGNAL FF_BWINDOW_Y_DL              : STD_LOGIC;
 
     CONSTANT VRAM_ACCESS_IDLE           : INTEGER := 0;
     CONSTANT VRAM_ACCESS_DRAW           : INTEGER := 1;

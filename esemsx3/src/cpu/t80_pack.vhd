@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250_T80 (+k04)
+-- Version : 0250 (+k05)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -49,7 +49,8 @@
 --  +k01 : Version alignment by KdL 2010.10.25
 --  +k02 : Added R800_mode signal by KdL 2018.05.14
 --  +k03 : Version alignment by KdL 2019.05.20
---  +k04 : Separation of T800 from T80 by KdL 2021.02.01
+--  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
+--  +k05 : Version alignment by KdL 2023.05.15
 --
 
 library IEEE;
@@ -60,6 +61,7 @@ package T80_Pack is
     component T80
     generic(
         Mode        : integer := 0;  -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+        R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU
         IOWait      : integer := 0;  -- 0 => Single I/O cycle, 1 => Std I/O cycle
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
@@ -92,6 +94,7 @@ package T80_Pack is
         MC          : out std_logic_vector(2 downto 0);
         TS          : out std_logic_vector(2 downto 0);
         IntCycle_n  : out std_logic;
+        R800_mode   : in std_logic;
         IntE        : out std_logic;
         Stop        : out std_logic
     );
@@ -120,6 +123,7 @@ package T80_Pack is
     component T80_MCode
     generic(
         Mode        : integer := 0;
+        R800_MULU   : integer := 1;  -- 0 => no MULU, 1 => MULU with LEs, 2 => MULU with FPGA Multiplier
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
         Flag_P      : integer := 2;
@@ -179,13 +183,16 @@ package T80_Pack is
         I_RLD       : out std_logic;
         I_RRD       : out std_logic;
         I_INRC      : out std_logic;
+        I_MULUB     : out std_logic;
+        I_MULU      : out std_logic;
         SetDI       : out std_logic;
         SetEI       : out std_logic;
         IMode       : out std_logic_vector(1 downto 0);
         Halt        : out std_logic;
         NoRead      : out std_logic;
         Write       : out std_logic;
-        XYbit_undoc : out std_logic
+        XYbit_undoc : out std_logic;
+        R800_mode   : in std_logic
     );
     end component;
 

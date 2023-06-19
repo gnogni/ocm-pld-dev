@@ -4,7 +4,7 @@
 ;   Initial Program Loader for Cyclone & EPCS (Altera)
 ;   Revision 3.00
 ;
-; Copyright (c) 2021-2022 Takayuki Hara
+; Copyright (c) 2021-2023 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -38,7 +38,7 @@
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
-;   2022/Oct/13th	v3.00	t.hara	Overall revision.
+;   2023/May/29th	v3.00	t.hara	Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------

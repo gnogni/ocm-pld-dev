@@ -71,7 +71,7 @@ Programmed by t.hara
 00f01f: 21 a2 f3
 
 [	LD BC , ( ( VDP_CONTROL_REGS_END - VDP_CONTROL_REGS ) << 8 ) | VDP_PORT1] Z80:11cyc, R800:3cyc
-00f022: 01 99 10
+00f022: 01 99 12
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
 00f025: ed b3
@@ -106,29 +106,29 @@ Programmed by t.hara
 [	JR NZ , LOOP1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 00f035: 20 f9
 
-[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
-00f037: 11 40 81
-
-[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
-00f03a: ed 59
-
-[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
-00f03c: ed 51
-
 [	LD B , 32] Z80:8cyc, R800:2cyc
-00f03e: 06 20
+00f037: 06 20
 
-[	LD A , 0XF0] Z80:8cyc, R800:2cyc
-00f040: 3e f0
+[	LD A , 0XF1] Z80:8cyc, R800:2cyc
+00f039: 3e f1
 
 [LOOP2 :]
-	label address: 0x00f042
+	label address: 0x00f03b
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f042: d3 98
+00f03b: d3 98
 
 [	DJNZ LOOP2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f044: 10 fc
+00f03d: 10 fc
+
+[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
+00f03f: 11 40 81
+
+[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
+00f042: ed 59
+
+[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
+00f044: ed 51
 
 [	LD D , 1 * 8] Z80:8cyc, R800:2cyc
 00f046: 16 08
@@ -143,7 +143,7 @@ Programmed by t.hara
 00f04c: 0d
 
 [	LD B , ( ( ICON_PATTERN_END - ICON_PATTERN ) % 256 )] Z80:8cyc, R800:2cyc
-00f04d: 06 08
+00f04d: 06 06
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
 00f04f: ed b3
@@ -1943,74 +1943,77 @@ Programmed by t.hara
 [	DB 0XF1 , 0X87]
 00f3ac: f1 87
 
+[	DB 0X00 , 0X8A]
+00f3ae: 00 8a
+
 [	DB 0X00 , 0X8B]
-00f3ae: 00 8b
+00f3b0: 00 8b
 
 [	DB 0X00 , 0X40]
-00f3b0: 00 40
+00f3b2: 00 40
 
 [VDP_CONTROL_REGS_END ::]
-	global label address: 0x00f3b2
+	global label address: 0x00f3b4
 
 [VDP_MSX1_PALETTE_REGS ::]
-	global label address: 0x00f3b2
-
-[	DB 0X00 , 0X00]
-00f3b2: 00 00
+	global label address: 0x00f3b4
 
 [	DB 0X00 , 0X00]
 00f3b4: 00 00
 
+[	DB 0X00 , 0X00]
+00f3b6: 00 00
+
 [	DB 0X22 , 0X06]
-00f3b6: 22 06
+00f3b8: 22 06
 
 [	DB 0X34 , 0X07]
-00f3b8: 34 07
+00f3ba: 34 07
 
 [	DB 0X37 , 0X03]
-00f3ba: 37 03
+00f3bc: 37 03
 
 [	DB 0X47 , 0X04]
-00f3bc: 47 04
+00f3be: 47 04
 
 [	DB 0X53 , 0X03]
-00f3be: 53 03
+00f3c0: 53 03
 
 [	DB 0X47 , 0X06]
-00f3c0: 47 06
+00f3c2: 47 06
 
 [	DB 0X63 , 0X03]
-00f3c2: 63 03
+00f3c4: 63 03
 
 [	DB 0X64 , 0X04]
-00f3c4: 64 04
+00f3c6: 64 04
 
 [	DB 0X63 , 0X06]
-00f3c6: 63 06
+00f3c8: 63 06
 
 [	DB 0X65 , 0X06]
-00f3c8: 65 06
+00f3ca: 65 06
 
 [	DB 0X11 , 0X05]
-00f3ca: 11 05
+00f3cc: 11 05
 
 [	DB 0X56 , 0X03]
-00f3cc: 56 03
+00f3ce: 56 03
 
 [	DB 0X66 , 0X06]
-00f3ce: 66 06
+00f3d0: 66 06
 
 [	DB 0X77 , 0X07]
-00f3d0: 77 07
+00f3d2: 77 07
 
 [VDP_MSX1_PALETTE_REGS_END ::]
-	global label address: 0x00f3d2
+	global label address: 0x00f3d4
 
 [ICON_PATTERN ::]
-	global label address: 0x00f3d2
+	global label address: 0x00f3d4
 
-[	DB 0XFF , 0XCB , 0XBD , 0XCD , 0XE9 , 0X93 , 0XFC , 0X00]
-00f3d2: ff cb bd cd e9 93 fc 00
+[	DB 0XCB , 0XBD , 0XCD , 0XE9 , 0X93 , 0XFC]
+00f3d4: cb bd cd e9 93 fc
 
 [ICON_PATTERN_END ::]
 	global label address: 0x00f3da
@@ -2170,14 +2173,14 @@ FOUND_BIOS_NAME 61803 ( 0xf16b )
 FOUND_BIOS_NAME:LOOP 61828 ( 0xf184 )
 GET_MSX_VERSION 62027 ( 0xf24b )
 ICON_EPCS1 2 ( 0x2 )
-ICON_PATTERN 62418 ( 0xf3d2 )
+ICON_PATTERN 62420 ( 0xf3d4 )
 ICON_PATTERN_END 62426 ( 0xf3da )
 ICON_SD_CARD 1 ( 0x1 )
 INIT_STACK 61471 ( 0xf01f )
 INIT_SWITCH_IO 61521 ( 0xf051 )
 INIT_VDP 61471 ( 0xf01f )
 INIT_VDP:LOOP1 61488 ( 0xf030 )
-INIT_VDP:LOOP2 61506 ( 0xf042 )
+INIT_VDP:LOOP2 61499 ( 0xf03b )
 JIS1_KANJI1_BANK 160 ( 0xa0 )
 JIS1_KANJI2_BANK 162 ( 0xa2 )
 JIS1_KANJI3_BANK 164 ( 0xa4 )
@@ -2332,9 +2335,9 @@ TYPE_SDHC 3 ( 0x3 )
 TYPE_SDSC 2 ( 0x2 )
 TYPE_UNKNOWN 0 ( 0x0 )
 VDP_CONTROL_REGS 62370 ( 0xf3a2 )
-VDP_CONTROL_REGS_END 62386 ( 0xf3b2 )
-VDP_MSX1_PALETTE_REGS 62386 ( 0xf3b2 )
-VDP_MSX1_PALETTE_REGS_END 62418 ( 0xf3d2 )
+VDP_CONTROL_REGS_END 62388 ( 0xf3b4 )
+VDP_MSX1_PALETTE_REGS 62388 ( 0xf3b4 )
+VDP_MSX1_PALETTE_REGS_END 62420 ( 0xf3d4 )
 VDP_MSX2_PALETTE_REGS 62426 ( 0xf3da )
 VDP_MSX2_PALETTE_REGS_END 62452 ( 0xf3f4 )
 VDP_PORT0 152 ( 0x98 )

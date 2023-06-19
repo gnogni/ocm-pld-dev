@@ -4,7 +4,7 @@
 //   Initial Program Loader for Cyclone & EPCS (Altera)
 //   Revision 3.00
 //
-// Copyright (c) 2021-2022 Takayuki Hara
+// Copyright (c) 2021-2023 Takayuki Hara
 // All rights reserved.
 //
 // Redistribution and use of this source code or any derivative works, are
@@ -31,7 +31,7 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-// IPL-ROM PRELOADER v1.01 for EPCS4
+// IPL-ROM PRELOADER v1.02 for EPCS4
 
 module iplrom (
     input           clk,
@@ -120,7 +120,7 @@ module iplrom (
         9'h04b:     ff_dbi <= 8'h00;
         9'h04c:     ff_dbi <= 8'h01;
         9'h04d:     ff_dbi <= 8'h99;
-        9'h04e:     ff_dbi <= 8'h10;
+        9'h04e:     ff_dbi <= 8'h12;
         9'h04f:     ff_dbi <= 8'hed;
         9'h050:     ff_dbi <= 8'hb3;
         9'h051:     ff_dbi <= 8'h01;
@@ -139,21 +139,21 @@ module iplrom (
         9'h05e:     ff_dbi <= 8'h15;
         9'h05f:     ff_dbi <= 8'h20;
         9'h060:     ff_dbi <= 8'hf9;
-        9'h061:     ff_dbi <= 8'h11;
-        9'h062:     ff_dbi <= 8'h40;
-        9'h063:     ff_dbi <= 8'h81;
-        9'h064:     ff_dbi <= 8'hed;
-        9'h065:     ff_dbi <= 8'h59;
-        9'h066:     ff_dbi <= 8'hed;
-        9'h067:     ff_dbi <= 8'h51;
-        9'h068:     ff_dbi <= 8'h06;
-        9'h069:     ff_dbi <= 8'h20;
-        9'h06a:     ff_dbi <= 8'h3e;
-        9'h06b:     ff_dbi <= 8'hf0;
-        9'h06c:     ff_dbi <= 8'hd3;
-        9'h06d:     ff_dbi <= 8'h98;
-        9'h06e:     ff_dbi <= 8'h10;
-        9'h06f:     ff_dbi <= 8'hfc;
+        9'h061:     ff_dbi <= 8'h06;
+        9'h062:     ff_dbi <= 8'h20;
+        9'h063:     ff_dbi <= 8'h3e;
+        9'h064:     ff_dbi <= 8'hf1;
+        9'h065:     ff_dbi <= 8'hd3;
+        9'h066:     ff_dbi <= 8'h98;
+        9'h067:     ff_dbi <= 8'h10;
+        9'h068:     ff_dbi <= 8'hfc;
+        9'h069:     ff_dbi <= 8'h11;
+        9'h06a:     ff_dbi <= 8'h40;
+        9'h06b:     ff_dbi <= 8'h81;
+        9'h06c:     ff_dbi <= 8'hed;
+        9'h06d:     ff_dbi <= 8'h59;
+        9'h06e:     ff_dbi <= 8'hed;
+        9'h06f:     ff_dbi <= 8'h51;
         9'h070:     ff_dbi <= 8'h16;
         9'h071:     ff_dbi <= 8'h08;
         9'h072:     ff_dbi <= 8'hed;
@@ -168,7 +168,7 @@ module iplrom (
         9'h07b:     ff_dbi <= 8'h3e;
         9'h07c:     ff_dbi <= 8'h01;
         9'h07d:     ff_dbi <= 8'hcd;
-        9'h07e:     ff_dbi <= 8'h03;
+        9'h07e:     ff_dbi <= 8'h05;
         9'h07f:     ff_dbi <= 8'h01;
         9'h080:     ff_dbi <= 8'h3e;
         9'h081:     ff_dbi <= 8'h35;
@@ -234,94 +234,96 @@ module iplrom (
         9'h0bd:     ff_dbi <= 8'hf1;
         9'h0be:     ff_dbi <= 8'h87;
         9'h0bf:     ff_dbi <= 8'h00;
-        9'h0c0:     ff_dbi <= 8'h8b;
+        9'h0c0:     ff_dbi <= 8'h8a;
         9'h0c1:     ff_dbi <= 8'h00;
-        9'h0c2:     ff_dbi <= 8'h40;
+        9'h0c2:     ff_dbi <= 8'h8b;
         9'h0c3:     ff_dbi <= 8'h00;
-        9'h0c4:     ff_dbi <= 8'h00;
+        9'h0c4:     ff_dbi <= 8'h40;
         9'h0c5:     ff_dbi <= 8'h00;
         9'h0c6:     ff_dbi <= 8'h00;
-        9'h0c7:     ff_dbi <= 8'h22;
-        9'h0c8:     ff_dbi <= 8'h06;
-        9'h0c9:     ff_dbi <= 8'h34;
-        9'h0ca:     ff_dbi <= 8'h07;
-        9'h0cb:     ff_dbi <= 8'h37;
-        9'h0cc:     ff_dbi <= 8'h03;
-        9'h0cd:     ff_dbi <= 8'h47;
-        9'h0ce:     ff_dbi <= 8'h04;
-        9'h0cf:     ff_dbi <= 8'h53;
-        9'h0d0:     ff_dbi <= 8'h03;
-        9'h0d1:     ff_dbi <= 8'h47;
-        9'h0d2:     ff_dbi <= 8'h06;
-        9'h0d3:     ff_dbi <= 8'h63;
-        9'h0d4:     ff_dbi <= 8'h03;
-        9'h0d5:     ff_dbi <= 8'h64;
-        9'h0d6:     ff_dbi <= 8'h04;
-        9'h0d7:     ff_dbi <= 8'h63;
-        9'h0d8:     ff_dbi <= 8'h06;
-        9'h0d9:     ff_dbi <= 8'h65;
+        9'h0c7:     ff_dbi <= 8'h00;
+        9'h0c8:     ff_dbi <= 8'h00;
+        9'h0c9:     ff_dbi <= 8'h22;
+        9'h0ca:     ff_dbi <= 8'h06;
+        9'h0cb:     ff_dbi <= 8'h34;
+        9'h0cc:     ff_dbi <= 8'h07;
+        9'h0cd:     ff_dbi <= 8'h37;
+        9'h0ce:     ff_dbi <= 8'h03;
+        9'h0cf:     ff_dbi <= 8'h47;
+        9'h0d0:     ff_dbi <= 8'h04;
+        9'h0d1:     ff_dbi <= 8'h53;
+        9'h0d2:     ff_dbi <= 8'h03;
+        9'h0d3:     ff_dbi <= 8'h47;
+        9'h0d4:     ff_dbi <= 8'h06;
+        9'h0d5:     ff_dbi <= 8'h63;
+        9'h0d6:     ff_dbi <= 8'h03;
+        9'h0d7:     ff_dbi <= 8'h64;
+        9'h0d8:     ff_dbi <= 8'h04;
+        9'h0d9:     ff_dbi <= 8'h63;
         9'h0da:     ff_dbi <= 8'h06;
-        9'h0db:     ff_dbi <= 8'h11;
-        9'h0dc:     ff_dbi <= 8'h05;
-        9'h0dd:     ff_dbi <= 8'h56;
-        9'h0de:     ff_dbi <= 8'h03;
-        9'h0df:     ff_dbi <= 8'h66;
-        9'h0e0:     ff_dbi <= 8'h06;
-        9'h0e1:     ff_dbi <= 8'h77;
-        9'h0e2:     ff_dbi <= 8'h07;
-        9'h0e3:     ff_dbi <= 8'h49;
-        9'h0e4:     ff_dbi <= 8'h49;
-        9'h0e5:     ff_dbi <= 8'hff;
-        9'h0e6:     ff_dbi <= 8'hff;
+        9'h0db:     ff_dbi <= 8'h65;
+        9'h0dc:     ff_dbi <= 8'h06;
+        9'h0dd:     ff_dbi <= 8'h11;
+        9'h0de:     ff_dbi <= 8'h05;
+        9'h0df:     ff_dbi <= 8'h56;
+        9'h0e0:     ff_dbi <= 8'h03;
+        9'h0e1:     ff_dbi <= 8'h66;
+        9'h0e2:     ff_dbi <= 8'h06;
+        9'h0e3:     ff_dbi <= 8'h77;
+        9'h0e4:     ff_dbi <= 8'h07;
+        9'h0e5:     ff_dbi <= 8'h49;
+        9'h0e6:     ff_dbi <= 8'h49;
         9'h0e7:     ff_dbi <= 8'hff;
         9'h0e8:     ff_dbi <= 8'hff;
         9'h0e9:     ff_dbi <= 8'hff;
-        9'h0ea:     ff_dbi <= 8'hbf;
-        9'h0eb:     ff_dbi <= 8'h20;
-        9'h0ec:     ff_dbi <= 8'h20;
-        9'h0ed:     ff_dbi <= 8'hf0;
-        9'h0ee:     ff_dbi <= 8'hf0;
+        9'h0ea:     ff_dbi <= 8'hff;
+        9'h0eb:     ff_dbi <= 8'hff;
+        9'h0ec:     ff_dbi <= 8'hbf;
+        9'h0ed:     ff_dbi <= 8'h20;
+        9'h0ee:     ff_dbi <= 8'h20;
         9'h0ef:     ff_dbi <= 8'hf0;
         9'h0f0:     ff_dbi <= 8'hf0;
         9'h0f1:     ff_dbi <= 8'hf0;
         9'h0f2:     ff_dbi <= 8'hf0;
-        9'h0f3:     ff_dbi <= 8'hff;
-        9'h0f4:     ff_dbi <= 8'h49;
-        9'h0f5:     ff_dbi <= 8'h49;
-        9'h0f6:     ff_dbi <= 8'h00;
-        9'h0f7:     ff_dbi <= 8'h02;
-        9'h0f8:     ff_dbi <= 8'h07;
-        9'h0f9:     ff_dbi <= 8'h0f;
-        9'h0fa:     ff_dbi <= 8'h1f;
-        9'h0fb:     ff_dbi <= 8'hf0;
-        9'h0fc:     ff_dbi <= 8'h20;
-        9'h0fd:     ff_dbi <= 8'h20;
-        9'h0fe:     ff_dbi <= 8'h00;
-        9'h0ff:     ff_dbi <= 8'h00;
+        9'h0f3:     ff_dbi <= 8'hf0;
+        9'h0f4:     ff_dbi <= 8'hf0;
+        9'h0f5:     ff_dbi <= 8'hff;
+        9'h0f6:     ff_dbi <= 8'h49;
+        9'h0f7:     ff_dbi <= 8'h49;
+        9'h0f8:     ff_dbi <= 8'h00;
+        9'h0f9:     ff_dbi <= 8'h02;
+        9'h0fa:     ff_dbi <= 8'h07;
+        9'h0fb:     ff_dbi <= 8'h0f;
+        9'h0fc:     ff_dbi <= 8'h1f;
+        9'h0fd:     ff_dbi <= 8'hf0;
+        9'h0fe:     ff_dbi <= 8'h20;
+        9'h0ff:     ff_dbi <= 8'h20;
         9'h100:     ff_dbi <= 8'h00;
-        9'h101:     ff_dbi <= 8'h80;
-        9'h102:     ff_dbi <= 8'hc0;
-        9'h103:     ff_dbi <= 8'h21;
-        9'h104:     ff_dbi <= 8'h01;
-        9'h105:     ff_dbi <= 8'h58;
-        9'h106:     ff_dbi <= 8'hcd;
-        9'h107:     ff_dbi <= 8'h0b;
-        9'h108:     ff_dbi <= 8'h01;
-        9'h109:     ff_dbi <= 8'h2e;
-        9'h10a:     ff_dbi <= 8'h21;
-        9'h10b:     ff_dbi <= 8'h0e;
-        9'h10c:     ff_dbi <= 8'h99;
-        9'h10d:     ff_dbi <= 8'hed;
-        9'h10e:     ff_dbi <= 8'h69;
+        9'h101:     ff_dbi <= 8'h00;
+        9'h102:     ff_dbi <= 8'h00;
+        9'h103:     ff_dbi <= 8'h80;
+        9'h104:     ff_dbi <= 8'hc0;
+        9'h105:     ff_dbi <= 8'h21;
+        9'h106:     ff_dbi <= 8'h01;
+        9'h107:     ff_dbi <= 8'h58;
+        9'h108:     ff_dbi <= 8'hcd;
+        9'h109:     ff_dbi <= 8'h0d;
+        9'h10a:     ff_dbi <= 8'h01;
+        9'h10b:     ff_dbi <= 8'h2e;
+        9'h10c:     ff_dbi <= 8'h21;
+        9'h10d:     ff_dbi <= 8'h0e;
+        9'h10e:     ff_dbi <= 8'h99;
         9'h10f:     ff_dbi <= 8'hed;
-        9'h110:     ff_dbi <= 8'h61;
-        9'h111:     ff_dbi <= 8'hd3;
-        9'h112:     ff_dbi <= 8'h98;
-        9'h113:     ff_dbi <= 8'h3c;
-        9'h114:     ff_dbi <= 8'hd3;
-        9'h115:     ff_dbi <= 8'h98;
-        9'h116:     ff_dbi <= 8'h3c;
-        9'h117:     ff_dbi <= 8'hc9;
+        9'h110:     ff_dbi <= 8'h69;
+        9'h111:     ff_dbi <= 8'hed;
+        9'h112:     ff_dbi <= 8'h61;
+        9'h113:     ff_dbi <= 8'hd3;
+        9'h114:     ff_dbi <= 8'h98;
+        9'h115:     ff_dbi <= 8'h3c;
+        9'h116:     ff_dbi <= 8'hd3;
+        9'h117:     ff_dbi <= 8'h98;
+        9'h118:     ff_dbi <= 8'h3c;
+        9'h119:     ff_dbi <= 8'hc9;
 // Tip: a default value of 0xFF is better processed by the compiler.
         default:    ff_dbi <= 8'hff;
         endcase

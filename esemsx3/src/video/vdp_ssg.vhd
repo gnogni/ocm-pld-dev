@@ -391,7 +391,7 @@ BEGIN
 
             IF( W_HSYNC = '1' )THEN
                 -- JP: PREWINDOW_Xが 1になるタイミングと同じタイミングでY座標の計算
-                IF(  W_V_BLANKING_END = '1' )THEN
+                IF( W_V_BLANKING_END = '1' )THEN
                     IF(    REG_R9_Y_DOTS = '0' AND VDPR9PALMODE = '0' )THEN
                         PREDOTCOUNTERYPSTART := "111100110";                    -- TOP BORDER LINES = -26
                     ELSIF( REG_R9_Y_DOTS = '1' AND VDPR9PALMODE = '0' )THEN

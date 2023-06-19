@@ -9,7 +9,7 @@ if not exist %PROJECT%.qpf goto err_msg
 
 :compile
 if exist %QPATH%bin\quartus.exe (
-    start %QPATH%bin\quartus.exe %PROJECT%.qpf
+    start "" %QPATH%bin\quartus.exe %PROJECT%.qpf
     goto init
 )
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cyclone" goto err_quartus

@@ -19,7 +19,7 @@ Programmed by t.hara
 00f002: 30 03
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f004: 32 a8 f5
+00f004: 32 aa f5
 
 [NOT_POWER_ON_RESET :]
 	label address: 0x00f007
@@ -31,7 +31,7 @@ Programmed by t.hara
 00f007: 31 ff ff
 
 [	LD BC , END_OF_CODE - INIT_STACK] Z80:11cyc, R800:3cyc
-00f00a: 01 88 05
+00f00a: 01 8a 05
 
 [	LD DE , INIT_STACK] Z80:11cyc, R800:3cyc
 00f00d: 11 17 f0
@@ -62,7 +62,7 @@ Programmed by t.hara
 00f017: 21 3f f4
 
 [	LD BC , ( ( VDP_CONTROL_REGS_END - VDP_CONTROL_REGS ) << 8 ) | VDP_PORT1] Z80:11cyc, R800:3cyc
-00f01a: 01 99 10
+00f01a: 01 99 12
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
 00f01d: ed b3
@@ -97,29 +97,29 @@ Programmed by t.hara
 [	JR NZ , LOOP1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 00f02d: 20 f9
 
-[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
-00f02f: 11 40 81
-
-[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
-00f032: ed 59
-
-[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
-00f034: ed 51
-
 [	LD B , 32] Z80:8cyc, R800:2cyc
-00f036: 06 20
+00f02f: 06 20
 
-[	LD A , 0XF0] Z80:8cyc, R800:2cyc
-00f038: 3e f0
+[	LD A , 0XF1] Z80:8cyc, R800:2cyc
+00f031: 3e f1
 
 [LOOP2 :]
-	label address: 0x00f03a
+	label address: 0x00f033
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f03a: d3 98
+00f033: d3 98
 
 [	DJNZ LOOP2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f03c: 10 fc
+00f035: 10 fc
+
+[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
+00f037: 11 40 81
+
+[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
+00f03a: ed 59
+
+[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
+00f03c: ed 51
 
 [	LD D , 1 * 8] Z80:8cyc, R800:2cyc
 00f03e: 16 08
@@ -154,7 +154,7 @@ Programmed by t.hara
 	global label address: 0x00f04c
 
 [	LD A , [ BIOS_UPDATING ]] Z80:14cyc, R800:6cyc
-00f04c: 3a a8 f5
+00f04c: 3a aa f5
 
 [	CP A , 0XD4] Z80:8cyc, R800:2cyc
 00f04f: fe d4
@@ -211,7 +211,7 @@ Programmed by t.hara
 	global label address: 0x00f06d
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f06d: cd 89 f5
+00f06d: cd 8b f5
 
 [	LD A , 0X35] Z80:8cyc, R800:2cyc
 00f070: 3e 35
@@ -232,7 +232,7 @@ Programmed by t.hara
 00f07a: d3 41
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f07c: 32 a8 f5
+00f07c: 32 aa f5
 
 [	HALT] Z80:5cyc, R800:2cyc and wait interrupt
 00f07f: 76
@@ -383,22 +383,22 @@ Programmed by t.hara
 00f0ae: 3e 1d
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f0b0: 32 ab f5
+00f0b0: 32 ad f5
 
 [	LD A , ICON_SD_ANI + 2] Z80:8cyc, R800:2cyc
 00f0b3: 3e 1f
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f0b5: 32 aa f5
+00f0b5: 32 ac f5
 
 [	LD A , ICON_SD_CARD] Z80:8cyc, R800:2cyc
 00f0b8: 3e 0d
 
 [	LD [ ANIMATION_ID ] , A] Z80:14cyc, R800:6cyc
-00f0ba: 32 a9 f5
+00f0ba: 32 ab f5
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f0bd: cd 89 f5
+00f0bd: cd 8b f5
 
 [SD_FIRST_PROCESS :]
 	label address: 0x00f0c0
@@ -545,7 +545,7 @@ Programmed by t.hara
 00f101: 2a 16 c0
 
 [	LD [ REMAIN_FAT_SECTORS ] , HL] Z80:17cyc, R800:7cyc
-00f104: 22 9f f5
+00f104: 22 a1 f5
 
 [	LD HL , [ BUFFER + PBR_ROOT_ENTRIES ]] Z80:17cyc, R800:7cyc
 00f107: 2a 11 c0
@@ -590,10 +590,10 @@ Programmed by t.hara
 00f11a: 88
 
 [	LD [ DATA_AREA + 0 ] , HL] Z80:17cyc, R800:7cyc
-00f11b: 22 a4 f5
+00f11b: 22 a6 f5
 
 [	LD [ DATA_AREA + 2 ] , A] Z80:14cyc, R800:6cyc
-00f11e: 32 a6 f5
+00f11e: 32 a8 f5
 
 [GET_NEXT_SECTOR :]
 	label address: 0x00f121
@@ -611,10 +611,10 @@ Programmed by t.hara
 00f128: 79
 
 [	LD [ ROOT_ENTRIES + 0 ] , DE] Z80:22cyc, R800:8cyc
-00f129: ed 53 a1 f5
+00f129: ed 53 a3 f5
 
 [	LD [ ROOT_ENTRIES + 2 ] , A] Z80:14cyc, R800:6cyc
-00f12d: 32 a3 f5
+00f12d: 32 a5 f5
 
 [	LD B , 512 / DIR_ENTRY_SIZE] Z80:8cyc, R800:2cyc
 00f130: 06 10
@@ -716,13 +716,13 @@ Programmed by t.hara
 00f15c: 10 d7
 
 [	LD DE , [ REMAIN_FAT_SECTORS ]] Z80:22cyc, R800:8cyc
-00f15e: ed 5b 9f f5
+00f15e: ed 5b a1 f5
 
 [	DEC DE] Z80:7cyc, R800:1cyc
 00f162: 1b
 
 [	LD [ REMAIN_FAT_SECTORS ] , DE] Z80:22cyc, R800:8cyc
-00f163: ed 53 9f f5
+00f163: ed 53 a1 f5
 
 [	LD A , D] Z80:5cyc, R800:2cyc
 00f167: 7a
@@ -737,10 +737,10 @@ Programmed by t.hara
 00f16a: c8
 
 [	LD A , [ ROOT_ENTRIES + 2 ]] Z80:14cyc, R800:6cyc
-00f16b: 3a a3 f5
+00f16b: 3a a5 f5
 
 [	LD DE , [ ROOT_ENTRIES + 0 ]] Z80:22cyc, R800:8cyc
-00f16e: ed 5b a1 f5
+00f16e: ed 5b a3 f5
 
 [	LD C , A] Z80:5cyc, R800:2cyc
 00f172: 4f
@@ -840,13 +840,13 @@ Programmed by t.hara
 00f19d: 4f
 
 [	LD DE , [ DATA_AREA + 0 ]] Z80:22cyc, R800:8cyc
-00f19e: ed 5b a4 f5
+00f19e: ed 5b a6 f5
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
 00f1a2: 19
 
 [	LD A , [ DATA_AREA + 2 ]] Z80:14cyc, R800:6cyc
-00f1a3: 3a a6 f5
+00f1a3: 3a a8 f5
 
 [	ADC A , C] Z80:5cyc, R800:1cyc
 00f1a6: 89
@@ -933,22 +933,22 @@ Programmed by t.hara
 00f1cf: 3e 15
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f1d1: 32 ab f5
+00f1d1: 32 ad f5
 
 [	LD A , ICON_EPCS1_ANI + 2] Z80:8cyc, R800:2cyc
 00f1d4: 3e 17
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f1d6: 32 aa f5
+00f1d6: 32 ac f5
 
 [	LD A , ICON_EPCS1] Z80:8cyc, R800:2cyc
 00f1d9: 3e 05
 
 [	LD [ ANIMATION_ID ] , A] Z80:14cyc, R800:6cyc
-00f1db: 32 a9 f5
+00f1db: 32 ab f5
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f1de: cd 89 f5
+00f1de: cd 8b f5
 
 [	LD HL , EPBIOS_IMAGE_TABLE] Z80:11cyc, R800:3cyc
 00f1e1: 21 80 f0
@@ -969,13 +969,13 @@ Programmed by t.hara
 00f1e4: 3e d4
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f1e6: 32 a8 f5
+00f1e6: 32 aa f5
 
 [	LD A , DOS_ROM1_BANK] Z80:8cyc, R800:2cyc
 00f1e9: 3e 80
 
 [	LD [ BANK_ID ] , A] Z80:14cyc, R800:6cyc
-00f1eb: 32 a7 f5
+00f1eb: 32 a9 f5
 
 [LOAD_BLOCK_LOOP ::]
 	global label address: 0x00f1ee
@@ -1044,10 +1044,10 @@ Programmed by t.hara
 00f20b: d3 4e
 
 [	LD A , [ ANIMATION_ID ]] Z80:14cyc, R800:6cyc
-00f20d: 3a a9 f5
+00f20d: 3a ab f5
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f210: cd 89 f5
+00f210: cd 8b f5
 
 [SET_F4_DEVICE ::]
 	global label address: 0x00f213
@@ -1107,7 +1107,7 @@ Programmed by t.hara
 00f22f: 01 9a 1a
 
 [	LD HL , VDP_MSX2_PALETTE_REGS] Z80:11cyc, R800:3cyc
-00f232: 21 6f f5
+00f232: 21 71 f5
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
 00f235: ed b3
@@ -1122,7 +1122,7 @@ Programmed by t.hara
 00f238: d3 40
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f23a: 32 a8 f5
+00f23a: 32 aa f5
 
 [	LD [ ESERAM8K_BANK0 ] , A] Z80:14cyc, R800:6cyc
 00f23d: 32 00 60
@@ -1185,7 +1185,7 @@ Programmed by t.hara
 00f25d: d8
 
 [	LD A , [ BANK_ID ]] Z80:14cyc, R800:6cyc
-00f25e: 3a a7 f5
+00f25e: 3a a9 f5
 
 [	CP A , DOS_ROM2_BANK] Z80:8cyc, R800:2cyc
 00f261: fe 82
@@ -1338,16 +1338,16 @@ Programmed by t.hara
 	global label address: 0x00f2a6
 
 [	LD A , [ ANIMATION_ID + 1 ]] Z80:14cyc, R800:6cyc
-00f2a6: 3a aa f5
+00f2a6: 3a ac f5
 
 [	PUSH AF] Z80:12cyc, R800:6cyc
 00f2a9: f5
 
 [	LD A , [ ANIMATION_ID + 2 ]] Z80:14cyc, R800:6cyc
-00f2aa: 3a ab f5
+00f2aa: 3a ad f5
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f2ad: 32 aa f5
+00f2ad: 32 ac f5
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
 00f2b0: c5
@@ -1356,7 +1356,7 @@ Programmed by t.hara
 00f2b1: e5
 
 [	CALL VDP_PUT_ANIMATION] Z80:18cyc, R800:5cyc
-00f2b2: cd 8f f5
+00f2b2: cd 91 f5
 
 [	POP HL] Z80:11cyc, R800:5cyc
 00f2b5: e1
@@ -1368,10 +1368,10 @@ Programmed by t.hara
 00f2b7: f1
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f2b8: 32 ab f5
+00f2b8: 32 ad f5
 
 [	LD A , [ BANK_ID ]] Z80:14cyc, R800:6cyc
-00f2bb: 3a a7 f5
+00f2bb: 3a a9 f5
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
 00f2be: 32 00 70
@@ -1386,7 +1386,7 @@ Programmed by t.hara
 00f2c5: 3c
 
 [	LD [ BANK_ID ] , A] Z80:14cyc, R800:6cyc
-00f2c6: 32 a7 f5
+00f2c6: 32 a9 f5
 
 [	RET] Z80:11cyc, R800:5cyc
 00f2c9: c9
@@ -2174,260 +2174,263 @@ Programmed by t.hara
 [	DB 0XF1 , 0X87]
 00f449: f1 87
 
+[	DB 0X00 , 0X8A]
+00f44b: 00 8a
+
 [	DB 0X00 , 0X8B]
-00f44b: 00 8b
+00f44d: 00 8b
 
 [	DB 0X00 , 0X40]
-00f44d: 00 40
+00f44f: 00 40
 
 [VDP_CONTROL_REGS_END ::]
-	global label address: 0x00f44f
+	global label address: 0x00f451
 
 [VDP_MSX1_PALETTE_REGS ::]
-	global label address: 0x00f44f
-
-[	DB 0X00 , 0X00]
-00f44f: 00 00
+	global label address: 0x00f451
 
 [	DB 0X00 , 0X00]
 00f451: 00 00
 
+[	DB 0X00 , 0X00]
+00f453: 00 00
+
 [	DB 0X22 , 0X06]
-00f453: 22 06
+00f455: 22 06
 
 [	DB 0X34 , 0X07]
-00f455: 34 07
+00f457: 34 07
 
 [	DB 0X37 , 0X03]
-00f457: 37 03
+00f459: 37 03
 
 [	DB 0X47 , 0X04]
-00f459: 47 04
+00f45b: 47 04
 
 [	DB 0X53 , 0X03]
-00f45b: 53 03
+00f45d: 53 03
 
 [	DB 0X47 , 0X06]
-00f45d: 47 06
+00f45f: 47 06
 
 [	DB 0X63 , 0X03]
-00f45f: 63 03
+00f461: 63 03
 
 [	DB 0X64 , 0X04]
-00f461: 64 04
+00f463: 64 04
 
 [	DB 0X63 , 0X06]
-00f463: 63 06
+00f465: 63 06
 
 [	DB 0X65 , 0X06]
-00f465: 65 06
+00f467: 65 06
 
 [	DB 0X11 , 0X05]
-00f467: 11 05
+00f469: 11 05
 
 [	DB 0X56 , 0X03]
-00f469: 56 03
+00f46b: 56 03
 
 [	DB 0X66 , 0X06]
-00f46b: 66 06
+00f46d: 66 06
 
 [	DB 0X77 , 0X07]
-00f46d: 77 07
+00f46f: 77 07
 
 [VDP_MSX1_PALETTE_REGS_END ::]
-	global label address: 0x00f46f
+	global label address: 0x00f471
 
 [ICON_PATTERN ::]
-	global label address: 0x00f46f
+	global label address: 0x00f471
 
 [	DB 0X00 , 0XFF , 0XE1 , 0XDF , 0XE3 , 0XF3 , 0XC2 , 0XC4]
-00f46f: 00 ff e1 df e3 f3 c2 c4
+00f471: 00 ff e1 df e3 f3 c2 c4
 
 [	DB 0X00 , 0XF0 , 0X30 , 0XD0 , 0XD0 , 0X90 , 0X30 , 0X70]
-00f477: 00 f0 30 d0 d0 90 30 70
+00f479: 00 f0 30 d0 d0 90 30 70
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X02 , 0X07 , 0X0F , 0X1F]
-00f47f: ff f3 00 00 02 07 0f 1f
+00f481: ff f3 00 00 02 07 0f 1f
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X80 , 0XC0]
-00f487: 80 00 00 00 00 00 80 c0
+00f489: 80 00 00 00 00 00 80 c0
 
 [	DB 0X49 , 0X49 , 0XFF , 0XFF , 0XFF , 0XFF , 0XFF , 0XBF]
-00f48f: 49 49 ff ff ff ff ff bf
+00f491: 49 49 ff ff ff ff ff bf
 
 [	DB 0X20 , 0X20 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0]
-00f497: 20 20 f0 f0 f0 f0 f0 f0
+00f499: 20 20 f0 f0 f0 f0 f0 f0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f49f: ff 49 49 00 00 00 00 00
+00f4a1: ff 49 49 00 00 00 00 00
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4a7: f0 20 20 00 00 00 00 00
+00f4a9: f0 20 20 00 00 00 00 00
 
 [	DB 0X49 , 0X49 , 0XFF , 0XFF , 0XFF , 0XFF , 0XFF , 0XBF]
-00f4af: 49 49 ff ff ff ff ff bf
+00f4b1: 49 49 ff ff ff ff ff bf
 
 [	DB 0X20 , 0X20 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0]
-00f4b7: 20 20 f0 f0 f0 f0 f0 f0
+00f4b9: 20 20 f0 f0 f0 f0 f0 f0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4bf: ff 49 49 00 00 00 00 00
+00f4c1: ff 49 49 00 00 00 00 00
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4c7: f0 20 20 00 00 00 00 00
+00f4c9: f0 20 20 00 00 00 00 00
 
 [	DB 0X00 , 0XFF , 0XE1 , 0XDF , 0XE3 , 0XF3 , 0XC2 , 0XC4]
-00f4cf: 00 ff e1 df e3 f3 c2 c4
+00f4d1: 00 ff e1 df e3 f3 c2 c4
 
 [	DB 0X00 , 0XF0 , 0X30 , 0XD0 , 0XD0 , 0X90 , 0X30 , 0X70]
-00f4d7: 00 f0 30 d0 d0 90 30 70
+00f4d9: 00 f0 30 d0 d0 90 30 70
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4df: ff f3 00 00 00 00 00 00
+00f4e1: ff f3 00 00 00 00 00 00
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4e7: 80 00 00 00 00 00 00 00
+00f4e9: 80 00 00 00 00 00 00 00
 
 [	DB 0X0F , 0X1D , 0X35 , 0X65 , 0X6D , 0X6F , 0X67 , 0X30]
-00f4ef: 0f 1d 35 65 6d 6f 67 30
+00f4f1: 0f 1d 35 65 6d 6f 67 30
 
 [	DB 0X80 , 0XC0 , 0X60 , 0X30 , 0XB0 , 0XB0 , 0X30 , 0X60]
-00f4f7: 80 c0 60 30 b0 b0 30 60
+00f4f9: 80 c0 60 30 b0 b0 30 60
 
 [	DB 0X1F , 0X0F , 0X00 , 0X00 , 0X02 , 0X07 , 0X0F , 0X1F]
-00f4ff: 1f 0f 00 00 02 07 0f 1f
+00f501: 1f 0f 00 00 02 07 0f 1f
 
 [	DB 0XC0 , 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X80 , 0XC0]
-00f507: c0 80 00 00 00 00 80 c0
+00f509: c0 80 00 00 00 00 80 c0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X0A , 0X05 , 0X0A]
-00f50f: ff 49 49 00 00 0a 05 0a
+00f511: ff 49 49 00 00 0a 05 0a
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f517: f0 20 20 00 00 00 00 00
+00f519: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X05 , 0X0A , 0X05]
-00f51f: ff 49 49 00 00 05 0a 05
+00f521: ff 49 49 00 00 05 0a 05
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f527: f0 20 20 00 00 00 00 00
+00f529: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X0A , 0X05 , 0X0A]
-00f52f: ff 49 49 00 00 0a 05 0a
+00f531: ff 49 49 00 00 0a 05 0a
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f537: f0 20 20 00 00 00 00 00
+00f539: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X05 , 0X0A , 0X05]
-00f53f: ff 49 49 00 00 05 0a 05
+00f541: ff 49 49 00 00 05 0a 05
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f547: f0 20 20 00 00 00 00 00
+00f549: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X02 , 0X08 , 0X01 , 0X04]
-00f54f: ff f3 00 00 02 08 01 04
+00f551: ff f3 00 00 02 08 01 04
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f557: 80 00 00 00 00 00 00 00
+00f559: 80 00 00 00 00 00 00 00
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X04 , 0X01 , 0X08 , 0X02]
-00f55f: ff f3 00 00 04 01 08 02
+00f561: ff f3 00 00 04 01 08 02
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f567: 80 00 00 00 00 00 00 00
+00f569: 80 00 00 00 00 00 00 00
 
 [ICON_PATTERN_END ::]
-	global label address: 0x00f56f
+	global label address: 0x00f571
 
 [VDP_MSX2_PALETTE_REGS ::]
-	global label address: 0x00f56f
+	global label address: 0x00f571
 
 [	DB 0X11 , 0X06]
-00f56f: 11 06
+00f571: 11 06
 
 [	DB 0X33 , 0X07]
-00f571: 33 07
+00f573: 33 07
 
 [	DB 0X17 , 0X01]
-00f573: 17 01
+00f575: 17 01
 
 [	DB 0X27 , 0X03]
-00f575: 27 03
+00f577: 27 03
 
 [	DB 0X51 , 0X01]
-00f577: 51 01
+00f579: 51 01
 
 [	DB 0X27 , 0X06]
-00f579: 27 06
+00f57b: 27 06
 
 [	DB 0X71 , 0X01]
-00f57b: 71 01
+00f57d: 71 01
 
 [	DB 0X73 , 0X03]
-00f57d: 73 03
+00f57f: 73 03
 
 [	DB 0X61 , 0X06]
-00f57f: 61 06
+00f581: 61 06
 
 [	DB 0X64 , 0X06]
-00f581: 64 06
+00f583: 64 06
 
 [	DB 0X11 , 0X04]
-00f583: 11 04
+00f585: 11 04
 
 [	DB 0X65 , 0X02]
-00f585: 65 02
+00f587: 65 02
 
 [	DB 0X55 , 0X05]
-00f587: 55 05
+00f589: 55 05
 
 [VDP_MSX2_PALETTE_REGS_END ::]
-	global label address: 0x00f589
+	global label address: 0x00f58b
 
 [	SCOPE VDP_PUT_ICON]
 	Scope path: VDP_PUT_ICON:
 
 [VDP_PUT_ICON ::]
-	global label address: 0x00f589
+	global label address: 0x00f58b
 
 [	LD HL , 0X1801 | 0X4000] Z80:11cyc, R800:3cyc
-00f589: 21 01 58
+00f58b: 21 01 58
 
 [	CALL SUB_CODE] Z80:18cyc, R800:5cyc
-00f58c: cd 92 f5
+00f58e: cd 94 f5
 
 [VDP_PUT_ANIMATION ::]
-	global label address: 0x00f58f
+	global label address: 0x00f591
 
 [	LD HL , 0X1821 | 0X4000] Z80:11cyc, R800:3cyc
-00f58f: 21 21 58
+00f591: 21 21 58
 
 [SUB_CODE :]
-	label address: 0x00f592
+	label address: 0x00f594
 
 [	LD C , VDP_PORT1] Z80:8cyc, R800:2cyc
-00f592: 0e 99
+00f594: 0e 99
 
 [	OUT [ C ] , L] Z80:14cyc, R800:10 or 9cyc
-00f594: ed 69
+00f596: ed 69
 
 [	OUT [ C ] , H] Z80:14cyc, R800:10 or 9cyc
-00f596: ed 61
+00f598: ed 61
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f598: d3 98
+00f59a: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f59a: 3c
+00f59c: 3c
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f59b: d3 98
+00f59d: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f59d: 3c
+00f59f: 3c
 
 [	RET] Z80:11cyc, R800:5cyc
-00f59e: c9
+00f5a0: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -2435,19 +2438,19 @@ Programmed by t.hara
 [	INCLUDE ".//../subroutine/ocm_iplrom_vdp_standard_icon_single_epbios.asm"] end
 
 [END_OF_CODE :]
-	label address: 0x00f59f
+	label address: 0x00f5a1
 
 [IF ( END_OF_CODE - BEGIN_OF_CODE ) > 3072]
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1439byte): ../hex_iplrom_304k_rev300.asm(179)
+MESSAGE: Size is not a problem. (1441byte): ../hex_iplrom_304k_rev300.asm(179)
 [ENDIF]
 	Selected {ELSE} block.
 
 
 << label >>
-ANIMATION_ID 62889 ( 0xf5a9 )
+ANIMATION_ID 62891 ( 0xf5ab )
 ATTR_ARCHIVE 32 ( 0x20 )
 ATTR_DIRECTORY 16 ( 0x10 )
 ATTR_HIDDEN 2 ( 0x2 )
@@ -2455,14 +2458,14 @@ ATTR_LONG_FILE_NAME 15 ( 0xf )
 ATTR_READ_ONLY 1 ( 0x1 )
 ATTR_SYSTEM 4 ( 0x4 )
 ATTR_VOLUME_ID 8 ( 0x8 )
-BANK_ID 62887 ( 0xf5a7 )
+BANK_ID 62889 ( 0xf5a9 )
 BEGIN_OF_CODE 61440 ( 0xf000 )
-BIOS_UPDATING 62888 ( 0xf5a8 )
+BIOS_UPDATING 62890 ( 0xf5aa )
 BOOT_UP_BIOS 61985 ( 0xf221 )
 BUFFER 49152 ( 0xc000 )
 CARD_TYPE 65487 ( 0xffcf )
 CHECK_ALREADY_LOADED 61516 ( 0xf04c )
-DATA_AREA 62884 ( 0xf5a4 )
+DATA_AREA 62886 ( 0xf5a6 )
 DIR_ATTRIBUTE 11 ( 0xb )
 DIR_CRT_DATE 16 ( 0x10 )
 DIR_CRT_TIME 14 ( 0xe )
@@ -2486,7 +2489,7 @@ DOS_ROM6_BANK 138 ( 0x8a )
 DOS_ROM7_BANK 140 ( 0x8c )
 DOS_ROM8_BANK 142 ( 0x8e )
 DRAM_CODE_ADDRESS 61440 ( 0xf000 )
-END_OF_CODE 62879 ( 0xf59f )
+END_OF_CODE 62881 ( 0xf5a1 )
 EPBIOS_IMAGE_TABLE 61568 ( 0xf080 )
 EPCS_ANI_ENABLER 1 ( 0x1 )
 EPCS_BIOS1_START_ADDRESS 416 ( 0x1a0 )
@@ -2522,15 +2525,15 @@ ICON_EPCS2 9 ( 0x9 )
 ICON_EPCS2_ANI 25 ( 0x19 )
 ICON_ERROR 1 ( 0x1 )
 ICON_LOOP 17 ( 0x11 )
-ICON_PATTERN 62575 ( 0xf46f )
-ICON_PATTERN_END 62831 ( 0xf56f )
+ICON_PATTERN 62577 ( 0xf471 )
+ICON_PATTERN_END 62833 ( 0xf571 )
 ICON_SD_ANI 29 ( 0x1d )
 ICON_SD_CARD 13 ( 0xd )
 INIT_STACK 61463 ( 0xf017 )
 INIT_SWITCH_IO 61513 ( 0xf049 )
 INIT_VDP 61463 ( 0xf017 )
 INIT_VDP:LOOP1 61480 ( 0xf028 )
-INIT_VDP:LOOP2 61498 ( 0xf03a )
+INIT_VDP:LOOP2 61491 ( 0xf033 )
 JIS1_KANJI1_BANK 160 ( 0xa0 )
 JIS1_KANJI2_BANK 162 ( 0xa2 )
 JIS1_KANJI3_BANK 164 ( 0xa4 )
@@ -2614,8 +2617,8 @@ READ_SECTOR_CBR 62042 ( 0xf25a )
 READ_SECTOR_FROM_EPCS 61576 ( 0xf088 )
 READ_SECTOR_FROM_EPCS:READ_ALL 61597 ( 0xf09d )
 RECEIVE_RESPONSE 62187 ( 0xf2eb )
-REMAIN_FAT_SECTORS 62879 ( 0xf59f )
-ROOT_ENTRIES 62881 ( 0xf5a1 )
+REMAIN_FAT_SECTORS 62881 ( 0xf5a1 )
+ROOT_ENTRIES 62883 ( 0xf5a3 )
 SDACMD_APP_SEND_OP_COND 41 ( 0x29 )
 SDACMD_SET_WR_BLOCK_ERASE_COUNT 23 ( 0x17 )
 SDBIOS_IMAGE_TABLE 61574 ( 0xf086 )
@@ -2692,17 +2695,17 @@ TYPE_SDHC 3 ( 0x3 )
 TYPE_SDSC 2 ( 0x2 )
 TYPE_UNKNOWN 0 ( 0x0 )
 VDP_CONTROL_REGS 62527 ( 0xf43f )
-VDP_CONTROL_REGS_END 62543 ( 0xf44f )
-VDP_MSX1_PALETTE_REGS 62543 ( 0xf44f )
-VDP_MSX1_PALETTE_REGS_END 62575 ( 0xf46f )
-VDP_MSX2_PALETTE_REGS 62831 ( 0xf56f )
-VDP_MSX2_PALETTE_REGS_END 62857 ( 0xf589 )
+VDP_CONTROL_REGS_END 62545 ( 0xf451 )
+VDP_MSX1_PALETTE_REGS 62545 ( 0xf451 )
+VDP_MSX1_PALETTE_REGS_END 62577 ( 0xf471 )
+VDP_MSX2_PALETTE_REGS 62833 ( 0xf571 )
+VDP_MSX2_PALETTE_REGS_END 62859 ( 0xf58b )
 VDP_PORT0 152 ( 0x98 )
 VDP_PORT1 153 ( 0x99 )
 VDP_PORT2 154 ( 0x9a )
 VDP_PORT3 155 ( 0x9b )
-VDP_PUT_ANIMATION 62863 ( 0xf58f )
-VDP_PUT_ICON 62857 ( 0xf589 )
-VDP_PUT_ICON:SUB_CODE 62866 ( 0xf592 )
+VDP_PUT_ANIMATION 62865 ( 0xf591 )
+VDP_PUT_ICON 62859 ( 0xf58b )
+VDP_PUT_ICON:SUB_CODE 62868 ( 0xf594 )
 WAIT_BUSY 62196 ( 0xf2f4 )
 XBASIC2_BANK 148 ( 0x94 )

@@ -11,11 +11,11 @@ if not exist %PROJECT%.qpf goto err_msg
 
 :compile
 if exist %QPATH%bin64\quartus.exe (
-    start %QPATH%bin64\quartus.exe %PROJECT%.qpf
+    start "" %QPATH%bin64\quartus.exe %PROJECT%.qpf
     goto init
 )
 if exist %QPATH%bin\quartus.exe (
-    start %QPATH%bin\quartus.exe %PROJECT%.qpf
+    start "" %QPATH%bin\quartus.exe %PROJECT%.qpf
     goto init
 )
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cycloneive" goto err_quartus
@@ -24,7 +24,7 @@ explorer %PROJECT%.qpf
 :init
 del "## BUILDING FAILED ##.log" >nul 2>nul
 md %OUTPUT% >nul 2>nul
-echo /* Quartus Prime Version 22.1std.0 Build 915 10/25/2022 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
+echo /* Quartus Prime Version 22.1std.1 Build 917 02/14/2023 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
 echo JedecChain;>>%OUTPUT%%PROJECT%.cdf
 echo     FileRevision(JESD32A);>>%OUTPUT%%PROJECT%.cdf
 echo     DefaultMfr(6E);>>%OUTPUT%%PROJECT%.cdf

@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	VDP initializer
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2022 Takayuki Hara
+; Copyright (c) 2021-2023 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12th  t.hara  Overall revision.
+;   2023/May/29th  t.hara  Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -72,17 +72,17 @@ loop1:
 			dec			d
 			jr			nz, loop1
 
+			; clear color table
+			ld			b, 32							; 32 bytes
+			ld			a, 0xF1							; Set Color (White on Black)
+loop2:
+			out			[vdp_port0], a
+			djnz		loop2
+
 			; display on
 			ld			de, 0x8140
 			out			[c], e
 			out			[c], d
-
-			; clear color table
-			ld			b, 32							; 32 bytes
-			ld			a, 0xF0
-loop2:
-			out			[vdp_port0], a
-			djnz		loop2
 
 			; set icon pattern to pattern generator table
 			ld			d, 1 * 8						; ED = 0x4008

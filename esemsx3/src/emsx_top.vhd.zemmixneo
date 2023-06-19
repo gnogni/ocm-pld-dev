@@ -30,7 +30,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 ---------------------------------------------------------------------------------
--- OCM-PLD Pack v3.9.2 by KdL (2022.11.27)
+-- OCM-PLD Pack v3.9.2 by KdL (2023.06.19)
 -- MSX2+ Stable Release for Zemmix Neo (KR), Zemmix Neo BR and SX-1 (regular)
 -- Special thanks to t.hara, caro, mygodess & all MRC users (http://www.msx.org)
 ---------------------------------------------------------------------------------
@@ -40,10 +40,14 @@
 
 library ieee;
     use ieee.std_logic_1164.all;
+    use ieee.numeric_std.all;
     use ieee.std_logic_unsigned.all;
     use work.vdp_package.all;
 
 entity emsx_top is
+    generic(
+        use_midi_g      : boolean := false
+    );
     port(
         -- Clock, Reset ports
         pClk21m         : in    std_logic;                                      -- VDP Clock ... 21.48MHz
@@ -117,8 +121,8 @@ entity emsx_top is
         pDac_SL         : out   std_logic_vector(  5 downto 0 ) := "ZZZZZZ";    -- Sound-L
         pDac_SR         : inout std_logic_vector(  5 downto 0 ) := "ZZZZZZ";    -- Sound-R / CMT
 
-        pVideoHS_n      : out   std_logic;                                      -- Csync(RGB15K), HSync(VGA31K)
-        pVideoVS_n      : out   std_logic;                                      -- Audio(RGB15K), VSync(VGA31K)
+        pVideoHS_n      : inout   std_logic;                                    -- Csync(RGB15K), HSync(VGA31K)
+        pVideoVS_n      : inout   std_logic;                                    -- Audio(RGB15K), VSync(VGA31K)
 
         pVideoClk       : out   std_logic;                                      -- (Reserved)
         pVideoDat       : out   std_logic;                                      -- (Reserved)
@@ -157,7 +161,7 @@ architecture RTL of emsx_top is
     component t80a
         port(
             RESET_n     : in    std_logic;
---          R800_mode   : in    std_logic;
+            R800_mode   : in    std_logic;
             CLK_n       : in    std_logic;
             WAIT_n      : in    std_logic;
             INT_n       : in    std_logic;
@@ -578,6 +582,7 @@ architecture RTL of emsx_top is
             LevCtrl         : inout std_logic_vector(  2 downto 0 );            -- Volume and high-speed level
             GreenLvEna      : out   std_logic;
             -- 'RESET' group
+            cold_reset_comb : in    std_logic;                                  -- Cold Reset combination
             swioRESET_n     : inout std_logic;                                  -- Reset Pulse
             warmRESET       : inout std_logic;                                  -- 0=Cold Reset, 1=Warm Reset
             WarmMSXlogo     : inout std_logic;                                  -- Show MSX logo with Warm Reset
@@ -659,6 +664,7 @@ architecture RTL of emsx_top is
     signal  ff_dip_ack      : std_logic_vector(  7 downto 0 );                      -- here to reduce LEs
     signal  LevCtrl         : std_logic_vector(  2 downto 0 );
     signal  GreenLvEna      : std_logic;
+    signal  cold_reset_comb : std_logic;
     signal  swioRESET_n     : std_logic := '1';
     signal  warmRESET       : std_logic := '0';
     signal  WarmMSXlogo     : std_logic;                                            -- here to reduce LEs
@@ -677,6 +683,7 @@ architecture RTL of emsx_top is
     signal  Mapper0_req     : std_logic;                                            -- here to reduce LEs
     signal  Mapper0_ack     : std_logic;
     signal  iPsg2_ena       : std_logic;
+--  signal  odd_line_s      : std_logic := '0';
 
     -- System timer (S1990)
 --  signal  systim_req      : std_logic;
@@ -1652,7 +1659,7 @@ begin
                 dlydbi <= portF4_bit7 & "1111111";
             elsif( mem = '0' and adr(  7 downto 1 ) = "0000011" )then                                       -- ESP ports 06-07h
                 dlydbi <= esp_dout_s;
-            elsif( mem = '0' and adr(  7 downto 0 ) = "11101001" )then                                      -- MIDI port E9h
+            elsif( mem = '0' and adr(  7 downto 0 ) = "11101001" and use_midi_g )then                       -- MIDI port E9h
                 dlydbi <= midi_dout_s;
             else
                 dlydbi <= (others => '1');
@@ -1979,7 +1986,7 @@ begin
                 '1' when( pSltAdr(7 downto 0) = "11110100"                                      )else   -- I/O:F4h    / Port F4 device
                 '1' when( pSltAdr(7 downto 1) = "1010010"                                       )else   -- I/O:A4-A5h / turboR PCM device
                 '1' when( pSltAdr(7 downto 1) = "0000011"                                       )else   -- I/O:06-07h / ESP
-                '1' when( pSltAdr(7 downto 0) = "11101001"                                      )else   -- I/O:E9h    / MIDI
+                '1' when( pSltAdr(7 downto 0) = "11101001" and use_midi_g                       )else   -- I/O:E9h    / MIDI
                 '0';
 
     ----------------------------------------------------------------
@@ -1989,6 +1996,9 @@ begin
     V9938_n <= '1';         -- '1' is TH9958 VDP core
 
     process( clk21m )
+--      variable r_v : unsigned(  5 downto 0 );
+--      variable g_v : unsigned(  5 downto 0 );
+--      variable b_v : unsigned(  5 downto 0 );
     begin
         if( clk21m'event and clk21m = '1' )then
             case DisplayMode is
@@ -2025,8 +2035,44 @@ begin
                 end if;
 
             end case;
+
+--          if odd_line_s = '0' and DisplayMode(1) = '1' then
+--
+--              if vga_scanlines = "11" then
+--                  -- 75%
+--                  pDac_VR <= "000" & VideoR( 5 downto 3 );
+--                  pDac_VG <= "000" & VideoG( 5 downto 3 );
+--                  pDac_VB <= "000" & VideoB( 5 downto 3 );
+--
+--              elsif vga_scanlines = "10" then
+--                  -- 50%
+--                  pDac_VR <= "00" & VideoR( 5 downto 2 );
+--                  pDac_VG <= "00" & VideoG( 5 downto 2 );
+--                  pDac_VB <= "00" & VideoB( 5 downto 2 );
+--
+--              elsif vga_scanlines = "01" then
+--                  -- 25% (default)
+--                  r_v := unsigned("00" & VideoR(  5 downto 2 )) + unsigned("000" & VideoR(  5 downto 3 ));
+--                  g_v := unsigned("00" & VideoG(  5 downto 2 )) + unsigned("000" & VideoG(  5 downto 3 ));
+--                  b_v := unsigned("00" & VideoB(  5 downto 2 )) + unsigned("000" & VideoB(  5 downto 3 ));
+--                  pDac_VR <= std_logic_vector(r_v);
+--                  pDac_VG <= std_logic_vector(g_v);
+--                  pDac_VB <= std_logic_vector(b_v);
+--
+--              end if;
+--          end if;
+
         end if;
     end process;
+
+--  process( pVideoHS_n, pVideoVS_n )
+--  begin
+--      if pVideoVS_n = '0' then
+--          odd_line_s <= '0';
+--      elsif( pVideoHS_n'event and pVideoHS_n = '1' )then
+--          odd_line_s <= not odd_line_s;
+--      end if;
+--  end process;
 
     -- PRTSCR key
     process( clk21m )
@@ -2583,7 +2629,7 @@ begin
     U01 : t80a
         port map(
             RESET_n     => (not reset),
---          R800_mode   => portF4_mode,
+            R800_mode   => '0',                 -- '0' => no MULU, '1' => MULU with LEs, portF4_mode = auto selection with LEs
             CLK_n       => iCpuClk,
             WAIT_n      => wait_n_s,
             INT_n       => pSltInt_n,
@@ -2800,6 +2846,7 @@ begin
             LevCtrl         => LevCtrl          ,
             GreenLvEna      => GreenLvEna       ,
 
+            cold_reset_comb => cold_reset_comb  ,
             swioRESET_n     => swioRESET_n      ,
             warmRESET       => warmRESET        ,
             WarmMSXlogo     => WarmMSXlogo      ,   -- here to reduce LEs
@@ -2838,9 +2885,9 @@ begin
             clk_i           => clk21m,
             wait_o          => esp_wait_s,
             reset_i         => xSltRst_n,           -- swioRESET_n was purposely excluded here
-            iorq_i          => pSltIorq_n,
-            wrt_i           => pSltWr_n,
-            rd_i            => pSltRd_n,
+            iorq_i          => iSltIorq_n,
+            wrt_i           => xSltWr_n,
+            rd_i            => xSltRd_n,
             tx_i            => esp_tx_i,
             rx_o            => esp_rx_o,
             adr_i           => adr,
@@ -2851,22 +2898,27 @@ begin
     esp_tx_i <= pUsbP1;
     pUsbN1 <= esp_rx_o;
 
-    umidi : work.midi
-        port map(
-            clk_i           => clk21m,
-            reset_i         => (not reset),
-            iorq_i          => pSltIorq_n,
-            wrt_i           => pSltWr_n,
-            rd_i            => pSltRd_n,
-            tx_i            => '0',
-            rx_o            => midi_o,              -- module output pin
-            adr_i           => adr,
-            db_i            => dbo,
-            db_o            => midi_dout_s,
-            tx_active_o     => midi_active_o
-        );
+    midi : if use_midi_g generate
+      umidi : work.midi
+          port map(
+              clk_i         => clk21m,
+              reset_i       => (not reset),
+              iorq_i        => iSltIorq_n,
+              wrt_i         => xSltWr_n,
+              rd_i          => xSltRd_n,
+              tx_i          => '0',
+              rx_o          => midi_o,            -- module output pin
+              adr_i         => adr,
+              db_i          => dbo,
+              db_o          => midi_dout_s,
+              tx_active_o   => midi_active_o
+          );
+    end generate;
 
-    pJoyB(0) <= midi_o when( midi_active_o = '1' )else
+    pJoyB(0) <= midi_o when( midi_active_o = '1' and use_midi_g )else
                 'Z';
+
+    -- Cold Reset combination
+    cold_reset_comb  <=      vFkeys(7)  and vFkeys(6) and (vFkeys(0) xor Fkeys(0)); -- [CTRL+SHIFT+F12]
 
 end RTL;

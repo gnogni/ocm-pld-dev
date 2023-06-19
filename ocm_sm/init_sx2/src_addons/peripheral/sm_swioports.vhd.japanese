@@ -94,6 +94,7 @@ entity switched_io_ports is
         LevCtrl         : inout std_logic_vector(  2 downto 0 );            -- Volume and high-speed level
         GreenLvEna      : out   std_logic;
         -- 'RESET' group
+        cold_reset_comb : in    std_logic;                                  -- Cold Reset combination
         swioRESET_n     : inout std_logic;                                  -- Reset Pulse
         warmRESET       : inout std_logic;                                  -- 0=Cold Reset, 1=Warm Reset
         WarmMSXlogo     : inout std_logic;                                  -- Show MSX logo with Warm Reset
@@ -348,12 +349,12 @@ begin
                     end if;
                     -- in assignment: 'Toggle Keys' (keyboard)
                     if( Fkeys(7) = '0' )then                                    -- SHIFT key    is  Off
-                        if( io43_id212(2) = '0' )then                           -- BIT[2]=0     of  Lock Mask
+                        if( io43_id212(2) = '0' and Fkeys(6) = '0' )then        -- BIT[2]=0     of  Lock Mask   +   CTRL key    is Off
                             if( Fkeys(5 downto 4) /= vFKeys(5 downto 4) )then
                                 GreenLvEna  <=  '1';
                                 LevCtrl <= "111";
                             end if;
-                            if( Fkeys(6) = '0' and Fkeys(4) /= vFkeys(4) )then  -- PGDOWN       is  Master Volume Down
+                            if( Fkeys(4) /= vFkeys(4) )then                     -- PGDOWN       is  Master Volume Down
                                 if( MstrVol /= "111" )then
                                     LevCtrl <= not (MstrVol + 1);
                                     MstrVol <= MstrVol + 1;
@@ -361,7 +362,7 @@ begin
                                     LevCtrl <= "000";
                                 end if;
                             end if;
-                            if( Fkeys(6) = '0' and Fkeys(5) /= vFkeys(5) )then  -- PGUP         is  Master Volume Up
+                            if( Fkeys(5) /= vFkeys(5) )then                     -- PGUP         is  Master Volume Up
                                 if( MstrVol /= "000" )then
                                     LevCtrl <= not (MstrVol - 1);
                                     MstrVol <= MstrVol - 1;
@@ -394,7 +395,7 @@ begin
                                 end case;
                             end if;
                         end if;
-                        if( io43_id212(2) = '0' )then                           -- BIT[2]=0     of  Lock Mask
+                        if( io43_id212(2) = '0' and Fkeys(6) = '0' )then        -- BIT[2]=0     of  Lock Mask   +   CTRL key    is Off
                             if( Fkeys(3 downto 1) /= vFKeys(3 downto 1) )then
                                 GreenLvEna  <=  '1';
                                 LevCtrl     <=  "111";
@@ -422,12 +423,12 @@ begin
                             end if;
                         end if;
                     else                                                        -- SHIFT key    is  On (held down)
-                        if( io43_id212(2) = '0' )then                           -- BIT[2]=0     of  Lock Mask
+                        if( io43_id212(2) = '0' and Fkeys(6) = '0' )then        -- BIT[2]=0     of  Lock Mask   +   CTRL key    is Off
                             if( Fkeys(5 downto 4) /= vFKeys(5 downto 4) )then
                                 GreenLvEna  <=  '1';
                                 LevCtrl <= "111";
                             end if;
-                            if( Fkeys(6) = '0' and Fkeys(4) /= vFkeys(4) )then  -- SHIFT+PGDOWN is  Master Volume from max to middle, min or mute
+                            if( Fkeys(4) /= vFkeys(4) )then                     -- SHIFT+PGDOWN is  Master Volume from max to middle, min or mute
                                 if( MstrVol < "011" )then
                                     LevCtrl <= "100";
                                     MstrVol <= "011";
@@ -439,7 +440,7 @@ begin
                                     MstrVol <= "111";
                                 end if;
                             end if;
-                            if( Fkeys(6) = '0' and Fkeys(5) /= vFkeys(5) )then  -- SHIFT+PGUP   is  Master Volume from mute to min, middle or max
+                            if( Fkeys(5) /= vFkeys(5) )then                     -- SHIFT+PGUP   is  Master Volume from mute to min, middle or max
                                 if( MstrVol > "110" )then
                                     LevCtrl <= "001";
                                     MstrVol <= "110";
@@ -461,7 +462,7 @@ begin
                                 end case;
                             end if;
                         end if;
-                        if( io43_id212(2) = '0' )then                           -- BIT[2]=0     of  Lock Mask
+                        if( io43_id212(2) = '0' and Fkeys(6) = '0' )then        -- BIT[2]=0     of  Lock Mask   +   CTRL key    is Off
                             if( Fkeys(3 downto 1) /= vFKeys(3 downto 1) )then
                                 GreenLvEna  <=  '1';
                                 LevCtrl     <=  "000";
@@ -1051,9 +1052,14 @@ begin
                     end if;
                     -- in assignment: 'Scanlines button'
                     if( btn_scan = '1' )then                                    -- Released
-                        prev_scan <= vga_scanlines;
+                        prev_scan           <= vga_scanlines;
                     elsif( vga_scanlines = prev_scan )then                      -- Held down
-                        vga_scanlines <= vga_scanlines + 1;
+                        vga_scanlines       <= vga_scanlines + 1;
+                    end if;
+                    -- in assignment: 'Cold Reset combination'
+                    if( cold_reset_comb = '1' )then
+                        bios_reload_ack     <=  bios_reload_req;
+                        swioRESET_n         <=  '0';
                     end if;
                 end if;
             end if;

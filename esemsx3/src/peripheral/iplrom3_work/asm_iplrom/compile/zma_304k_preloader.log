@@ -146,7 +146,7 @@ Programmed by t.hara
 000049: 21 b3 00
 
 [	LD BC , ( ( VDP_CONTROL_REGS_END - VDP_CONTROL_REGS ) << 8 ) | VDP_PORT1] Z80:11cyc, R800:3cyc
-00004c: 01 99 10
+00004c: 01 99 12
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
 00004f: ed b3
@@ -181,29 +181,29 @@ Programmed by t.hara
 [	JR NZ , LOOP1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 00005f: 20 f9
 
-[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
-000061: 11 40 81
-
-[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
-000064: ed 59
-
-[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
-000066: ed 51
-
 [	LD B , 32] Z80:8cyc, R800:2cyc
-000068: 06 20
+000061: 06 20
 
-[	LD A , 0XF0] Z80:8cyc, R800:2cyc
-00006a: 3e f0
+[	LD A , 0XF1] Z80:8cyc, R800:2cyc
+000063: 3e f1
 
 [LOOP2 :]
-	label address: 0x00006c
+	label address: 0x000065
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00006c: d3 98
+000065: d3 98
 
 [	DJNZ LOOP2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00006e: 10 fc
+000067: 10 fc
+
+[	LD DE , 0X8140] Z80:11cyc, R800:3cyc
+000069: 11 40 81
+
+[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
+00006c: ed 59
+
+[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
+00006e: ed 51
 
 [	LD D , 1 * 8] Z80:8cyc, R800:2cyc
 000070: 16 08
@@ -235,7 +235,7 @@ Programmed by t.hara
 	global label address: 0x00007d
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00007d: cd 03 01
+00007d: cd 05 01
 
 [	LD A , 0X35] Z80:8cyc, R800:2cyc
 000080: 3e 35
@@ -385,128 +385,131 @@ Programmed by t.hara
 [	DB 0XF1 , 0X87]
 0000bd: f1 87
 
+[	DB 0X00 , 0X8A]
+0000bf: 00 8a
+
 [	DB 0X00 , 0X8B]
-0000bf: 00 8b
+0000c1: 00 8b
 
 [	DB 0X00 , 0X40]
-0000c1: 00 40
+0000c3: 00 40
 
 [VDP_CONTROL_REGS_END ::]
-	global label address: 0x0000c3
+	global label address: 0x0000c5
 
 [VDP_MSX1_PALETTE_REGS ::]
-	global label address: 0x0000c3
-
-[	DB 0X00 , 0X00]
-0000c3: 00 00
+	global label address: 0x0000c5
 
 [	DB 0X00 , 0X00]
 0000c5: 00 00
 
+[	DB 0X00 , 0X00]
+0000c7: 00 00
+
 [	DB 0X22 , 0X06]
-0000c7: 22 06
+0000c9: 22 06
 
 [	DB 0X34 , 0X07]
-0000c9: 34 07
+0000cb: 34 07
 
 [	DB 0X37 , 0X03]
-0000cb: 37 03
+0000cd: 37 03
 
 [	DB 0X47 , 0X04]
-0000cd: 47 04
+0000cf: 47 04
 
 [	DB 0X53 , 0X03]
-0000cf: 53 03
+0000d1: 53 03
 
 [	DB 0X47 , 0X06]
-0000d1: 47 06
+0000d3: 47 06
 
 [	DB 0X63 , 0X03]
-0000d3: 63 03
+0000d5: 63 03
 
 [	DB 0X64 , 0X04]
-0000d5: 64 04
+0000d7: 64 04
 
 [	DB 0X63 , 0X06]
-0000d7: 63 06
+0000d9: 63 06
 
 [	DB 0X65 , 0X06]
-0000d9: 65 06
+0000db: 65 06
 
 [	DB 0X11 , 0X05]
-0000db: 11 05
+0000dd: 11 05
 
 [	DB 0X56 , 0X03]
-0000dd: 56 03
+0000df: 56 03
 
 [	DB 0X66 , 0X06]
-0000df: 66 06
+0000e1: 66 06
 
 [	DB 0X77 , 0X07]
-0000e1: 77 07
+0000e3: 77 07
 
 [VDP_MSX1_PALETTE_REGS_END ::]
-	global label address: 0x0000e3
+	global label address: 0x0000e5
 
 [ICON_PATTERN ::]
-	global label address: 0x0000e3
+	global label address: 0x0000e5
 
 [	DB 0X49 , 0X49 , 0XFF , 0XFF , 0XFF , 0XFF , 0XFF , 0XBF]
-0000e3: 49 49 ff ff ff ff ff bf
+0000e5: 49 49 ff ff ff ff ff bf
 
 [	DB 0X20 , 0X20 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0]
-0000eb: 20 20 f0 f0 f0 f0 f0 f0
+0000ed: 20 20 f0 f0 f0 f0 f0 f0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X02 , 0X07 , 0X0F , 0X1F]
-0000f3: ff 49 49 00 02 07 0f 1f
+0000f5: ff 49 49 00 02 07 0f 1f
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X80 , 0XC0]
-0000fb: f0 20 20 00 00 00 80 c0
+0000fd: f0 20 20 00 00 00 80 c0
 
 [ICON_PATTERN_END ::]
-	global label address: 0x000103
+	global label address: 0x000105
 
 [	SCOPE VDP_PUT_ICON]
 	Scope path: VDP_PUT_ICON:
 
 [VDP_PUT_ICON ::]
-	global label address: 0x000103
+	global label address: 0x000105
 
 [	LD HL , 0X1801 | 0X4000] Z80:11cyc, R800:3cyc
-000103: 21 01 58
+000105: 21 01 58
 
 [	CALL SUB_CODE] Z80:18cyc, R800:5cyc
-000106: cd 0b 01
+000108: cd 0d 01
 
 [	LD L , 33] Z80:8cyc, R800:2cyc
-000109: 2e 21
+00010b: 2e 21
 
 [SUB_CODE :]
-	label address: 0x00010b
+	label address: 0x00010d
 
 [	LD C , VDP_PORT1] Z80:8cyc, R800:2cyc
-00010b: 0e 99
+00010d: 0e 99
 
 [	OUT [ C ] , L] Z80:14cyc, R800:10 or 9cyc
-00010d: ed 69
+00010f: ed 69
 
 [	OUT [ C ] , H] Z80:14cyc, R800:10 or 9cyc
-00010f: ed 61
+000111: ed 61
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-000111: d3 98
+000113: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-000113: 3c
+000115: 3c
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-000114: d3 98
+000116: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-000116: 3c
+000118: 3c
 
 [	RET] Z80:11cyc, R800:5cyc
-000117: c9
+000119: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -514,13 +517,13 @@ Programmed by t.hara
 [	INCLUDE ".//../subroutine/ocm_iplrom_vdp_preloader_icon.asm"] end
 
 [END_OF_CODE :]
-	label address: 0x000118
+	label address: 0x00011a
 
 [IF ( END_OF_CODE - BEGIN_OF_CODE ) > 512]
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (280byte): ../hex_iplrom_304k_rev300_preloader.asm(113)
+MESSAGE: Size is not a problem. (282byte): ../hex_iplrom_304k_rev300_preloader.asm(113)
 [ENDIF]
 	Selected {ELSE} block.
 
@@ -529,7 +532,7 @@ MESSAGE: Size is not a problem. (280byte): ../hex_iplrom_304k_rev300_preloader.a
 BEGIN_OF_CODE 0 ( 0x0 )
 DESTINATION_ADDRESS 46080 ( 0xb400 )
 DRAM_CODE_ADDRESS 0 ( 0x0 )
-END_OF_CODE 280 ( 0x118 )
+END_OF_CODE 282 ( 0x11a )
 EPCS_ERASE_BULK 199 ( 0xc7 )
 EPCS_ERASE_SECTOR 216 ( 0xd8 )
 EPCS_FAST_READ 11 ( 0xb )
@@ -548,8 +551,8 @@ ESERAM8K_BANK3 30720 ( 0x7800 )
 EXP_IO_1CHIPMSX_ID 212 ( 0xd4 )
 EXP_IO_VENDOR_ID_PORT 64 ( 0x40 )
 ICON_ERROR 1 ( 0x1 )
-ICON_PATTERN 227 ( 0xe3 )
-ICON_PATTERN_END 259 ( 0x103 )
+ICON_PATTERN 229 ( 0xe5 )
+ICON_PATTERN_END 261 ( 0x105 )
 INIT_PRELOADER 5 ( 0x5 )
 INIT_PRELOADER:DUMMY_READ0 25 ( 0x19 )
 INIT_PRELOADER:LOADING_ERROR 71 ( 0x47 )
@@ -557,7 +560,7 @@ INIT_PRELOADER:NEW_ATTEMPT 45 ( 0x2d )
 INIT_SWITCH_IO 1 ( 0x1 )
 INIT_VDP 73 ( 0x49 )
 INIT_VDP:LOOP1 90 ( 0x5a )
-INIT_VDP:LOOP2 108 ( 0x6c )
+INIT_VDP:LOOP2 101 ( 0x65 )
 IPLROM_BANK 255 ( 0xff )
 LOADING_ATTEMPTS 16 ( 0x10 )
 MEGASD_LAST_DATA_REGISTER 23552 ( 0x5c00 )
@@ -570,12 +573,12 @@ READ_SECTOR_FROM_EPCS:READ_ALL 162 ( 0xa2 )
 STOP_WITH_ERROR 125 ( 0x7d )
 TARGET_SECTOR_NUMBER 410 ( 0x19a )
 VDP_CONTROL_REGS 179 ( 0xb3 )
-VDP_CONTROL_REGS_END 195 ( 0xc3 )
-VDP_MSX1_PALETTE_REGS 195 ( 0xc3 )
-VDP_MSX1_PALETTE_REGS_END 227 ( 0xe3 )
+VDP_CONTROL_REGS_END 197 ( 0xc5 )
+VDP_MSX1_PALETTE_REGS 197 ( 0xc5 )
+VDP_MSX1_PALETTE_REGS_END 229 ( 0xe5 )
 VDP_PORT0 152 ( 0x98 )
 VDP_PORT1 153 ( 0x99 )
 VDP_PORT2 154 ( 0x9a )
 VDP_PORT3 155 ( 0x9b )
-VDP_PUT_ICON 259 ( 0x103 )
-VDP_PUT_ICON:SUB_CODE 267 ( 0x10b )
+VDP_PUT_ICON 261 ( 0x105 )
+VDP_PUT_ICON:SUB_CODE 269 ( 0x10d )

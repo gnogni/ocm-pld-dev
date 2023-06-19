@@ -2,7 +2,7 @@
 # ========================
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "10:46:23  OCTOBER 14, 2013"
-set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name VHDL_FILE ../esemsx3/src/video/vdp.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/video/vdp_colordec.vhd
@@ -59,12 +59,12 @@ set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/ram.vhd
 set_global_assignment -name VHDL_FILE src_addons/peripheral/sm_swioports.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/systemtimer.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/UART.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800_ALU.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800_MCode.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800_Pack.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800_Reg.vhd
-set_global_assignment -name VHDL_FILE src_addons/cpu/T800a.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80_Pack.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE src_addons/cpu/T80a.vhd
 set_global_assignment -name VHDL_FILE ../esemsx3/src/peripheral/fifo.vhd
 set_global_assignment -name VHDL_FILE src_addons/peripheral/sm_wifi_lite.vhd
 set_global_assignment -name VHDL_FILE src_addons/sys/debounce.vhd
@@ -75,7 +75,7 @@ set_global_assignment -name VERILOG_FILE src_addons/peripheral/autofire.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/sm_eseps2.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/iplrom_512k.v
 set_global_assignment -name VERILOG_FILE ../esemsx3/src/peripheral/megasd.v
-set_global_assignment -name VERILOG_FILE src_addons/peripheral/ps2_mouse.v
+set_global_assignment -name VERILOG_FILE src_addons/peripheral/eseps2mouse.v
 set_global_assignment -name VERILOG_FILE src_addons/peripheral/sm_rtc.v
 set_global_assignment -name VERILOG_FILE src_addons/sys/i2c.v
 set_global_assignment -name VERILOG_FILE src_addons/sys/i2s.v

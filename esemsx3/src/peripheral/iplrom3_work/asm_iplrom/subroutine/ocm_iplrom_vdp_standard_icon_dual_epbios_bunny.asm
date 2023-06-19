@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	VDP initializer
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2022 Takayuki Hara
+; Copyright (c) 2021-2023 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -29,19 +29,20 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/12th  t.hara  Overall revision.
+;   2023/May/29th  t.hara  Overall revision.
 ; ==============================================================================
 
 			; VDP port 99h [set register]
 vdp_control_regs::
 ;			db		0x00, 0x80				; 0x00 -> R#0 : SCREEN1 (GRAPHIC1 Mode) (default value)
 ;			db		0x00, 0x81				; 0x00 -> R#1 : SCREEN1 (GRAPHIC1 Mode) and Display Off (default value)
-			db		0x1800 >> 10, 0x82		; 0x02 -> R#2 : Pattern Name Table is 0x1800
+			db		0x1800 >> 10, 0x82		; 0x02 -> R#2 : Pattern Name Table is 0x1800 (LOW)
 			db		0x2000 >> 6, 0x83		; 0x2C -> R#3 : Color Table is 0x2000
 			db		0x0000 >> 11, 0x84		; 0x00 -> R#4 : Pattern Generator Table is 0x0000
 			db		0x1B00 >> 7, 0x85		; 0x03 -> R#5 : Sprite Attribute Table is 0x1B00
 			db		0x00, 0x86				; 0x00 -> R#6 : Sprite Pattern Generator Table is 0x0000
 			db		0xF1, 0x87				; 0xF1 -> R#7 : Set Color (White on Black)
+			db		0x00, 0x8A				; 0x00 -> R#10: Pattern Name Table is 0x1800 (HIGH)
 			db		0x00, 0x8B				; 0x00 -> R#11: Sprite Attribute Table is 0x1B00
 ;			db		0x00, 0x90				; 0x00 -> R#16: Palette selector #0 (default value)
 			db		0x00, 0x40				; VRAM address 0x0000

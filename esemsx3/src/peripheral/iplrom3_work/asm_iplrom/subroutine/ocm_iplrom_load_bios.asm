@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	load BIOS image
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2022 Takayuki Hara
+; Copyright (c) 2021-2023 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2021/Aug/15th  t.hara  First version.
+;   2022/Oct/22nd  t.hara  Overall revision.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------

@@ -94,6 +94,7 @@ entity switched_io_ports is
         LevCtrl         : inout std_logic_vector(  2 downto 0 );            -- Volume and high-speed level
         GreenLvEna      : out   std_logic;
         -- 'RESET' group
+        cold_reset_comb : in    std_logic;                                  -- Cold Reset combination
         swioRESET_n     : inout std_logic;                                  -- Reset Pulse
         warmRESET       : inout std_logic;                                  -- 0=Cold Reset, 1=Warm Reset
         WarmMSXlogo     : inout std_logic;                                  -- Show MSX logo with Warm Reset
@@ -1051,9 +1052,14 @@ begin
                     end if;
                     -- in assignment: 'Scanlines button'
                     if( btn_scan = '1' )then                                    -- Released
-                        prev_scan <= vga_scanlines;
+                        prev_scan           <= vga_scanlines;
                     elsif( vga_scanlines = prev_scan )then                      -- Held down
-                        vga_scanlines <= vga_scanlines + 1;
+                        vga_scanlines       <= vga_scanlines + 1;
+                    end if;
+                    -- in assignment: 'Cold Reset combination'
+                    if( cold_reset_comb = '1' )then
+                        bios_reload_ack     <=  bios_reload_req;
+                        swioRESET_n         <=  '0';
                     end if;
                 end if;
             end if;

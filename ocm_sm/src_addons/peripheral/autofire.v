@@ -36,18 +36,23 @@
 // 2021/Aug/09  t.hara
 //   The autofire speed is now cycled up and down.
 //   It can be turned on and off independently of the autofire speed.
+// 2023/May/16  KdL
+//   Added on/off LED toggle.
 // ============================================================================
 
 module autofire (
         input           clk21m,
         input           reset,
         input           count_en,
+        input           af_on_off_led,
         input           af_on_off_toggle,
         input           af_increment,
         input           af_decrement,
+        output          af_led_sta,
         output          af_mask,
         output  [3:0]   af_speed
     );
+    reg                 ff_led_sta;         //  0: OFF, 1: ON
     reg                 ff_enable;          //  0: OFF, 1: ON
     reg                 ff_count_en;
     reg     [3:0]       ff_af_speed;
@@ -60,6 +65,21 @@ module autofire (
     end
 
     assign w_count_en   = count_en & ~ff_count_en;
+
+    always @( posedge reset or posedge clk21m ) begin
+        if( reset ) begin
+            ff_led_sta <= 1'b1;
+        end
+        else if( !ff_enable ) begin
+            ff_led_sta <= 1'b1;
+        end
+        else if( af_on_off_led ) begin
+            ff_led_sta <= ~ff_led_sta;
+        end
+        else begin
+            //  hold
+        end
+    end
 
     always @( posedge reset or posedge clk21m ) begin
         if( reset ) begin
@@ -117,6 +137,7 @@ module autofire (
         end
     end
 
-    assign af_mask  = ff_af_mask & ff_enable;
-    assign af_speed = ff_af_speed;
+    assign af_led_sta = ff_led_sta & ff_enable;
+    assign af_mask    = ff_af_mask & ff_enable;
+    assign af_speed   = ff_af_speed;
 endmodule
