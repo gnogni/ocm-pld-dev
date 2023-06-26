@@ -84,17 +84,18 @@ Internal MegaSD     <=  [DIP-SW8] only
 Blackout Mode       <=  [PAUSE]
 CMT                 <=  [SCRLK] on Cyclone I series     { 1chipMSX, Zemmix Neo (KR), Zemmix Neo BR, SX-1 (regular) and [SX-1 Mini/Mini+] }
 Internal OPL3       <=  [SCRLK] on Cyclone IV-E series  { SM-X (regular) and SX-2 }
-System Reset        <=  [HARD RESET KEY]  Three actions are possible:
-                                          1. with a short click you can perform a quick reset;
-                                          2. with a long click you can reload SDBIOS or EPBIOS;
-                                          3. with one more click you can cancel the loading of SDBIOS to start EPBIOS instead.
+Cold Reset          <=  [CTRL+SHIFT+F12]    Due to hardware limitations, this function is unable to reset cartridges on 1st Gen machines.
+System Reset        <=  [HARD RESET KEY]    Three actions are possible:
+                                            1. with a short click you can perform a quick reset;
+                                            2. with a long click you can reload SDBIOS or EPBIOS;
+                                            3. with one more click you can cancel the loading of SDBIOS to start EPBIOS instead.
 
 Extra Keys on Cyclone IV-E series
 =================================
-Autofire ON/OFF     <=  [CTRL+SHIFT+PGUP] or [CTRL+SHIFT+PGDOWN]
+Autofire ON/OFF     <=  [CTRL+SHIFT+PGDOWN]
 Autofire Speed      <=  [CTRL+PGUP/PGDOWN]  Both LCTRL and RCTRL keys are available for Autofire functionality.
-Autofire Status LED <=  [PAUSE]  The main LED blinks if Autofire is ON, otherwise it stays off in Blackout Mode.
+Autofire Status LED <=  [CTRL+SHIFT+PGUP]   Autofire activates a blinking LED that can be turned off with this key combination.
 
 
 ______________
-KdL 2022.11.27
+KdL 2023.06.19
