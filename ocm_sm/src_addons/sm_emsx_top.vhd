@@ -30,7 +30,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 ---------------------------------------------------------------------------------
--- OCM-PLD Pack v3.9.2 by KdL (2023.06.19)
+-- OCM-PLD Pack v3.9.2 by KdL (2023.08.09)
 -- MSX2+ Stable Release for SM-X (regular) and SX-2 / MSXtR Experimental
 -- Special thanks to t.hara, caro, mygodess & all MRC users (http://www.msx.org)
 ---------------------------------------------------------------------------------
@@ -1723,7 +1723,7 @@ begin
                     if( ff_ldbios_n = '0' )then
                         count := "0010";                                -- 8.06MHz (simulated)
                     else
-                        count := CustomSpeed;                           -- 4.10MHz until 8.06MHz (simulated)
+                        count := CustomSpeed;                           -- 4.10MHz up to 8.06MHz (simulated)
                     end if;
                 elsif( ff_clksel5m_n = '0' and (iSltScc1 = '1' or iSltScc2 = '1') )then
                     count := "0001";
@@ -1732,7 +1732,11 @@ begin
                 if( ff_clksel = '1' )then
                     count := "0110";                                    -- "0011" = original value, "0110" = better reading the pull-up states at 10.74MHz
                 elsif( ff_clksel5m_n = '0' )then
-                    count := "0110";                                    -- "0110" = calibrated to properly access the ADPCM unit (NMS-1205) at 5.37 MHz
+                    if( extclk3m = '0' )then
+                        count := "0010";                                -- "0010" = calibrated to minimize artifacts in Gradius 2 Enhanced at 5.37 MHz, and other titles
+                    else
+                        count := "0110";                                -- "0110" = calibrated to properly access the ADPCM unit (NMS-1205) with async 5.37 MHz
+                    end if;
                 end if;
             elsif( count /= "0000" )then                                -- countdown timer
                 count := count - 1;

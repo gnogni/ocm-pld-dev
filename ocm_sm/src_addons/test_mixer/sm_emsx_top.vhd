@@ -1644,7 +1644,7 @@ begin
 --                    if( ff_ldbios_n = '0' )then
 --                        count := "0010";                                -- 8.06MHz (simulated)
 --                    else
---                        count := CustomSpeed;                           -- 4.10MHz until 8.06MHz (simulated)
+--                        count := CustomSpeed;                           -- 4.10MHz up to 8.06MHz (simulated)
 --                    end if;
 --                elsif( ff_clksel5m_n = '0' and (iSltScc1 = '1' or iSltScc2 = '1') )then
 --                    count := "0001";
