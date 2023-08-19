@@ -252,8 +252,6 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
 
     SIGNAL FF_SP_EN                 : STD_LOGIC;
     SIGNAL FF_CUR_Y                 : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
-    SIGNAL FF_PREV_CUR_Y            : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
-    SIGNAL SPLIT_SCRN               : STD_LOGIC;
 
     SIGNAL FF_VDPS0RESETACK         : STD_LOGIC;
     SIGNAL FF_VDPS5RESETACK         : STD_LOGIC;
@@ -347,7 +345,6 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
     SIGNAL W_SP_OVERMAP             : STD_LOGIC;
     SIGNAL W_ACTIVE                 : STD_LOGIC;
     SIGNAL SPWINDOW_Y               : STD_LOGIC;
-
 BEGIN
 
     PVDPS0RESETACK          <= FF_VDPS0RESETACK;
@@ -477,18 +474,6 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS( CLK21M )
-    BEGIN
-        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( (DOTSTATE = "01") AND (DOTCOUNTERX = 0) )THEN
-                FF_PREV_CUR_Y <= FF_CUR_Y;
-            END IF;
-        END IF;
-    END PROCESS;
-
-    -- detect a split screen
-    SPLIT_SCRN <= '0' WHEN (FF_CUR_Y = (FF_PREV_CUR_Y + 1)) ELSE '1';
-
     -----------------------------------------------------------------------------
     -- VRAM ADDRESS GENERATOR
     -----------------------------------------------------------------------------
@@ -575,7 +560,6 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-
 
     -----------------------------------------------------------------------------
     -- [Y_TEST]Yテストステートでないことを示す信号
@@ -949,7 +933,7 @@ BEGIN
                             ELSIF( (SPLINEBUFDRAWDATA_OUT(7) = '1') AND (SPINFORAMIC_OUT = '0') ) THEN
                                 SPLINEBUFDRAWCOLOR <= SPLINEBUFDRAWDATA_OUT;
                                 -- JP: スプライトが衝突。
-                                -- SPRITE COLISION OCCURED
+                                -- SPRITE COLLISION OCCURED
                                 VDPS0SPCOLLISIONINCIDENCEV := '1';
                                 VDPS3S4SPCOLLISIONXV := SPDRAWX + 12;
                                 -- NOTE: DRAWING LINE IS PREVIOUS LINE.
@@ -959,7 +943,7 @@ BEGIN
                         --
                         IF( DOTCOUNTERX = 0 ) THEN
                             SPPREDRAWLOCALPLANENUM <= (OTHERS => '0');
-                            SPPREDRAWEND <= SPLIT_SCRN OR REG_R8_SP_OFF;
+                            SPPREDRAWEND <= REG_R8_SP_OFF;
                             LASTCC0LOCALPLANENUMV := (OTHERS => '0');
                             SPCC0FOUNDV := '0';
                         ELSIF( DOTCOUNTERX(4 DOWNTO 0) = 0 ) THEN
