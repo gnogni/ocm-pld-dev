@@ -1511,7 +1511,7 @@ begin
 
     pSltRsv5    <=  'Z';
     pSltRsv16   <=  'Z';
---  pSltRsv16   <=  (not reset) and power_on_reset;                     -- can perform RESET_n lock on Cyclone I machine slot pins by applying a hardware patch (check the history.txt)
+--  pSltRsv16   <=  '0' when( reset = '1' or power_on_reset = '0' )else 'Z';    -- can perform RESET_n lock on Cyclone I machine slot pins by applying a hardware patch (check the history.txt)
     pSltSw1     <=  'Z';
     pSltSw2     <=  'Z';
 
