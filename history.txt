@@ -111,7 +111,7 @@ v3.9.2 [2023.08.26] [KdL's Updates!] [ALPHA11]
 - Improved Autofire toggle and interaction of LEDs with OCM indicator. (2023.05.16)
 - Added the key combination CTRL+SHIFT+F12 to perform Cold Reset from the keyboard. (2023.05.17)
 - Fixed IPL-ROM on VDP initialization. Updated the '*_no_epcs_icon.hex' that did not show the SD icon. (2023.05.29)
-- Sprite multiplex fix and sprite fixes on split-screen by Luis Felipe Antoniosi. (2023.06.11)
+- Sprite multiplex fix by Luis Felipe Antoniosi and improved timing in the drawing of sprites. (2023.06.11)
 - New M File Manager v4.0 (2023.03.18) in the [msxtools\] folder. (2023.06.13)
 - Slightly improved cpu clock 5.37 MHz to get better experience with some games. (2023.08.09)
 - Updated Intel Quartus Prime Lite Edition to version 22.1.2 (2023.08.26)
