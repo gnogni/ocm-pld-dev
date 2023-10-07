@@ -377,7 +377,7 @@ begin
                                     if( extclk3m = '0' )then                    -- Off          is  Triple Step
                                         io41_id008_n    <=  '1';
                                         io42_id212(0)   <=  '1';                -- 5.37MHz      >>  Custom Turbo
-                                    else                                        -- On           is  Double Step
+                                    else                                        -- On           is  Double Step (cartridge safeguard mode)
                                         io41_id008_n    <=  '1';                -- 5.37MHz      >>  3.58MHz
                                     end if;
                                 else
