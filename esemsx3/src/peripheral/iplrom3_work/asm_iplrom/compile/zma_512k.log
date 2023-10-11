@@ -2477,7 +2477,7 @@ Programmed by t.hara
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1467byte): ../iplrom_512k_rev300.asm(173)
+MESSAGE: Size is not a problem. (1467byte): ../iplrom_512k_rev300.asm(174)
 [ENDIF]
 	Selected {ELSE} block.
 

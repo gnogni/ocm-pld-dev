@@ -2444,7 +2444,7 @@ Programmed by t.hara
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1441byte): ../hex_iplrom_304k_rev300.asm(179)
+MESSAGE: Size is not a problem. (1441byte): ../hex_iplrom_304k_rev300.asm(180)
 [ENDIF]
 	Selected {ELSE} block.
 

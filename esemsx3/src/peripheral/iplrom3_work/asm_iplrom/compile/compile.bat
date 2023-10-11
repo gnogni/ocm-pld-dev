@@ -75,6 +75,7 @@ echo.&echo [ IPL standard icon 512k dual epbios ]
 zma.exe ../ipl_iplrom_512k_rev300_dual_epbios.asm ..\..\ipl_iplrom\GEN2ROMD.IPL
 ren zma.log zma_512k_ipl_dual_epbios.log
 
+for %%F in (*.*) do ( if %%~zF LSS 1 del %%F )
 del iplrom_body*.*
 echo.
 if not "%1"=="--cleanup" pause&exit

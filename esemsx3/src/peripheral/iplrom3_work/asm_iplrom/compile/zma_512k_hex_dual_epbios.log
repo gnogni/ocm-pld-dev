@@ -2462,7 +2462,7 @@ Programmed by t.hara
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1455byte): ../hex_iplrom_512k_rev300_dual_epbios.asm(173)
+MESSAGE: Size is not a problem. (1455byte): ../hex_iplrom_512k_rev300_dual_epbios.asm(174)
 [ENDIF]
 	Selected {ELSE} block.
 
