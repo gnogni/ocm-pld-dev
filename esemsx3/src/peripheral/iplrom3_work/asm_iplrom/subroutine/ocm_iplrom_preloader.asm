@@ -29,7 +29,7 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2022/Oct/22nd  KdL  Overall revision.
+;   2022/Oct/22nd  KdL  Overall revision.  Coded in ZMA v1.0.15
 ; ==============================================================================
 
 			scope		init_preloader

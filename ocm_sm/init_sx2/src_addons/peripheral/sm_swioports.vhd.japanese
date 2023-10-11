@@ -3,7 +3,7 @@
 --   Switched I/O ports ($40-$4F)
 --   Revision 11
 --
--- Copyright (c) 2011-2022 KdL
+-- Copyright (c) 2011-2023 KdL
 -- All rights reserved.
 --
 -- Redistribution and use of this source code or any derivative works, are

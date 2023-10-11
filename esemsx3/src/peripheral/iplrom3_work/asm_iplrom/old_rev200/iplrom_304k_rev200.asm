@@ -32,7 +32,8 @@
 ; IPL-ROM Revision 2.00 for 304 kB unpacked
 ; EPCS4 start adr 34000h - Optimized by KdL 2017.09.18
 ;
-; Coded in TWZ'CA3 w/ TASM80 v3.2ud for OCM-PLD Pack v3.4 or later
+; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
+; TASM is at http://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ;

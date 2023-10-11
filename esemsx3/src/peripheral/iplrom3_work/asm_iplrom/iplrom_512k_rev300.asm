@@ -33,12 +33,13 @@
 ; IPL-ROM Revision 2.00 for 512 kB unpacked with Dual-EPBIOS support
 ; EPCS16 [or higher] start adr 100000h - Optimized by KdL 2020.01.09
 ;
-; Coded in TWZ'CA3 w/ TASM80 v3.2ud for OCM-PLD Pack v3.4 or later
+; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
+; TASM is at http://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
-;   2023/May/29th	v3.00	t.hara	Overall revision.
+;   2023/May/29th  v3.00  t.hara  Overall revision.  Coded in ZMA v1.0.15
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
