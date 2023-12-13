@@ -1,10 +1,10 @@
 @echo off
-rem --- '1_sm_compile.cmd' v3.0 by KdL (2022.11.27)
+rem --- '1_sm_compile.cmd' v3.1 by KdL (2023.12.13)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm
 set OUTPUT=output_files\
-set QPATH=C:\intelFPGA_lite\22.1std\quartus\
+set QPATH=C:\intelFPGA_lite\23.1std\quartus\
 if "%1"=="" color 87&title COMPILE for %PROJECT%
 if not exist %PROJECT%_device.env goto err_init
 if not exist %PROJECT%.qpf goto err_msg
@@ -24,7 +24,7 @@ explorer %PROJECT%.qpf
 :init
 del "## BUILDING FAILED ##.log" >nul 2>nul
 md %OUTPUT% >nul 2>nul
-echo /* Quartus Prime Version 22.1std.2 Build 922 07/20/2023 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
+echo /* Quartus Prime Version 23.1std.0 Build 991 11/28/2023 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
 echo JedecChain;>>%OUTPUT%%PROJECT%.cdf
 echo     FileRevision(JESD32A);>>%OUTPUT%%PROJECT%.cdf
 echo     DefaultMfr(6E);>>%OUTPUT%%PROJECT%.cdf

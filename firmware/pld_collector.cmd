@@ -1,5 +1,5 @@
 @echo off
-rem --- 'pld_collector.cmd' v3.9.2 by KdL (2022.11.27)
+rem --- 'pld_collector.cmd' v3.9.2 by KdL (2023.12.13)
 
 set VERSION=3.9.2
 set VER=392

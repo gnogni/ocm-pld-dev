@@ -1,5 +1,5 @@
 @echo off
-rem --- '!!-init-smx.cmd' v3.0 by KdL (2022.11.27)
+rem --- '!!-init-smx.cmd' v3.1 by KdL (2023.12.13)
 
 set TIMEOUT=1
 set FOLDER=init_

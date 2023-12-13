@@ -1,5 +1,5 @@
 @echo off
-rem --- '!!-cleanup.cmd' v3.0 by KdL (2022.11.27)
+rem --- '!!-cleanup.cmd' v3.1 by KdL (2023.12.13)
 
 set PROJECT1=emsx_top
 set PROJECT2=ocm_sm

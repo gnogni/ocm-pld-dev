@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz2_prepare_multi-release.cmd' v3.0 by KdL (2022.11.27)
+rem --- 'zz2_prepare_multi-release.cmd' v3.1 by KdL (2023.12.13)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -29,7 +29,7 @@ md %DEST% >nul 2>nul
 rem --------------------------------------
 echo %~dp0>%DEST%source_path.txt
 echo @echo off>%DEST%compile_multi-release.cmd
-echo rem --- 'compile_multi-release.cmd' v3.0 by KdL (2022.11.27)>>%DEST%compile_multi-release.cmd
+echo rem --- 'compile_multi-release.cmd' v3.1 by KdL (2023.12.13)>>%DEST%compile_multi-release.cmd
 echo.>>%DEST%compile_multi-release.cmd
 
 rem --- BR layout
