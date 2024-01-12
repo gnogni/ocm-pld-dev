@@ -208,6 +208,16 @@ fill_ff:
 			endscope
 
 ; ------------------------------------------------------------------------------
+;	get_msx_version
+;	input:
+;		none
+;	output:
+;		a .... MSX version number: 0=MSX1, 1=MSX2, 2=MSX2+, 3=MSXtR
+;	break:
+;		af
+;	comment:
+;		-
+; ------------------------------------------------------------------------------
 			scope		get_msx_version
 get_msx_version::
 			ld			a, MAIN_ROM1_BANK
@@ -226,7 +236,7 @@ get_msx_version::
 ;	break:
 ;		bc', de', hl'
 ;	comment:
-;		Fill data by A into 0x8000-0xAFFF
+;		Fill data by A into 0x8000-0xBFFF.
 ; ------------------------------------------------------------------------------
 			scope		fill_bank
 fill_bank::

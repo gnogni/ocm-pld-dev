@@ -636,8 +636,8 @@ module eseps2 #(
                     //  Shift Left == 'h12, Shift Right == 'h59
                     ff_shift_key <= ~ff_f0_detect;
                 end
-                if( ff_e1_detect == 1'b0 && ff_ps2_rcv_dat == 8'h14 ) begin
-                    //  CTRL Left == 'h14, CTRL Right == 'hE0:'h14
+                if( ff_e1_detect == 1'b0 && ff_e0_detect == 1'b0 && ff_ps2_rcv_dat == 8'h14 ) begin
+                    //  CTRL Left == 'h14, CTRL Right == 'hE0:'h14 (CTRL Right is EXECUTE, not CTRL)
                     ff_control_key <= ~ff_f0_detect;
                 end
                 if( ff_e1_detect == 1'b0 && ff_e0_detect == 1'b0 && ff_f0_detect == 1'b1 && ff_ps2_rcv_dat == 8'h77 ) begin
