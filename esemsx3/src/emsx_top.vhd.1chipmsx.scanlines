@@ -1933,7 +1933,7 @@ begin
     -- Slot1
     iSltScc1    <=  mem when( (w_prislt_dec(1) and (w_page_dec(1) or w_page_dec(2)) and (not iSlt1_linear)) = '1' and Scc1Type /= "00"          )else   -- 1   (4000-BFFFh)  1024 kB  ESE-SCC1
                     '0';
-    iSltLin1    <=  mem when( (w_prislt_dec(1) and iSlt1_linear) = '1' and Scc1Type /= "00"                                                     )else   -- 2   (0000-FFFFh)    64 kB  Linear over ESE-SCC1
+    iSltLin1    <=  mem when( (w_prislt_dec(1) and iSlt1_linear) = '1' and Scc1Type /= "00"                                                     )else   -- 1   (0000-FFFFh)    64 kB  Linear over ESE-SCC1
                     '0';
     -- Slot2
     iSltScc2    <=  mem when( (w_prislt_dec(2) and (w_page_dec(1) or w_page_dec(2)) and (not iSlt2_linear)) = '1' and Slot2Mode /= "00"         )else   -- 2   (4000-BFFFh)  2048 kB  ESE-SCC2
