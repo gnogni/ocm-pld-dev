@@ -523,7 +523,7 @@ Programmed by t.hara
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (282byte): ../hex_iplrom_304k_rev300_preloader.asm(114)
+MESSAGE: Size is not a problem. (282byte): ../hex_iplrom_304k_rev300_preloader.asm(115)
 [ENDIF]
 	Selected {ELSE} block.
 

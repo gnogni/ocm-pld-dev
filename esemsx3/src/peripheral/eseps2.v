@@ -52,8 +52,8 @@ module eseps2 #(
     output          Scro,       //  CMT Switch
     output          Reso,       //  Display Mode
 
-    // | b7   | b6   | b5   | b4   | b3   | b2   | b1   | b0   |
-    // | SHFT | CTRL | PgUp | PgDn | F9   | F10  | F11  | F12  |    0: unpressed, 1: pressed
+    // | b7    | b6    | b5   | b4   | b3   | b2   | b1   | b0   |
+    // | SHIFT | LCTRL | PgUp | PgDn | F9   | F10  | F11  | F12  |      0: unpressed, 1: pressed
     output  [7:0]   Fkeys,
 
     inout           pPs2Clk,
@@ -495,7 +495,7 @@ module eseps2 #(
                     ff_shift_key <= ~ff_f0_detect;
                 end
                 if( ff_e1_detect == 1'b0 && ff_e0_detect == 1'b0 && ff_ps2_rcv_dat == 8'h14 ) begin
-                    //  CTRL Left == 'h14, CTRL Right == 'hE0:'h14 (CTRL Right is EXECUTE, not CTRL)
+                    //  CTRL Left == 'h14   (memo: CTRL Right == 'hE0:'h14 is EXECUTE, not CTRL)
                     ff_control_key <= ~ff_f0_detect;
                 end
                 if( ff_e1_detect == 1'b0 && ff_e0_detect == 1'b0 && ff_f0_detect == 1'b1 && ff_ps2_rcv_dat == 8'h77 ) begin

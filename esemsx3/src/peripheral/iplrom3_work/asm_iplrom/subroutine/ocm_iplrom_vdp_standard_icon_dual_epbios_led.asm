@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	VDP initializer
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2023 Takayuki Hara
+; Copyright (c) 2021-2024 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -29,7 +29,8 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
 ; History:
-;   2023/May/29th  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2021/Aug/12th  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2023/May/29th  KdL     Fixed the initialization of VDP R#10.
 ; ==============================================================================
 
 			; VDP port 99h [set register]

@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	load BIOS image
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2023 Takayuki Hara
+; Copyright (c) 2021-2024 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -30,6 +30,8 @@
 ; ------------------------------------------------------------------------------
 ; History:
 ;   2022/Oct/22nd  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2024/Jan/21st  KdL     Added support for C-BIOS.
+;                          Added special features to [RALT] and [RCTRL] keys.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -128,10 +130,31 @@ s1:
 			out			[0x4F], a						; 0x0? = normal, 0xF? = inverted
 			out			[0xF4], a						; force MSX logo = ON
 
+			; let's intercept [RALT] key after loading the BIOS
+enforce_slot0_primary_mode::
+			in			a, [0xAA]
+			and			a, 0xF0
+			add			a, 0x0B							; row[B] of the Japanese Key Matrix Table
+			out			[0xAA], a
+			in			a, [0xA9]
+			bit			3, a							; bit[3] of the Japanese Key Matrix Table
+			jr			nz, enforce_extra_mapper
+			; bit[3] = 0, [RALT] key is held down
+			ld			a, 0xF9
+			out			[0x41], a						; Slot0 Primary Mode (not expanded)
+			cpl											; a = 0b0000_0110, [RCTRL] key will be ignored
+			; let's intercept [RCTRL] key after loading the BIOS
+enforce_extra_mapper:
+			bit			1, a							; bit[1] of the Japanese Key Matrix Table
+			jr			nz, boot_up_bios
+			; bit[1] = 0, [RCTRL] key is held down
+			ld			a, 0x57							; Extra-Mapper 4096 kB = ON (available only if Slot0 is expanded)
+			out			[0x41], a
+
 boot_up_bios::
 			call		get_msx_version
 			or			a, a
-			jr			z, bank_init
+			jr			z, bank_init					; if MSX BIOS ID = 0, skip the MSX2 palette
 set_msx2_palette:
 			ld			a, 2
 			out			[vdp_port1], a
@@ -165,7 +188,7 @@ bank_init:
 ;	break:
 ;		a, b, f
 ;	comment:
-;
+;		-
 ; ------------------------------------------------------------------------------
 			scope		load_bios_images
 load_bios_images::
@@ -182,8 +205,36 @@ loop:
 			ret			c								; error
 			; check "AB" mark
 			ld			a, [bank_id]
+			cp			a, JIS1_KANJI1_BANK
+			jr			z, make_cbios_check
 			cp			a, DOS_ROM2_BANK
 			jr			nz, skip_ab_check
+			call		ab_check
+			ret			nz								; "AB" not found
+skip_ab_check:
+			ex			af,af'
+			dec			a
+			jr			nz, loop
+			jp			load_block_loop
+make_cbios_check:
+			; check for C-BIOS Logo ROM
+			call		cbios_check
+			jr			skip_ab_check
+			endscope
+
+; ------------------------------------------------------------------------------
+;	ab_check
+;	input:
+;		none
+;	output:
+;		none
+;	break:
+;		af
+;	comment:
+;		-
+; ------------------------------------------------------------------------------
+			scope		ab_check
+ab_check::
 			push		hl
 			ld			hl, 0x8000
 			ld			a, [hl]
@@ -192,12 +243,42 @@ loop:
 			inc			hl
 			cp			a, [hl]
 			pop			hl
-			ret			nz								; "AB" not found
-skip_ab_check:
-			ex			af,af'
-			dec			a
-			jr			nz, loop
-			jp			load_block_loop
+			ret
+			endscope
+
+; ------------------------------------------------------------------------------
+;	cbios_check
+;	input:
+;		none
+;	output:
+;		none
+;	break:
+;		af
+;	comment:
+;		-
+; ------------------------------------------------------------------------------
+			scope		cbios_check
+cbios_check::
+			push		hl
+			ld			hl, 0x8000
+			ld			a, [hl]
+			xor			a, 'C'
+			xor			a, '-'
+			inc			hl
+			cp			a, [hl]
+			pop			hl
+			ret			nz								; "C-" not found
+			ld			a, 0xF9
+			out			[0x41], a						; C-BIOS Mode = ON
+			push		bc
+			ld			bc, 0xC000
+wait_a_moment:
+			dec			c
+			cp			a, c
+			jr			nz, wait_a_moment
+			djnz		wait_a_moment
+			pop			bc
+			ret
 			endscope
 
 ; ------------------------------------------------------------------------------
@@ -303,3 +384,43 @@ set_bank::
 			ld			[bank_id], a
 			ret
 			endscope
+
+; ------------------------------------------------------------------------------
+;	MEMO: Japanese Key Matrix Table
+;	
+;	 bit    7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBE5 | 7 ' | 6 & | 5 % | 4 $ | 3 # | 2 " | 1 ! |  0  |  0
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBE6 | ; + | [ { | @ ` |Yen || ^ ~ | - = | 9 ) | 8 ( |  1
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBE7 |  B  |  A  |  _  | / ? | . > | , < | ] } | : * |  2
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBE8 |  J  |  I  |  H  |  G  |  F  |  E  |  D  |  C  |  3
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBE9 |  R  |  Q  |  P  |  O  |  N  |  M  |  L  |  K  |  4
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBEA |  Z  |  Y  |  X  |  W  |  V  |  U  |  T  |  S  |  5
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBEB | F3  | F2  | F1  | Kana|CapsL|Graph| Ctrl|Shift|  6
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBEC |Enter|Selec| BS  | Stop| Tab | Esc | F5  | F4  |  7
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBED |Right| Down| Up  | Left| Del | Ins | Home|Space|  8
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBEE | [4] | [3] | [2] | [1] | [0] | [/] | [+] | [*] |  9
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	#FBEF | [.] | [,] | [-] | [9] | [8] | [7] | [6] | [5] |  A
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	 ---- |     |     |     |     |[Can]|     |[Exe]|     |  B    Can: Torikeshi(Cancel) = [RALT], Exe: Jikkou(Execute) = [RCTRL]
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	 ---- |     |     |     |     |     |     |     |     |  D
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	 ---- |     |     |     |     |     |     |     |     |  D
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	 ---- |ScrLk|     |     |     |     |     |     |     |  E
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	 ---- | N/A |PrtSc|PgUp |PgDn | F9  | F10 | F11 | F12 |  F
+;	      +-----+-----+-----+-----+-----+-----+-----+-----+
+;	bit     7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
+; ------------------------------------------------------------------------------

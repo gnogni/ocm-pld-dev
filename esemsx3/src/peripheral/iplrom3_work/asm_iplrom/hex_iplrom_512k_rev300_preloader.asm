@@ -4,7 +4,7 @@
 ;   Initial Program Loader for Cyclone & EPCS (Altera)
 ;   Revision 3.00
 ;
-; Copyright (c) 2021-2023 Takayuki Hara
+; Copyright (c) 2021-2024 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -39,7 +39,8 @@
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
-;   2023/May/29th  v3.00  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2022/Oct/22nd  v3.00  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2024/Jan/21st         KdL     Added C-BIOS support and other features.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -53,7 +54,7 @@ loading_attempts						:= 0x10			; number of attempts before showing the error ic
 ; --------------------------------------------------------------------
 target_sector_number					:= 0x07FA		; EPCS start address FF400h / 512 bytes
 destination_address						:= 0xB400		; B400h~BFFFh, 3072 bytes
-number_of_sectors						:= 0x06			; the current length of the IPL-ROM is < 1536 bytes, max value is 0x06
+number_of_sectors						:= 0x06			; the current length of the IPL-ROM is about 1536 bytes, max value is 0x06
 
 ; --------------------------------------------------------------------
 ;	MegaSD Information

@@ -2099,7 +2099,7 @@ Programmed by t.hara
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1024byte): ../iplrom_304k_rev300.asm(172)
+MESSAGE: Size is not a problem. (1024byte): ../iplrom_304k_rev300.asm(173)
 [ENDIF]
 	Selected {ELSE} block.
 

@@ -1,9 +1,9 @@
 --
 -- swioports.vhd
 --   Switched I/O ports ($40-$4F)
---   Revision 11
+--   Revision 12
 --
--- Copyright (c) 2011-2023 KdL
+-- Copyright (c) 2011-2024 KdL
 -- All rights reserved.
 --
 -- Redistribution and use of this source code or any derivative works, are
@@ -95,6 +95,7 @@ entity switched_io_ports is
         GreenLvEna      : out   std_logic;
         -- 'RESET' group
         cold_reset_comb : in    std_logic;                                  -- Cold Reset combination
+        warm_reset_comb : in    std_logic;                                  -- Warm Reset combination
         swioRESET_n     : inout std_logic;                                  -- Reset Pulse
         warmRESET       : inout std_logic;                                  -- 0=Cold Reset, 1=Warm Reset
         WarmMSXlogo     : inout std_logic;                                  -- Show MSX logo with Warm Reset
@@ -116,6 +117,8 @@ entity switched_io_ports is
         Mapper0_req     : inout std_logic;                                  -- Extra-Mapper req         :   Warm Reset is required to complete the request
         Mapper0_ack     : inout std_logic;                                  -- Current Extra-Mapper state
         iPsg2_ena       : inout std_logic;                                  -- Internal PSG2 enabler
+        cbios_mode      : out   std_logic;                                  -- C-BIOS Mode              :  0=Off (default), 1=On
+        xmr_ena         : inout std_logic;                                  -- Extended MegaROM Reading :  0=Off (default for compatibility), 1=On
         -- 'VARIABLES' group
         SdrSize         : in    std_logic_vector(  1 downto 0 );
         VDP_ID          : out   std_logic_vector(  4 downto 0 );
@@ -137,7 +140,7 @@ architecture RTL of switched_io_ports is
     constant ocm_pld_z  : std_logic_vector(  1 downto 0 ) :=       "10";    -- 2
 
     -- Switched I/O Ports revision number (0-31)                            -- Switched I/O ports Revision 0 ~ 31
-    constant swioRevNr  : std_logic_vector(  4 downto 0 ) :=    "01011";    -- 11
+    constant swioRevNr  : std_logic_vector(  4 downto 0 ) :=    "01100";    -- 12
 
 begin
     -- out assignment: 'ports $40-$4F'
@@ -182,9 +185,12 @@ begin
             iSlt2_linear & iSlt1_linear & legacy_sel & not centerYJK_R25_n & (not RatioMode + 1) & right_inverse
                 when( (adr(3 downto 0) = "1010") and (io40_n = "00101011") )else
 --  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            -- $4B ID212 (dynamic port 4B) if $44 ID212 equ #000 states as below => read only
+            -- $4B ID212 (dynamic port 4B), if $44 ID212 equ #000 states as below => read only
             Slot0_req & Mapper0_req & bios_reload_req & SdrSize & iPsg2_ena & vga_scanlines
                 when( (adr(3 downto 0) = "1011") and (io40_n = "00101011") and (io44_id212 = "00000000") )else
+            -- $4B ID212 (dynamic port 4B), if $44 ID212 equ #001 states as below => read only
+            "1111111" & xmr_ena
+                when( (adr(3 downto 0) = "1011") and (io40_n = "00101011") and (io44_id212 = "00000001") )else
 --  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             -- $4C ID212 states of physical dip-sw => read only
             ff_dip_req
@@ -215,11 +221,12 @@ begin
             if( reset = '1' )then
 
                 swioRESET_n     <=  '1';                    -- End of Reset pulse
-                io40_n          <=  "11111111";             -- Override Port $40 after any reboot
-                vram_slot_ids   <=  "00010000";             -- Restore VRAM Slot ID after any reboot
+                io40_n          <=  "11111111";             -- Override Port $40 after each reboot
+                vram_slot_ids   <=  "00010000";             -- Restore VRAM Slot ID after each reboot
                 bios_reload_req <=  '0';                    -- OCM-BIOS Reloading is Off (default)
                 bios_reload_ack <=  '0';                    -- End of OCM-BIOS Reloading
-                RatioMode       <=  "000";                  -- Restore Pixel Ratio 1:1 for LED Display after any reboot
+                RatioMode       <=  "000";                  -- Restore Pixel Ratio 1:1 for LED Display after each reboot
+                cbios_mode      <=  '0';                    -- C-BIOS Mode is Off after each reboot
                 if( warmRESET /= '1' )then
                     -- Cold Reset
                     OFFSET_Y        <=  "0010011";          -- Default Vertical Offset
@@ -261,6 +268,7 @@ begin
                     Mapper0_req     <=  '0';                -- Set Extra-Mapper state is Off
                     Mapper0_ack     <=  '0';                -- Prevent system crash using a toggle
                     iPsg2_ena       <=  '0';                -- Internal PSG2 is Off
+                    xmr_ena         <=  '0';                -- Extended MegaROM Reading is Off
                 else
                     -- Warm Reset
                     io42_id212(6)   <=  Mapper_req;         -- Set Mapper state to last required
@@ -369,7 +377,7 @@ begin
                                 end if;
                             end if;
                         end if;
-                        if( io43_id212(0) = '0' )then                           -- BIT[0]=0     of  Lock Mask
+                        if( io43_id212(0) = '0' and Fkeys(6) = '0' )then        -- BIT[0]=0     of  Lock Mask   +   LCTRL key   is Off
                             if( Fkeys(0) /= vFKeys(0) )then                     -- F12          is  TURBO selector
                                 if( io41_id008_n = '1' and io42_id212(0) = '0' )then
                                     io41_id008_n    <=  '0';                    -- 3.58MHz      >>  5.37MHz
@@ -486,7 +494,7 @@ begin
                                 end if;
                             end if;
                         end if;
-                        if( io43_id212(3) = '0' )then                           -- BIT[3]=0     of  Lock Mask
+                        if( io43_id212(3) = '0' and Fkeys(6) = '0' )then        -- BIT[3]=0     of  Lock Mask   +   LCTRL key   is Off
                             if( Fkeys(0) /= vFKeys(0) )then                     -- SHIFT+F12    is  SLOT1 selector
                                 io42_id212(3)   <=  not io42_id212(3);
                                 iSlt1_linear    <=  '0';
@@ -796,16 +804,27 @@ begin
                             when "01010110" =>                                  -- Extra-Mapper 4096 kB Off (warm reset to go) (default)
                                 if( SdrSize /= "00" )then
                                     Mapper0_req     <=  '0';
+                                    if( ff_ldbios_n = '0' )then                 -- Extra-Mapper 4096 kB Off (ready to go) [Reserved to IPL-ROM]
+                                        Mapper0_ack <=  '0';
+                                    end if;
                                 else
                                     io41_id212_n    <=  "11111111";             -- Not available when SDRAM size is 8 MB
                                 end if;
                             when "01010111" =>                                  -- Extra-Mapper 4096 kB On (warm reset to go)
                                 if( SdrSize /= "00" )then
                                     Mapper0_req     <=  '1';
+                                    if( ff_ldbios_n = '0' )then                 -- Extra-Mapper 4096 kB On (ready to go) [Reserved to IPL-ROM]
+                                        Mapper0_ack <=  '1';
+                                    end if;
                                 else
                                     io41_id212_n    <=  "11111111";             -- Not available when SDRAM size is 8 MB
                                 end if;
-                            -- SMART CODES  #088, #..., #126                    -- Free Group
+                            -- SMART CODES  #088, #089
+                            when "01011000" =>                                  -- Extended MegaROM Reading Off (default for compatibility)
+                                xmr_ena         <=  '0';
+                            when "01011001" =>                                  -- Extended MegaROM Reading On (ASCII-8K/16K max size playable)
+                                xmr_ena         <=  '1';
+                            -- SMART CODES  #090, #..., #126                    -- Free Group
                             -- SMART CODE   #127
                             when "01111111" =>                                  -- Pixel Ratio 1:1 for LED Display
                                 RatioMode       <=  RatioMode - 1;
@@ -939,6 +958,10 @@ begin
                             -- SMART CODE   #249
                             when "11111001" =>                                  -- Slot0 Primary Mode (warm reset to go) (internal OPLL disabled)
                                 Slot0_req       <=  '0';
+                                if( ff_ldbios_n = '0' )then                     -- C-BIOS Mode [Reserved to IPL-ROM]
+                                    cbios_mode  <=  '1';                        -- On
+                                    Slot0Mode   <=  '0';
+                                end if;
                             -- SMART CODE   #250
                             when "11111010" =>                                  -- System Logo On (the logo will be displayed after a warm reset)
                                 WarmMSXlogo     <=  not portF4_mode;
@@ -997,6 +1020,7 @@ begin
                                 Slot0_req       <=  '1';
                                 Mapper0_req     <=  '0';
                                 iPsg2_ena       <=  '0';
+                                xmr_ena         <=  '0';
                             -- NULL CODES
                             when others     =>
                                 io41_id212_n    <=  "11111111";                 -- Not available
@@ -1058,6 +1082,12 @@ begin
                     end if;
                     -- in assignment: 'Cold Reset combination'
                     if( cold_reset_comb = '1' )then
+                        bios_reload_ack     <=  bios_reload_req;
+                        swioRESET_n         <=  '0';
+                    end if;
+                    -- in assignment: 'Warm Reset combination'
+                    if( warm_reset_comb = '1' )then
+                        warmRESET           <=  '1';
                         bios_reload_ack     <=  bios_reload_req;
                         swioRESET_n         <=  '0';
                     end if;

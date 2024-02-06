@@ -1,7 +1,7 @@
 --
 -- megaram.vhd
---   Mega-ROM emulation, ASC8K(8Mbits), ASC16K/SCC+(16Mbits)
---   Revision 2.01
+--   Mega-ROM emulation, SCC+/ASC8K(16Mbits), ASC16K(32Mbits)
+--   Revision 3.00
 --
 -- Copyright (c) 2006 Kazuhiro Tsujikawa (ESE Artists' factory)
 -- All rights reserved.
@@ -52,14 +52,17 @@ entity megaram is
 
         ramreq  : out   std_logic;
         ramwrt  : out   std_logic;
-        ramadr  : out   std_logic_vector(20 downto 0);
+        ramadr  : out   std_logic_vector(21 downto 0);
         ramdbi  : in    std_logic_vector( 7 downto 0);
         ramdbo  : out   std_logic_vector( 7 downto 0);
 
         mapsel  : in    std_logic_vector( 1 downto 0);  -- "-0":SCC+, "01":ASC8K, "11":ASC16K
 
         wavl    : out   std_logic_vector(14 downto 0);
-        wavr    : out   std_logic_vector(14 downto 0)
+        wavr    : out   std_logic_vector(14 downto 0);
+
+        -- Extended MegaROM Reading, Added by KdL, 2024/Feb/03rd
+        xmr_ena : in    std_logic
     );
 end megaram;
 
@@ -137,16 +140,25 @@ begin
                 '0';
     RamWrt  <=  wrt;
 
-    -- 2048 kB bank indexing $00~$FF = SCC+
-    -- 2048 kB bank indexing $00~$7F = ASC16K
-    -- 1024 kB bank indexing $00~$7F = ASC8K
-    RamAdr(20)          <=  '0'         when( mapsel = "01" )else
+    -- (R/W) 2048 kB bank indexing $00~$FF = SCC+
+    -- (R/W) 1024 kB bank indexing $00~$7F = ASC8K(L)
+    -- (R/-) 1024 kB bank indexing $80~$FF = ASC8K(H)
+    -- (R/W) 2048 kB bank indexing $00~$7F = ASC16K(L)
+    -- (R/-) 2048 kB bank indexing $80~$FF = ASC16K(H)
+    RamAdr(21)          <=  '0'         when( mapsel /= "11" )else
+                            '0'         when( xmr_ena = '0' )else
+                            '0'         when( (SccBank0(7) = '1' or SccBank2(7) = '1' or SccBank3(7) = '1') and wrt = '1' )else
+                            SccBank0(7) when( adr(14) = '1' )else
+                            SccBank2(7); -- ( adr(14) = '0' );
+
+    RamAdr(20)          <=  '0'         when( xmr_ena = '0' and mapsel = "01" )else
+                            '0'         when( (SccBank0(7) = '1' or SccBank2(7) = '1' or SccBank3(7) = '1') and wrt = '1' and mapsel = "01" )else
                             SccBankL    when( adr(14) = '1' and mapsel = "11" )else
                             SccBankH    when( adr(14) = '0' and mapsel = "11" )else
                             SccBank0(7) when( adr(14 downto 13) = "10" )else
                             SccBank1(7) when( adr(14 downto 13) = "11" )else
                             SccBank2(7) when( adr(14 downto 13) = "00" )else
-                            SccBank3(7);
+                            SccBank3(7); -- ( adr(14 downto 13) = "01" );
 
     -- RAM address (MSB is fixed to '0' in 6000-7FFFh)
     RamAdr(19)          <=  -- SccModeA(6) when( adr(14 downto 13) /= "11" and mapsel(0) = '0' )else
@@ -154,12 +166,12 @@ begin
                             SccBank0(6) when( adr(14 downto 13) = "10" )else
                             SccBank1(6) when( adr(14 downto 13) = "11" )else
                             SccBank2(6) when( adr(14 downto 13) = "00" )else
-                            SccBank3(6);
+                            SccBank3(6); -- ( adr(14 downto 13) = "01" );
 
     RamAdr(18 downto 0) <=  SccBank0(5 downto 0) & adr(12 downto 0) when( adr(14 downto 13) = "10" )else
                             SccBank1(5 downto 0) & adr(12 downto 0) when( adr(14 downto 13) = "11" )else
                             SccBank2(5 downto 0) & adr(12 downto 0) when( adr(14 downto 13) = "00" )else
-                            SccBank3(5 downto 0) & adr(12 downto 0);
+                            SccBank3(5 downto 0) & adr(12 downto 0); -- ( adr(14 downto 13) = "01" );
 
     -- Mapped I/O port access on 9800-98FFh / B800-B8FFh ... Wave memory
     WavReq  <= (req or WavCpy) when SccSel(1) = '1' else '0';
@@ -277,8 +289,8 @@ begin
                     -- ASC16K / 6000-67FFh
                     elsif (adr(11) = '0') then
                         SccBankL <= dbo(6);
-                        SccBank0 <= dbo(7) & dbo(5 downto 0) & '0';
-                        SccBank1 <= dbo(7) & dbo(5 downto 0) & '1';
+                        SccBank0 <= dbo(7) & dbo(5 downto 0) & "0";
+                        SccBank1 <= dbo(7) & dbo(5 downto 0) & "1";
                     end if;
                 end if;
 
@@ -293,8 +305,8 @@ begin
                     -- ASC16K / 7000-77FFh
                     elsif (adr(11) = '0') then
                         SccBankH <= dbo(6);
-                        SccBank2 <= dbo(7) & dbo(5 downto 0) & '0';
-                        SccBank3 <= dbo(7) & dbo(5 downto 0) & '1';
+                        SccBank2 <= dbo(7) & dbo(5 downto 0) & "0";
+                        SccBank3 <= dbo(7) & dbo(5 downto 0) & "1";
                     end if;
                 end if;
             end if;

@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	load BIOS image
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2023 Takayuki Hara
+; Copyright (c) 2021-2024 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -30,6 +30,7 @@
 ; ------------------------------------------------------------------------------
 ; History:
 ;   2022/Oct/22nd  t.hara  Overall revision.  Coded in ZMA v1.0.15
+;   2024/Jan/21st  KdL     Lite version without C-BIOS support and more.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -128,7 +129,7 @@ s1:
 boot_up_bios::
 			call		get_msx_version
 			or			a, a
-			jr			z, bank_init
+			jr			z, bank_init					; if MSX BIOS ID = 0, skip the MSX2 palette
 set_msx2_palette:
 			ld			a, 2
 			out			[vdp_port1], a
@@ -162,7 +163,7 @@ bank_init:
 ;	break:
 ;		a, b, f
 ;	comment:
-;
+;		-
 ; ------------------------------------------------------------------------------
 			scope		load_bios_images
 load_bios_images::

@@ -1,5 +1,5 @@
-Firmware list divided into interchangeable groups
-=================================================
+Firmware list divided into interchangeable groups (v3.9.2)
+==========================================================
                                                                                                                                     { GROUP 1 }
  1chipmsx_br_layout\single_epbios_msxplusplus_backslash  <=  this fw is for 1chipMSX                with Brazilian keyboard / MSX++ official logo
                    \single_epbios_msx2plus_backslash     <=                 1chipMSX                with Brazilian keyboard / MSX2+ logo
@@ -65,37 +65,5 @@ zemmixneo_us_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemm
                    \single_epbios_sx1_backslash          <=                 SX-1 (regular)          with English   keyboard                         <=  default for SX-1 (regular)
 
 
-DIP-SW and Special Keys
-=======================
-GAMING-SPACEBAR     <=  [WIN]
-GRAPH               <=  [F6] or [LALT]
-KANA/CODE           <=  [F7] or [MENU]
-SELECT              <=  [F8]
-CTRL                <=  [LCTRL]
-CANCEL              <=  [RALT]
-EXECUTE             <=  [RCTRL]
-CPU Clock           <=  [F12] or [DIP-SW1]
-Video Output        <=  [(SHIFT+)PRTSCR] or [DIP-SW2/3]
-Audio Mixer         <=  [(SHIFT+)PGUP/PGDOWN/F9/F10/F11]
-Cartridge Slot-1    <=  [SHIFT+F12] or [DIP-SW4]
-Cartridge Slot-2    <=  [SHIFT+SCRLK] or [DIP-SW5/6]
-Internal Mapper     <=  [DIP-SW7] only
-Internal MegaSD     <=  [DIP-SW8] only
-Blackout Mode       <=  [PAUSE]
-CMT                 <=  [SCRLK] on Cyclone I series     { 1chipMSX, Zemmix Neo (KR), Zemmix Neo BR, SX-1 (regular) and [SX-1 Mini/Mini+] }
-Internal OPL3       <=  [SCRLK] on Cyclone IV-E series  { SM-X (regular) and SX-2 }
-Cold Reset          <=  [CTRL+SHIFT+F12]    Due to hardware limitations, this function is unable to reset cartridges on 1st Gen machines.
-System Reset        <=  [HARD RESET KEY]    Three actions are possible:
-                                            1. with a short click you can perform a quick reset;
-                                            2. with a long click you can reload SDBIOS or EPBIOS;
-                                            3. with one more click you can cancel the loading of SDBIOS to start EPBIOS instead.
-
-Extra Keys on Cyclone IV-E series
-=================================
-Autofire ON/OFF     <=  [CTRL+SHIFT+PGDOWN]
-Autofire Speed      <=  [CTRL+PGUP/PGDOWN]  Both LCTRL and RCTRL keys are available for Autofire functionality.
-Autofire Status LED <=  [CTRL+SHIFT+PGUP]   Autofire activates a blinking LED that can be turned off with this key combination.
-
-
 ______________
-KdL 2023.12.13
+KdL 2024.02.03
