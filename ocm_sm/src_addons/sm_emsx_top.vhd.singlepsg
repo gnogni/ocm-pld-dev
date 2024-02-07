@@ -2424,11 +2424,14 @@ begin
     -- Slot 0-2 : FM-BIOS               [ D ]02C000-02FFFF (  16 kB)
     -- Slot 0-3 : rom_free(OPT)         [ D ]03C000-03FFFF (  16 kB)
     -- Slot 1   : (EXTERNAL-SLOT)
-    --            / ESE-SCC1-SMN        [ C ]100000-1FFFFF (1024 kB) <= shared with the 2nd half of ESE-SCC2(L), only for SDRAM < 16 MB
-    --            / Linear-1-SMN        [ C ]100000-10FFFF (  64 kB) <= shared with ESE-SCC1-SMN, only for SDRAM < 16 MB
+    --            / ESE-SCC1-SMN(1M)    [ C ]100000-1FFFFF (1024 kB) <= shared with the 2nd half of ESE-SCC2(L) : only for SDRAM < 16 MB + Mapper 4096kB
+    --            / Linear-1-SMN(1M)    [ C ]100000-10FFFF (  64 kB) <= shared with ESE-SCC1-SMN(1M)            : only for SDRAM < 16 MB + Mapper 4096kB
+    --            / ESE-SCC1-SMN(2M)    [ B ]000000-1FFFFF (2048 kB) <= not shared                              : only for SDRAM < 16 MB + Mapper 2048kB
+    --            / Linear-1-SMN(2M)    [ B ]000000-10FFFF (  64 kB) <= shared with ESE-SCC1-SMN(2M)            : only for SDRAM < 16 MB + Mapper 2048kB
     -- Slot 2   : (EXTERNAL-SLOT)
     --            / ESE-SCC2(L)         [ C ]000000-1FFFFF (2048 kB)
     --            / Linear-2            [ C ]000000-00FFFF (  64 kB) <= shared with ESE-SCC2(L)
+    --            / ESE-SCC2-SMN(H)     [ B ]000000-1FFFFF (2048 kB) <= not shared                              : only for SDRAM < 16 MB + Mapper 2048kB
     -- Slot 3-0 : Mapper                [A+B]000000-1FFFFF (4096 kB)
     -- Slot 3-1 : ExtROM + KanjiROM     [ D ]030000-03BFFF (  48 kB)
     -- Slot 3-2 : MegaSDHC / NEXTOR     [ D ]000000-01FFFF ( 128 kB)
@@ -2454,11 +2457,14 @@ begin
                             "00" & "00" & MapAdr(20)            when( iSltMap  = '1' )else                      -- [ A ]0xxxxx => 2048 kB Main-RAM
                             "00" & "100"                        when( iSltLin2 = '1' )else                      -- [ C ]0xxxxx =>   64 kB Linear over ESE-SCC2(L)
                "0" & Scc2Adr(21) & "10" & Scc2Adr(20)           when( iSltScc2 = '1' and SdrSize /= "00" )else  -- [ C ]0xxxxx => 4096 kB ESE-SCC2(L) + ESE-SCC2(H)
-                            "00" & "10" & Scc2Adr(20)           when( iSltScc2 = '1' )else                      -- [ C ]0xxxxx => 2048 kB ESE-SCC2(L), only for SDRAM < 16 MB
+                            "00" & "10" & Scc2Adr(20)           when( iSltScc2 = '1' and FullRAM = '1' )else    -- [ C ]0xxxxx => 2048 kB ESE-SCC2(L)                   : only for SDRAM < 16 MB + Mapper 4096kB
+               "00" & not Scc2Adr(21) & Scc2Adr(21 downto 20)   when( iSltScc2 = '1' )else                      -- [C+B]0xxxxx => 4096 kB ESE-SCC2(L) + ESE-SCC2-SMN(H) : only for SDRAM < 16 MB + Mapper 2048kB
                             "01" & "100"                        when( iSltLin1 = '1' and SdrSize /= "00" )else  -- [ C ]2xxxxx =>   64 kB Linear over ESE-SCC1
                             "01" & "10" & Scc1Adr(20)           when( iSltScc1 = '1' and SdrSize /= "00" )else  -- [ C ]2xxxxx => 2048 kB ESE-SCC1
-                            "00" & "101"                        when( iSltLin1 = '1' or iSltScc1 = '1' )else    -- [ C ]1xxxxx =>   64 kB Linear over ESE-SCC1-SMN, only for SDRAM < 16 MB
-                                                                                                                -- [ C ]1xxxxx => 1024 kB ESE-SCC1-SMN, only for SDRAM < 16 MB
+                            "00" & "101"    when( (iSltLin1 = '1' or iSltScc1 = '1') and FullRAM = '1' )else    -- [ C ]1xxxxx =>   64 kB Linear over ESE-SCC1-SMN(1M)  : only for SDRAM < 16 MB + Mapper 4096kB
+                                                                                                                -- [ C ]1xxxxx => 1024 kB ESE-SCC1-SMN(1M)              : only for SDRAM < 16 MB + Mapper 4096kB
+                            "00" & "01" & Scc1Adr(20)           when( iSltLin1 = '1' or iSltScc1 = '1' )else    -- [ B ]0xxxxx =>   64 kB Linear over ESE-SCC1-SMN(2M)  : only for SDRAM < 16 MB + Mapper 2048kB
+                                                                                                                -- [ B ]0xxxxx => 2048 kB ESE-SCC1-SMN(2M)              : only for SDRAM < 16 MB + Mapper 2048kB
                             "00" & "110";                                                                       -- [ D ]0xxxxx => 1024 kB ESE-RAM
 --                          "00" & "111";                                                                       -- [ D ]1xxxxx => 1024 kB VRAM
 
@@ -2466,11 +2472,14 @@ begin
                                                                                                                 -- [A+B]000000-1FFFFF (4096 kB) Internal Slot3-0
                             "0000"   & adr(15 downto  0)        when( iSltLin1 = '1' or iSltLin2 = '1' )else    -- [ C ]000000-00FFFF (  64 kB) Internal Slot2 Linear
                                                                                                                 -- [ C ]200000-20FFFF (  64 kB) Internal Slot1 Linear
-                                                                                                                -- [ C ]100000-10FFFF (  64 kB) Internal Slot1 Linear, only for SDRAM < 16 MB
+                                                                                                                -- [ C ]100000-10FFFF (  64 kB) Internal Slot1 Linear   : only for SDRAM < 16 MB + Mapper 4096kB
+                                                                                                                -- [ B ]000000-1FFFFF (  64 kB) Internal Slot1 Linear   : only for SDRAM < 16 MB + Mapper 2048kB
                             Scc2Adr(19 downto  0)               when( iSltScc2 = '1' )else                      -- [ C ]000000-3FFFFF (4096 kB) Internal Slot2
-                                                                                                                -- [ C ]000000-1FFFFF (2048 kB) Internal Slot2, only for SDRAM < 16 MB
+                                                                                                                -- [ C ]000000-1FFFFF (2048 kB) Internal Slot2          : only for SDRAM < 16 MB + Mapper 4096kB
+                                                                                                                -- [C+B]000000-1FFFFF (4096 kB) Internal Slot2          : only for SDRAM < 16 MB + Mapper 2048kB
                             Scc1Adr(19 downto  0)               when( iSltScc1 = '1' )else                      -- [ C ]200000-3FFFFF (2048 kB) Internal Slot1
-                                                                                                                -- [ C ]100000-1FFFFF (1024 kB) Internal Slot1, only for SDRAM < 16 MB
+                                                                                                                -- [ C ]100000-1FFFFF (1024 kB) Internal Slot1          : only for SDRAM < 16 MB + Mapper 4096kB
+                                                                                                                -- [ B ]000000-1FFFFF (2048 kB) Internal Slot1          : only for SDRAM < 16 MB + Mapper 2048kB
                             "0"      & ErmAdr(18 downto  0)     when( iSltErm  = '1' )else                      -- [ D ]000000-07FFFF ( 512 kB) Internal Slot3-2
                             "00100"  & adr(14 downto  0)        when( rom_main = '1' )else                      -- [ D ]020000-027FFF (  32 kB) Internal Slot0-0
                             "001010" & adr(13 downto  0)        when( rom_xbas = '1' )else                      -- [ D ]028000-02BFFF (  16 kB) Internal Slot3-3
