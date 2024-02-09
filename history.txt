@@ -117,7 +117,7 @@ v3.9.2 [2024.02.03] [KdL's Updates!] [ALPHA13]
 - Updated Intel Quartus Prime Lite Edition to version 23.1 and Nextor kernel to version 2.1.2 (2023.12.13)
 - Improved IPL-ROM with support for C-BIOS, also added these two extra key combinations:
   [RALT] to set Slot0 in Primary mode at startup and [RCTRL] to enable Extra-Mapper 4096KB at startup. (2024.01.21)
-- Improved ESE-MegaRAM with the ability to read ASCII-16K up to 4096kB and ASCII-8K up to 2048kB. (2024.02.03)
+- Improved ESE-MegaRAM with the ability to read ASCII-16K up to 4096KB and ASCII-8K up to 2048KB. (2024.02.03)
 - Added the key combination [LCTRL+F12] to perform Warm Reset from the keyboard. (2024.02.03)
 - Updated the MSX++ v1.4 logo in the project hex-files. (2024.02.03)
 
@@ -138,8 +138,8 @@ v3.9.1 [2022.09.24] [KdL's Updates!]
 - Updated Switched I/O ports ($40-$4F) module to Revision 11:
   new Dynamic Port 4B that extends the I/O capacity by an additional 254 sub-ports based on the value of port $44;
   new smart command "Reserve OCM-BIOS Reloading" useful for managing several SDBIOS without turning off the power;
-  new Extra-Mapper 4096kB on Slot0-1 actionable by GETRESET or SETSMART commands for all machines with at least
-  16MB SDRAM, the size of system RAM can now be selected from 2048kB, 4096kB, 6144kB and 8192kB;
+  new Extra-Mapper 4096KB on Slot0-1 actionable by GETRESET or SETSMART commands for all machines with at least
+  16MB SDRAM, the size of system RAM can now be selected from 2048KB, 4096KB, 6144KB and 8192KB;
   new Internal PSG2 (acting as an external PSG) for 2nd Gen machines only, PSG2 logic was implemented by Ducasp;
   improved access to tPANA on port $41 ID $08, so that the 5.37 MHz cpu clock is handled properly by most programs.
 - Updated documentation in the [docs\] folder, added the "startup processing v3.9.1" by HRA!, which explains
@@ -195,13 +195,13 @@ Notes and warnings:
   A hardware patch can be made by isolating pin 15 of the slots from the reset button and connecting it to pin 16.
   This patch also requires custom firmware with the appropriate changes, so I do NOT recommend its use.
 - The ESP8266 Wi-Fi BIOS has NOT been integrated into EPBIOS because its full maturity has not yet been reached.
-- When Extra-Mapper 4096kB is enabled, you may encounter anomalies or system crashes with some software, as is the
+- When Extra-Mapper 4096KB is enabled, you may encounter anomalies or system crashes with some software, as is the
   case with Micro Music v3.1, but this depends on how they were programmed. MPCM can handle all that RAM.
 
 Some known issues:
 - The sprites disable and enable after three lines instead of after one line, reported by Grauw and Andre.
 - Some PSG sounds are not played accurately and sometimes the OPLL drum kit sounds too loud.
-- The current version of MSX turboR BIOS can be started with Internal Mapper 4096kB only using Nextor kernel
+- The current version of MSX turboR BIOS can be started with Internal Mapper 4096KB only using Nextor kernel
   and generates some issues with the PSG output (simply just listen to the beep sound to confirm it).
 - DIX game won't start due to INT_n inaccuracy, a temporary patch can run it by changing 00293h from C8h to 00h.
 - The CMT input on 1st Gen machines causes an increase in video noise of VGA modes, slightly affecting luminance.
@@ -276,7 +276,7 @@ Related to SM-X:
 - New DIP-SW User Manual for SM-X in the [docs\] folder and pinout description for the Joystick to MIDI cable.
 - New MYDRI v1.06 in the [msxtools\] folder, an impressive MIDI player compatible with SM-X.
 - New dedicated scripts to compile and collect firmware for SM-X.
-- New IPL-ROM Revision 2.00 with 512kB Dual-EPBIOS to allow a rapid exchange of MegaSDHC and Nextor kernels
+- New IPL-ROM Revision 2.00 with 512KB Dual-EPBIOS to allow a rapid exchange of MegaSDHC and Nextor kernels
   via DIP-SW7. The use of SDBIOS will continue to run in single mode to maintain an optimal user experience.
 - Improved some general aspects between faster system startup, clearer HDMI sound output and other things.
 - Added the DIP-SW8 status LED to display read/write access to the SD card.
@@ -363,8 +363,8 @@ v3.5 [2017.10.10] [KdL's Updates!]
   added Slot-0 Primary Mode signal to the smart commands, useful to disable FM-BIOS or to run some old games.
 - Updated DIP-SW User Manual in the [docs\] folder.
 - Updated some scripts to compile and collect firmware.
-- New ESE-MegaSCC+ 1024kB for the Slot-1, shared with the 2nd half of ESE-MegaSCC+ Slot-2.
-- New ESE-MegaSCC+ 2048kB for the Slot-2, tested with the beta version of Super Mario World.
+- New ESE-MegaSCC+ 1024KB for the Slot-1, shared with the 2nd half of ESE-MegaSCC+ Slot-2.
+- New ESE-MegaSCC+ 2048KB for the Slot-2, tested with the beta version of Super Mario World.
 - New 'mglocm.com' with 16 Mbits ROM support in the [msxtools\mglocm\] folder.
 - Improved Slot3-3 allocation, BASIC'n and IPL-ROM are shared now and Slot0-1 is free to use any novelties.
 - In this release all Zemmix Neo firmware are interchangeable with each other.
@@ -374,7 +374,7 @@ v3.4.2 [2017.10.02] [KdL's Updates!]
 - Updated DIP-SW User Manual in the [docs\] folder.
 - Updated some scripts to compile and collect firmware.
 - New 'z80_and_r800_opcodes_list.pdf' v1.05 by GDX in the [esemsx3\src\cpu\opcodes\] folder.
-- New ESE-MegaRAM ASCII-16K 2048kB, tested with the game Pointless Fighting!
+- New ESE-MegaRAM ASCII-16K 2048KB, tested with the game Pointless Fighting!
 - Added 'details.txt' to the [firmware\] folder, inside there are firmware descriptions and special keys.
 
 v3.4.1 [2017.09.22] [KdL's Updates!]
@@ -388,12 +388,12 @@ v3.4 [2017.09.18] [KdL's Updates!]
   Right Inverse Audio is a good solution for recording really clean balanced audio, suggested by Grauw.
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated all scripts to compile and collect firmware and added new ones to better manage the multi-release.
-- New generation of hex-files 304kB from OCM-SDBIOS Pack v2.0
-- New IPL-ROM Revision 2.00 that loads 304kB EPBIOS or 512kB SDBIOS with autodetection of JIS-ROM and F4 Device.
+- New generation of hex-files 304KB from OCM-SDBIOS Pack v2.0
+- New IPL-ROM Revision 2.00 that loads 304KB EPBIOS or 512KB SDBIOS with autodetection of JIS-ROM and F4 Device.
 - New method to improve the system boot time... I am very proud of this result!
 - New contents in the [msxtools\] folder, RTC save v2.2 with source code, new JIS Table and SwapEIDI tools.
 - Added support to Nextor kernel, MSX turboR BIOS and JIS 2nd level: a proper SDBIOS is required for them.
-- Bug fixes and improvements on Internal Mapper 2048kB, Kanji ROM controller, Hard Reset Key lock and I/O ports.
+- Bug fixes and improvements on Internal Mapper 2048KB, Kanji ROM controller, Hard Reset Key lock and I/O ports.
 - New optimization trick which gives a big reduction of 5% in logic elements.
 - The default synthesis settings have been reset to "Area" and "Normal compilation".
 - There are many PLDs in this package, choose the one you like from the [firmware\] folder.
@@ -405,7 +405,7 @@ Notes and warnings:
 
 
 v3.3.3 [2017.06.07] [KdL's Updates!]
-- New hex-files 304kB from OCM-SDBIOS Pack v1.9.2 with MSX3 Final Release and Zemmix Neo logos.
+- New hex-files 304KB from OCM-SDBIOS Pack v1.9.2 with MSX3 Final Release and Zemmix Neo logos.
   "UK layout with backslash" is the default profile from now.
 - New 'pld_collector.cmd' script, a simple collector tool for testing more PLDs.
 - Fixed access to port $40 for external cartridges, thanks to WORP3.
@@ -430,8 +430,8 @@ v3.3.1 [2017.03.16] [KdL's Updates!]
 v3.3 [2017.03.12] [KdL's Updates!]
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated the [msxtools\] folder: use 'eset.com' to add more drive letters and 'ep.com' to mount the disk images.
-- New hex-files 304kB from OCM-SDBIOS Pack v1.9 with MSX3 Final Release and Zemmix Neo logos.
-- New IPL-ROM Revision 1.05(K) that quickly loads a 304kB EPBIOS/384kB SDBIOS.
+- New hex-files 304KB from OCM-SDBIOS Pack v1.9 with MSX3 Final Release and Zemmix Neo logos.
+- New IPL-ROM Revision 1.05(K) that quickly loads a 304KB EPBIOS/384KB SDBIOS.
 - New SDHC support by Yuukun-OKEI, thanks to MAX.
 - New useful scripts for easy compilation and collection of firmware.
 - Added Brazilian keyboard layout by Fabio Belavenuto, Luis Luca and Emiliano Vaz Fraga.
@@ -462,8 +462,8 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - Updated Switched I/O ports ($40-$4F) module to Revision 4.
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated the [msxtools\] folder.
-- New hex-files 320kB from OCM-SDBIOS Pack v1.4 with MSX3 and Zemmix Neo logos.
-- New IPL-ROM Revision 1.01(K) that quickly loads a 320kB EPBIOS/384kB SDBIOS.
+- New hex-files 320KB from OCM-SDBIOS Pack v1.4 with MSX3 and Zemmix Neo logos.
+- New IPL-ROM Revision 1.01(K) that quickly loads a 320KB EPBIOS/384KB SDBIOS.
 - New LFSR counter for RTC module and speed limiter for logo animation.
 - New external clock rule, the toggles are limited to 5.37MHz for async mode.
 - New ID "Machine Type" (0-15) for OCM, Zemmix Neo, Altera DE0/DE1, etc.
@@ -474,7 +474,7 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - Added undocumented XY-Flags for CPI/CPD in the T80 core, by TobiFlex.
 - Fixed the black screen event with MegaSD Off, by caro.
 - Fixed various bug on H-Sync and V-Sync of VDP TH9958.
-- Increased VRAM to 1024kB, a full control of 16 pages by 64kB is allowed.
+- Increased VRAM to 1024KB, a full control of 16 pages by 64KB is allowed.
 - Increased the boot speed with cpu clock at 3.58MHz.
 - Improved the hard reset rules and increased the stability of system.
 - Restored [SHIFT+UP/DOWN] toggles to the original master volume.

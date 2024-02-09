@@ -197,7 +197,7 @@ loop:
 			ex			af,af'
 			call		set_bank
 			push		hl
-			ld			b, 16384 / 512					; Number of sectors equal to 16KB
+			ld			b, 16384 / 512					; Number of sectors equal to 16 kB
 			ld			hl, 0x8000
 			read_sector_cbr := $ + 1
 			call		sd_read_sector
@@ -386,7 +386,7 @@ set_bank::
 			endscope
 
 ; ------------------------------------------------------------------------------
-;	MEMO: Japanese Key Matrix Table
+;	Memo: Japanese Key Matrix Table
 ;	
 ;	 bit    7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
 ;	      +-----+-----+-----+-----+-----+-----+-----+-----+

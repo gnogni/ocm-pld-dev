@@ -17,7 +17,7 @@ CMT                 <=  [SCRLK] on Cyclone I series     { 1chipMSX, Zemmix Neo (
 Internal OPL3       <=  [SCRLK] on Cyclone IV-E series  { SM-X (regular) and SX-2 }
 
 CANCEL              <=  [RALT]              If held down during BIOS loading, it will enable Slot0 in Primary mode.
-EXECUTE             <=  [RCTRL]             If held down during BIOS loading, it will enable Extra-Mapper 4096kB.
+EXECUTE             <=  [RCTRL]             If held down during BIOS loading, it will enable Extra-Mapper 4096KB.
                                             Since Extra-Mapper is located in Slot0-1, [RCTRL] cannot be used together with [RALT].
 
 Cold Reset          <=  [LCTRL+SHIFT+F12]   It acts like the "GETRESET /C" command.
