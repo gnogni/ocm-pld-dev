@@ -2309,15 +2309,15 @@ begin
                             "00" & "00" & MapAdr(20)                        when( iSltMap  = '1' )else                          -- [ A ]0xxxxx => 2048 kB Mapper(RAM)
                             "00" & "100"                                    when( iSltLin2 = '1' )else                          -- [ C ]0xxxxx =>   64 kB Linear over ESE-SCC2(L) / ESE-SCC2-SMN(L)
                             "0" & Scc2Adr(21) & "10" & Scc2Adr(20)          when( iSltScc2 = '1' and SdrSize /= "00" )else      -- [ C ]0xxxxx => 4096 kB ESE-SCC2(L) + ESE-SCC2(H)
-                            "00" & "1" & Scc2Adr(21 downto 20)              when( iSltScc2 = '1' and Scc2Adr(21) = '0' )else    -- [ C ]0xxxxx => 2048 kB ESE-SCC2-SMN(L)               <= only for SDRAM < 16 MB
-                            "00" & "0" & Scc2Adr(20) & not Scc2Adr(20)      when( iSltScc2 = '1' and FullRAM = '1' )else        -- [A~B]1xxxxx => 2048 kB ESE-SCC2-SMN(H)(M4)           <= only for SDRAM < 16 MB + Mapper 4096 kB
-                            "00" & not Scc2Adr(21) & Scc2Adr(21 downto 20)  when( iSltScc2 = '1' )else                          -- [ B ]0xxxxx => 2048 kB ESE-SCC2-SMN(H)(M2)           <= only for SDRAM < 16 MB + Mapper 2048 kB
+--                          "00" & "1" & Scc2Adr(21 downto 20)              when( iSltScc2 = '1' and Scc2Adr(21) = '0' )else    -- [ C ]0xxxxx => 2048 kB ESE-SCC2-SMN(L)               <= only for SDRAM < 16 MB
+--                          "00" & "0" & Scc2Adr(20) & not Scc2Adr(20)      when( iSltScc2 = '1' and FullRAM = '1' )else        -- [A~B]1xxxxx => 2048 kB ESE-SCC2-SMN(H)(M4)           <= only for SDRAM < 16 MB + Mapper 4096 kB
+--                          "00" & not Scc2Adr(21) & Scc2Adr(21 downto 20)  when( iSltScc2 = '1' )else                          -- [ B ]0xxxxx => 2048 kB ESE-SCC2-SMN(H)(M2)           <= only for SDRAM < 16 MB + Mapper 2048 kB
                             "01" & "100"                                    when( iSltLin1 = '1' and SdrSize /= "00" )else      -- [ C ]2xxxxx =>   64 kB Linear over ESE-SCC1
                             "01" & "10" & Scc1Adr(20)                       when( iSltScc1 = '1' and SdrSize /= "00" )else      -- [ C ]2xxxxx => 2048 kB ESE-SCC1
-                            "00" & "001"                                    when( iSltLin1 = '1' and FullRAM = '1' )else        -- [ A ]1xxxxx =>   64 kB Linear over ESE-SCC1-SMN(M4)  <= only for SDRAM < 16 MB + Mapper 4096 kB
-                            "00" & "0" & Scc1Adr(20) & not Scc1Adr(20)      when( iSltScc1 = '1' and FullRAM = '1' )else        -- [A~B]1xxxxx => 2048 kB ESE-SCC1-SMN(M4)              <= only for SDRAM < 16 MB + Mapper 4096 kB
-                            "00" & "010"                                    when( iSltLin1 = '1' )else                          -- [ B ]0xxxxx =>   64 kB Linear over ESE-SCC1-SMN(M2)  <= only for SDRAM < 16 MB + Mapper 2048 kB
-                            "00" & "01" & Scc1Adr(20)                       when( iSltScc1 = '1' )else                          -- [ B ]0xxxxx => 2048 kB ESE-SCC1-SMN(M2)              <= only for SDRAM < 16 MB + Mapper 2048 kB
+--                          "00" & "001"                                    when( iSltLin1 = '1' and FullRAM = '1' )else        -- [ A ]1xxxxx =>   64 kB Linear over ESE-SCC1-SMN(M4)  <= only for SDRAM < 16 MB + Mapper 4096 kB
+--                          "00" & "0" & Scc1Adr(20) & not Scc1Adr(20)      when( iSltScc1 = '1' and FullRAM = '1' )else        -- [A~B]1xxxxx => 2048 kB ESE-SCC1-SMN(M4)              <= only for SDRAM < 16 MB + Mapper 4096 kB
+--                          "00" & "010"                                    when( iSltLin1 = '1' )else                          -- [ B ]0xxxxx =>   64 kB Linear over ESE-SCC1-SMN(M2)  <= only for SDRAM < 16 MB + Mapper 2048 kB
+--                          "00" & "01" & Scc1Adr(20)                       when( iSltScc1 = '1' )else                          -- [ B ]0xxxxx => 2048 kB ESE-SCC1-SMN(M2)              <= only for SDRAM < 16 MB + Mapper 2048 kB
                             "00" & "110";                                                                                       -- [ D ]0xxxxx => 1024 kB ESE-RAM
 --                          "00" & "111";                                                                                       -- [ D ]1xxxxx => 1024 kB VRAM
 
