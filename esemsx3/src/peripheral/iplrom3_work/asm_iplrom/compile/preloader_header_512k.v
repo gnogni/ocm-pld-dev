@@ -34,11 +34,11 @@
 // IPL-ROM PRELOADER v1.02 for EPCS16 or higher
 
 module iplrom (
-	input			clk,
-	input	[15:0]	adr,
-	output	[ 7:0]	dbi
+    input           clk,
+    input   [15:0]  adr,
+    output  [ 7:0]  dbi
 );
-	reg		[ 7:0]	ff_dbi;
+    reg     [ 7:0]  ff_dbi;
 
-	always @( posedge clk ) begin
-		case( adr[ 8:0] )
+    always @( posedge clk ) begin
+        case( adr[ 8:0] )

@@ -32,11 +32,11 @@
 //
 
 module iplrom (
-	input			clk,
-	input	[15:0]	adr,
-	output	[ 7:0]	dbi
+    input           clk,
+    input   [15:0]  adr,
+    output  [ 7:0]  dbi
 );
-	reg		[ 7:0]	ff_dbi;
+    reg     [ 7:0]  ff_dbi;
 
-	always @( posedge clk ) begin
-		case( adr[10:0] )
+    always @( posedge clk ) begin
+        case( adr[10:0] )
