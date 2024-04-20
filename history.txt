@@ -89,7 +89,7 @@
 --                Alexandre Da Silva Oliveira, Fabio Ritter, Mauricio Ferreira Cresti, Benjamin Wiley Sittler,
 --                Mario Cavalcanti, Danilo Angelo, Patrick van Arkel, Massimiliano Privato, Jacco Bot, Ferrerico,
 --                Maarten Loor, Andre Ruiz, Emiliano Olea Lucas, Miguel Colom Barco, Thomas Budsa, Marco Casali,
---                Francisco J. Estévez, Andrea Di Dio and Cesare Zavattari.
+--                Francisco J. Estévez, Andrea Di Dio, Cesare Zavattari, Franck Sataud.
 -------------------------------------------------------------------------------------------------------------------
 --
 -- OCM-PLD is the "MSX++ Official Firmware" from 2022/Jul/21st 11:10AM (CEST) thanks to 西 和彦 [Mr. Kazuhiko Nishi]
@@ -119,7 +119,8 @@ v3.9.2 [2024.02.03] [KdL's Updates!] [ALPHA13]
   [RALT] to set Slot0 in Primary mode at startup and [RCTRL] to enable Extra-Mapper 4096KB at startup. (2024.01.21)
 - Improved ESE-MegaRAM with the ability to read ASCII-16K up to 4096KB and ASCII-8K up to 2048KB. (2024.02.03)
 - Added the key combination [LCTRL+F12] to perform Warm Reset from the keyboard. (2024.02.03)
-- Updated the MSX++ v1.4 logo in the project hex-files. (2024.02.03)
+- Updated the MSX++ v1.4 logo in the project HEX files. (2024.02.03)
+- Updated 'mglocm.com' v2.4b (2024.02.05) in the [msxtools\mglunch\] folder, by ToughkidCST.
 
 v3.9.1 [2022.11.27] [KdL's Updates!] [REPACK]
 
@@ -388,7 +389,7 @@ v3.4 [2017.09.18] [KdL's Updates!]
   Right Inverse Audio is a good solution for recording really clean balanced audio, suggested by Grauw.
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated all scripts to compile and collect firmware and added new ones to better manage the multi-release.
-- New generation of hex-files 304KB from OCM-SDBIOS Pack v2.0
+- New generation of HEX files 304KB from OCM-SDBIOS Pack v2.0
 - New IPL-ROM Revision 2.00 that loads 304KB EPBIOS or 512KB SDBIOS with autodetection of JIS-ROM and F4 Device.
 - New method to improve the system boot time... I am very proud of this result!
 - New contents in the [msxtools\] folder, RTC save v2.2 with source code, new JIS Table and SwapEIDI tools.
@@ -405,7 +406,7 @@ Notes and warnings:
 
 
 v3.3.3 [2017.06.07] [KdL's Updates!]
-- New hex-files 304KB from OCM-SDBIOS Pack v1.9.2 with MSX3 Final Release and Zemmix Neo logos.
+- New HEX files 304KB from OCM-SDBIOS Pack v1.9.2 with MSX3 Final Release and Zemmix Neo logos.
   "UK layout with backslash" is the default profile from now.
 - New 'pld_collector.cmd' script, a simple collector tool for testing more PLDs.
 - Fixed access to port $40 for external cartridges, thanks to WORP3.
@@ -430,7 +431,7 @@ v3.3.1 [2017.03.16] [KdL's Updates!]
 v3.3 [2017.03.12] [KdL's Updates!]
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated the [msxtools\] folder: use 'eset.com' to add more drive letters and 'ep.com' to mount the disk images.
-- New hex-files 304KB from OCM-SDBIOS Pack v1.9 with MSX3 Final Release and Zemmix Neo logos.
+- New HEX files 304KB from OCM-SDBIOS Pack v1.9 with MSX3 Final Release and Zemmix Neo logos.
 - New IPL-ROM Revision 1.05(K) that quickly loads a 304KB EPBIOS/384KB SDBIOS.
 - New SDHC support by Yuukun-OKEI, thanks to MAX.
 - New useful scripts for easy compilation and collection of firmware.
@@ -462,7 +463,7 @@ v3.2 [2013.12.15] [KdL's Updates!]
 - Updated Switched I/O ports ($40-$4F) module to Revision 4.
 - Updated documentation and DIP-SW User Manual in the [docs\] folder.
 - Updated the [msxtools\] folder.
-- New hex-files 320KB from OCM-SDBIOS Pack v1.4 with MSX3 and Zemmix Neo logos.
+- New HEX files 320KB from OCM-SDBIOS Pack v1.4 with MSX3 and Zemmix Neo logos.
 - New IPL-ROM Revision 1.01(K) that quickly loads a 320KB EPBIOS/384KB SDBIOS.
 - New LFSR counter for RTC module and speed limiter for logo animation.
 - New external clock rule, the toggles are limited to 5.37MHz for async mode.
@@ -498,9 +499,9 @@ v3.1 [2011.07.09] [KdL's Updates!]
 - Improved tMSD compatibility, its speedup was reduced to 5.37MHz.
 - Improved hard reset and cartridges detection at boot.
 - Improved code readability of sources 'emsx_top.vhd' and 'swioports.vhd'.
-- Hidden the border color '7' at startup on all hex-files.
+- Hidden the border color '7' at startup on all HEX files.
 - Updated the [msxtools\] folder.
-- Added Western hex-file, suggested for future new layouts.
+- Added Western HEX file, suggested for future new layouts.
 - Added Spanish keyboard layout by DRomeo.
 - MSX2 and MSX2+ all in one. PLDs in this package:
   31ukyen?.pld is  English keyboard layout with yen
@@ -526,7 +527,7 @@ v3.0 [2011.05.19] [KdL's Updates!]
 - Improved code readability of sources replacing tabs with spaces.
 - Minor fixes to improved LEs resources.
 - Updated the [msxtools\] folder.
-- New custom hex-files compressed by Pletter:
+- New custom HEX files compressed by Pletter:
   yen or backslash, 80 columns, key click off and logo antialiasing fix.
 - PLDs in this package: JP layout, UK yen, UK backslash and FR backslash.
 - This release has been optimized with Quartus II 11.0 Web Edition.
@@ -555,7 +556,7 @@ v2.4 [2011.04.13] [KdL's Updates!]
 - Disabled OSD and Debug Window to cut LEs.
 - Disabled SCC interpolation to cut LEs.
 - Modified and updated the [msxtools\] folder.
-- Modified hex-file to get easy a customizable MSX2 bios, mainly to have
+- Modified HEX file to get easy a customizable MSX2 bios, mainly to have
   80 columns, key click sound off, backslash and logo antialiasing fix.
 - PLDs in this package: JP layout, UK yen, UK backslash and FR backslash.
 - This release has been optimized with Quartus II 8.1 Web Edition using:
