@@ -41,7 +41,7 @@
             .org        $FC00
 ;----------------------------------------
 
-SDBIOS_LEN: .equ        32                 ; SDBIOS lenght: 24=384 kB, 32=512 kB
+SDBIOS_LEN: .equ        32                 ; SDBIOS length: 24=384 kB, 32=512 kB
 ;----------------------------------------
 
 begin:                                     ; ### from low memory ($0000) ###
@@ -168,19 +168,19 @@ load_epcs:
             ld          de, $01A0          ; EPCS start adr = 34000h / 512 <304k
 ;----------------------------------------
             ld          a, $80             ; ESE-RAM init adr
-            ld          b, 4-1             ; DISK lenght -1
+            ld          b, 4-1             ; DISK length -1
             call        load_blocks        ;  4 * 16 kB [DATA]
-            ld          b, 4-1             ; FILL ZERO lenght -1
+            ld          b, 4-1             ; FILL ZERO length -1
             call        load_zero_16k      ; +4 * 16 kB [ZERO]
             call        load_blocks        ; +1 * 16 kB [DATA] <= MAIN(1)
             call        set_f4_device      ; set F4 normal or inverted
-            ld          b, 6-1             ; MAIN(2)+XBAS+MUS+SUB+KNJ lenght -1
+            ld          b, 6-1             ; MAIN(2)+XBAS+MUS+SUB+KNJ length -1
             call        load_blocks        ; +7 * 16 kB [DATA]
 ;----------------------------------------
 ;           call        load_blocks        ; +1 * 16 kB [DATA] <= HEX-FILE 320k
             call        load_free_16k      ; +1 * 16 kB [FREE] <= HEX-FILE 304k
 ;----------------------------------------
-            ld          b, 8-1             ; JIS1 lenght -1
+            ld          b, 8-1             ; JIS1 length -1
             call        load_blocks        ; +8 * 16 kB [DATA]
             jr          set_jis2_ena       ; a = $b0 (384 kB) JIS2 enabler = Off
 ;----------------------------------------

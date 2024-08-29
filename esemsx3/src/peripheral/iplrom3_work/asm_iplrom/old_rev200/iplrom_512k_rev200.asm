@@ -41,7 +41,7 @@
             .org        $FC00
 ;----------------------------------------
 
-SDBIOS_LEN: .equ        32                 ; SDBIOS lenght: 24=384 kB, 32=512 kB, 64=1024 kB
+SDBIOS_LEN: .equ        32                 ; SDBIOS length: 24=384 kB, 32=512 kB, 64=1024 kB
 ;----------------------------------------
 
 begin:                                     ; ### from low memory ($0000) ###
@@ -175,10 +175,10 @@ load_epcs:
             ld          d, a               ; EPCS start adr = 180000h if 4096 kB is set
 ;----------------------------------------
             ld          a, $80             ; ESE-RAM init adr
-            ld          b, 9-1             ; DISK+MAIN(1) lenght -1
+            ld          b, 9-1             ; DISK+MAIN(1) length -1
             call        load_blocks        ;   9 * 16 kB [DATA]
             call        set_f4_device      ; set F4 normal or inverted
-            ld          b, SDBIOS_LEN-9-1  ; MAIN(2)+OTHERS lenght -1
+            ld          b, SDBIOS_LEN-9-1  ; MAIN(2)+OTHERS length -1
 ;----------------------------------------  ; +15 * 16 kB [DATA] <= HEX-FILE 384k
             call        load_blocks        ; +23 * 16 kB [DATA] <= HEX-FILE 512k
 ;----------------------------------------  ; +55 * 16 kB [DATA] <= HEX-FILE 1024k
