@@ -212,8 +212,8 @@ BEGIN
                    (VCOUNTERIN > 524 + 38 + DISP_START_Y AND VCOUNTERIN < 524 + 38 + DISP_START_Y + PRB_HEIGHT) OR
                    (VCOUNTERIN > 524 + 526 - PRB_HEIGHT) )THEN
                 -- PIXEL RATIO 1:1 (VGA MODE, 60HZ, NOT INTERLACED)
---              IF( EVENODD = '0' )THEN                                         -- PLOT FROM TOP-RIGHT
-                IF( EVENODD = '1' )THEN                                         -- PLOT FROM TOP-LEFT
+--              IF( EVENODD = '0' )THEN                                         -- Plot from top-right
+                IF( EVENODD = '1' )THEN                                         -- Plot from top-left
                     DISP_START_X := BASE_LEFT_X + CONV_INTEGER(NOT RATIOMODE);  -- 35 TO 41
                 ELSE
                     DISP_START_X := RIGHT_X;                                    -- 106
@@ -241,7 +241,7 @@ BEGIN
     -- GENERATE V-SYNC SIGNAL
     -- THE VIDEOVSIN_N SIGNAL IS NOT USED
     PROCESS( RESET, CLK21M )
-        CONSTANT CENTER_Y       : INTEGER := 12;                                -- based on HDMI AV output
+        CONSTANT CENTER_Y       : INTEGER := 12;                                -- Based on HDMI AV output
     BEGIN
         IF( RESET = '1' )THEN
             FF_VSYNC_N <= '1';
@@ -300,7 +300,8 @@ BEGIN
             VIDEOOUTX <= '0';
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( (HCOUNTERIN = DISP_START_X) OR
-                    ((HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) AND INTERLACEMODE = '0') )THEN
+--                  (HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) )THEN                             -- Full luminance / Blurred image
+                    ((HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) AND INTERLACEMODE = '0') )THEN   -- Half luminance / Sharp image
                 VIDEOOUTX <= '1';
             ELSIF( (HCOUNTERIN = DISP_START_X + DISP_WIDTH) OR
                     (HCOUNTERIN = DISP_START_X + DISP_WIDTH + (CLOCKS_PER_LINE/2)) )THEN
