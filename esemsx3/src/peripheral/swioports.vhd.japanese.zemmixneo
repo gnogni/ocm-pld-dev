@@ -179,7 +179,7 @@ begin
             Blink_ena & RstReq_sta & LastRst_sta & Red_sta & LightsMode & CmtScro & swioKmap & not io41_id008_n
                 when( (adr(3 downto 0) = "1000") and (io40_n = "00101011") )else
             -- $49 ID212 states as below => read only
-            forced_v_mode & (ntsc_pal_type and (not io42_id212(1) or io42_id212(2))) & MachineID & extclk3m & pseudoStereo
+            forced_v_mode & ntsc_pal_type & MachineID & extclk3m & pseudoStereo
                 when( (adr(3 downto 0) = "1001") and (io40_n = "00101011") )else
             -- $4A ID212 states as below => read only
             iSlt2_linear & iSlt1_linear & legacy_sel & not centerYJK_R25_n & (not RatioMode + 1) & right_inverse
