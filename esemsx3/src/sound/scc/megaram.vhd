@@ -1,7 +1,7 @@
 --
 -- megaram.vhd
 --   Mega-ROM emulation, SCC+/ASC8K(16Mbits), ASC16K(32Mbits)
---   Revision 3.00
+--   Revision 3.01
 --
 -- Copyright (c) 2006 Kazuhiro Tsujikawa (ESE Artists' factory)
 -- All rights reserved.
@@ -40,29 +40,29 @@ library ieee;
 
 entity megaram is
     port(
-        clk21m  : in    std_logic;
-        reset   : in    std_logic;
-        clkena  : in    std_logic;
-        req     : in    std_logic;
-        ack     : out   std_logic;
-        wrt     : in    std_logic;
-        adr     : in    std_logic_vector(15 downto 0);
-        dbi     : out   std_logic_vector( 7 downto 0);
-        dbo     : in    std_logic_vector( 7 downto 0);
+        clk21m      : in    std_logic;
+        reset       : in    std_logic;
+        clkena      : in    std_logic;
+        req         : in    std_logic;
+        ack         : out   std_logic;
+        wrt         : in    std_logic;
+        adr         : in    std_logic_vector(15 downto 0);
+        dbi         : out   std_logic_vector( 7 downto 0);
+        dbo         : in    std_logic_vector( 7 downto 0);
 
-        ramreq  : out   std_logic;
-        ramwrt  : out   std_logic;
-        ramadr  : out   std_logic_vector(21 downto 0);
-        ramdbi  : in    std_logic_vector( 7 downto 0);
-        ramdbo  : out   std_logic_vector( 7 downto 0);
+        ramreq      : out   std_logic;
+        ramwrt      : out   std_logic;
+        ramadr      : out   std_logic_vector(21 downto 0);
+        ramdbi      : in    std_logic_vector( 7 downto 0);
+        ramdbo      : out   std_logic_vector( 7 downto 0);
 
-        mapsel  : in    std_logic_vector( 1 downto 0);  -- "-0":SCC+, "01":ASC8K, "11":ASC16K
+        mapsel      : in    std_logic_vector( 1 downto 0);      -- "-0":SCC+, "01":ASC8K, "11":ASC16K
 
-        wavl    : out   std_logic_vector(14 downto 0);
-        wavr    : out   std_logic_vector(14 downto 0);
+        wavl        : out   std_logic_vector(14 downto 0);
+        wavr        : out   std_logic_vector(14 downto 0);
 
-        -- Extended MegaROM Reading, Added by KdL, 2024/Feb/03rd
-        xmr_ena : in    std_logic
+        -- Extended MegaROM Reading                             -- Added by KdL, 2024/Feb/03rd
+        xmr_ena     : in    std_logic
     );
 end megaram;
 
@@ -236,6 +236,8 @@ begin
     process( reset, clk21m )
     begin
         if( reset = '1' )then
+            SccBankL    <= '0';
+            SccBankH    <= '0';
             SccBank0    <= X"00";
             SccBank1    <= X"01";
             SccBank2    <= X"02";
