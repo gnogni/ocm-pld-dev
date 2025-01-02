@@ -106,20 +106,20 @@ begin
   ----------------------------------------------------------------
   -- PSG register read
   ----------------------------------------------------------------
-  dbi <=          PsgFreqChA( 7 downto 0) when PsgRegPtr = "0000" and adr(1 downto 0) = "10" else
-         "0000" & PsgFreqChA(11 downto 8) when PsgRegPtr = "0001" and adr(1 downto 0) = "10" else
-                  PsgFreqChB( 7 downto 0) when PsgRegPtr = "0010" and adr(1 downto 0) = "10" else
-         "0000" & PsgFreqChB(11 downto 8) when PsgRegPtr = "0011" and adr(1 downto 0) = "10" else
-                  PsgFreqChC( 7 downto 0) when PsgRegPtr = "0100" and adr(1 downto 0) = "10" else
-         "0000" & PsgFreqChC(11 downto 8) when PsgRegPtr = "0101" and adr(1 downto 0) = "10" else
-         "000"  & PsgFreqNoise            when PsgRegPtr = "0110" and adr(1 downto 0) = "10" else
-         "10"   & PsgChanSel              when PsgRegPtr = "0111" and adr(1 downto 0) = "10" else
-         "000"  & PsgVolChA               when PsgRegPtr = "1000" and adr(1 downto 0) = "10" else
-         "000"  & PsgVolChB               when PsgRegPtr = "1001" and adr(1 downto 0) = "10" else
-         "000"  & PsgVolChC               when PsgRegPtr = "1010" and adr(1 downto 0) = "10" else
-                  PsgFreqEnv( 7 downto 0) when PsgRegPtr = "1011" and adr(1 downto 0) = "10" else
-                  PsgFreqEnv(15 downto 8) when PsgRegPtr = "1100" and adr(1 downto 0) = "10" else
-         "0000" & PsgShapeEnv             when PsgRegPtr = "1101" and adr(1 downto 0) = "10" else
+  dbi <=          PsgFreqChA( 7 downto 0) when PsgRegPtr = "0000" and adr(1 downto 0) = "10" else   -- R#0
+         "0000" & PsgFreqChA(11 downto 8) when PsgRegPtr = "0001" and adr(1 downto 0) = "10" else   -- R#1
+                  PsgFreqChB( 7 downto 0) when PsgRegPtr = "0010" and adr(1 downto 0) = "10" else   -- R#2
+         "0000" & PsgFreqChB(11 downto 8) when PsgRegPtr = "0011" and adr(1 downto 0) = "10" else   -- R#3
+                  PsgFreqChC( 7 downto 0) when PsgRegPtr = "0100" and adr(1 downto 0) = "10" else   -- R#4
+         "0000" & PsgFreqChC(11 downto 8) when PsgRegPtr = "0101" and adr(1 downto 0) = "10" else   -- R#5
+         "000"  & PsgFreqNoise            when PsgRegPtr = "0110" and adr(1 downto 0) = "10" else   -- R#6
+         "10"   & PsgChanSel              when PsgRegPtr = "0111" and adr(1 downto 0) = "10" else   -- R#7
+         "000"  & PsgVolChA               when PsgRegPtr = "1000" and adr(1 downto 0) = "10" else   -- R#8
+         "000"  & PsgVolChB               when PsgRegPtr = "1001" and adr(1 downto 0) = "10" else   -- R#9
+         "000"  & PsgVolChC               when PsgRegPtr = "1010" and adr(1 downto 0) = "10" else   -- R#10
+                  PsgFreqEnv( 7 downto 0) when PsgRegPtr = "1011" and adr(1 downto 0) = "10" else   -- R#11
+                  PsgFreqEnv(15 downto 8) when PsgRegPtr = "1100" and adr(1 downto 0) = "10" else   -- R#12
+         "0000" & PsgShapeEnv             when PsgRegPtr = "1101" and adr(1 downto 0) = "10" else   -- R#13
          (others => '1');
 
   ----------------------------------------------------------------
@@ -133,16 +133,16 @@ begin
 
       PsgRegPtr    <= (others => '0');
 
-      PsgFreqChA   <= (others => '1');
-      PsgFreqChB   <= (others => '1');
-      PsgFreqChC   <= (others => '1');
-      PsgFreqNoise <= (others => '1');
-      PsgChanSel   <= (others => '1');
-      PsgVolChA    <= (others => '0');
-      PsgVolChB    <= (others => '0');
-      PsgVolChC    <= (others => '0');
-      PsgFreqEnv   <= (others => '1');
-      PsgShapeEnv  <= (others => '1');
+      PsgFreqChA   <= (others => '0');  -- 12bits R#1 .. R#0
+      PsgFreqChB   <= (others => '0');  -- 12bits R#3 .. R#2
+      PsgFreqChC   <= (others => '0');  -- 12bits R#5 .. R#4
+      PsgFreqNoise <= (others => '0');  --  5bits R#6
+      PsgChanSel   <= (others => '1');  --  6bits R#7
+      PsgVolChA    <= (others => '0');  --  5bits R#8
+      PsgVolChB    <= (others => '0');  --  5bits R#9
+      PsgVolChC    <= (others => '0');  --  5bits R#10
+      PsgFreqEnv   <= (others => '0');  -- 16bits R#12 .. R#11
+      PsgShapeEnv  <= (others => '0');  --  4bits R#13
       PsgEnvReq    <= '0';
 
     elsif (clk21m'event and clk21m = '1') then
@@ -384,23 +384,24 @@ begin
         PsgIndex := PsgVolEnv;
       end if;
 
+      -- Fixed by KdL, 14th/Dec/2024, see 'Logarithmic volume scale' at https://map.grauw.nl/articles/psg_sample.php
       case PsgIndex is
-        when "1111" => PsgTable := "11111111";
-        when "1110" => PsgTable := "10110100";
-        when "1101" => PsgTable := "01111111";
-        when "1100" => PsgTable := "01011010";
-        when "1011" => PsgTable := "00111111";
-        when "1010" => PsgTable := "00101101";
-        when "1001" => PsgTable := "00011111";
-        when "1000" => PsgTable := "00010110";
-        when "0111" => PsgTable := "00001111";
-        when "0110" => PsgTable := "00001011";
-        when "0101" => PsgTable := "00000111";
-        when "0100" => PsgTable := "00000101";
-        when "0011" => PsgTable := "00000011";
-        when "0010" => PsgTable := "00000010";
-        when "0001" => PsgTable := "00000001";
-        when others => PsgTable := "00000000";
+        when "1111" => PsgTable := "11111111";  -- 255
+        when "1110" => PsgTable := "10110100";  -- 180
+        when "1101" => PsgTable := "10000000";  -- 128
+        when "1100" => PsgTable := "01011010";  -- 90
+        when "1011" => PsgTable := "01000000";  -- 64
+        when "1010" => PsgTable := "00101101";  -- 45
+        when "1001" => PsgTable := "00100000";  -- 32
+        when "1000" => PsgTable := "00010111";  -- 23
+        when "0111" => PsgTable := "00010000";  -- 16
+        when "0110" => PsgTable := "00001011";  -- 11
+        when "0101" => PsgTable := "00001000";  -- 8
+        when "0100" => PsgTable := "00000110";  -- 6
+        when "0011" => PsgTable := "00000100";  -- 4
+        when "0010" => PsgTable := "00000011";  -- 3
+        when "0001" => PsgTable := "00000010";  -- 2
+        when others => PsgTable := "00000000";  -- 0
       end case;
 
       if (clkena = '1') then
