@@ -52,6 +52,7 @@ entity PhaseGenerator is port (
   blk    : in BLK_TYPE;
   fnum   : in FNUM_TYPE;
   key    : in std_logic;
+  phold  : in std_logic;
 
   noise  : out std_logic;
   pgout  : out std_logic_vector( 17 downto 0 )
@@ -146,7 +147,11 @@ begin
         if lastkey(conv_integer(slot)) = '0' and key = '1' and (rhythm = '0' or (slot /= "01110" and slot /= "10001")) then
           memin <= (others => '0');
         else
-          memin <= memout + dphase;
+          if phold = '0' then
+            memin <= memout + dphase;
+          else
+            memin <= dphase;
+          end if;
         end if;
         lastkey(conv_integer(slot)) := key;
 

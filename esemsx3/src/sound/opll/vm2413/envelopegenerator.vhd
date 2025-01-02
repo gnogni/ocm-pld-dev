@@ -57,6 +57,7 @@ entity envelopegenerator is
         rr      : in    rr_type;
         rks     : in    rks_type;
         key     : in    std_logic;
+        egmax   : in    std_logic;
 
         egout   : out   std_logic_vector( 12 downto 0 )     --  小数部 6bit
     );
@@ -208,7 +209,9 @@ begin
                     end if;
 
                     -- Generate output
-                    if egtmp(egtmp'high downto egtmp'high-1) = "00" then    -- リミッタ
+                    if egmax = '1' then
+                        egout <= (others => '0');
+                    elsif egtmp(egtmp'high downto egtmp'high-1) = "00" then    -- リミッタ
                         egout <= egtmp(egout'range);
                     else
                         egout <= (others => '1');
