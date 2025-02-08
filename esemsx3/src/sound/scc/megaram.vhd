@@ -140,11 +140,13 @@ begin
                 '0';
     RamWrt  <=  wrt;
 
-    -- (R/W) 2048 kB bank indexing $00~$FF = SCC+
-    -- (R/W) 1024 kB bank indexing $00~$7F = ASC8K(L)
-    -- (R/-) 1024 kB bank indexing $80~$FF = ASC8K(H)
-    -- (R/W) 2048 kB bank indexing $00~$7F = ASC16K(L)
-    -- (R/-) 2048 kB bank indexing $80~$FF = ASC16K(H)
+    -- [R/W] 2048 KB bank indexing $00~$FF = SCC+
+    -- [R/W] 1024 KB bank indexing $00~$7F = ASC8K(L)
+    -- [R/-] 1024 KB bank indexing $80~$FF = ASC8K(H)
+    -- [R/W] 2048 KB bank indexing $00~$7F = ASC16K(L)
+    -- [R/-] 2048 KB bank indexing $80~$FF = ASC16K(H)
+
+    -- Extended RAM address
     RamAdr(21)          <=  '0'         when( mapsel /= "11" )else
                             '0'         when( xmr_ena = '0' )else
                             '0'         when( (SccBank0(7) = '1' or SccBank2(7) = '1' or SccBank3(7) = '1') and wrt = '1' )else
@@ -160,9 +162,9 @@ begin
                             SccBank2(7) when( adr(14 downto 13) = "00" )else
                             SccBank3(7); -- ( adr(14 downto 13) = "01" );
 
-    -- RAM address (MSB is fixed to '0' in 6000-7FFFh)
+    -- Standard RAM address (MSB was fixed to '0' in 6000-7FFFh of the original module)
     RamAdr(19)          <=  -- SccModeA(6) when( adr(14 downto 13) /= "11" and mapsel(0) = '0' )else
-                            -- '0'         when( mapsel(0) = '0' )else
+                            -- '0'         when(                               mapsel(0) = '0' )else
                             SccBank0(6) when( adr(14 downto 13) = "10" )else
                             SccBank1(6) when( adr(14 downto 13) = "11" )else
                             SccBank2(6) when( adr(14 downto 13) = "00" )else
