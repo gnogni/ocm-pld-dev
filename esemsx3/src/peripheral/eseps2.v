@@ -30,10 +30,18 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //------------------------------------------------------------------------------
-// Update note 更新メモ
+// Update note
 //------------------------------------------------------------------------------
 // MMM-DD-YYYY Rev.   Information
-// Apl-24-2022 2.00 - Newly redesigned by t.hara
+// Apr-24-2022 2.00 - Newly redesigned by t.hara
+// Oct-22-2022 2.01 - Branching between 'eseps2.v' and 'sm_eseps2.v'
+// Jan-07-2024 2.02 - Separate RCTRL from LCTRL to serve as EXECUTE by KdL
+// May-16-2025 2.03 - Fixes and optimizations by uniabis
+//                    * Transition directly from IDLE to KEYMAP_READ2 when
+//                      using Japanese keyboard
+//                    * Set non-inverted shift state to keymap address 9 when
+//                      transitioning from MATRIX_READ1_REQ to KEYMAP_READ2
+//                    * LFSR to reduce LEs
 //------------------------------------------------------------------------------
 
 module eseps2 #(
@@ -739,8 +747,8 @@ module eseps2 #(
             end
             else if( ff_matupd_state == MATUPD_ST_MATRIX_READ1_REQ ) begin
                 if( w_keymap_dat == 8'hFF ) begin
-                    ff_matupd_state <= MATUPD_ST_KEYMAP_READ2;
-                    ff_keymap_index[9] <= ff_shift_key;
+                    ff_matupd_state     <= MATUPD_ST_KEYMAP_READ2;
+                    ff_keymap_index[9]  <= ff_shift_key;
                 end
                 else begin
                     ff_matupd_state <= MATUPD_ST_MATRIX_READ1_RES;
@@ -752,10 +760,10 @@ module eseps2 #(
                 ff_matupd_state <= MATUPD_ST_MATRIX_WRITE1;
             end
             else if( ff_matupd_state == MATUPD_ST_MATRIX_WRITE1 ) begin
-                ff_matupd_state <= MATUPD_ST_KEYMAP_READ2;
-                ff_matupd_we    <= 1'b1;
-                ff_matupd_keys  <= w_matrix | w_mask;
-                ff_keymap_index[9] <= ff_shift_key;
+                ff_matupd_state     <= MATUPD_ST_KEYMAP_READ2;
+                ff_matupd_we        <= 1'b1;
+                ff_matupd_keys      <= w_matrix | w_mask;
+                ff_keymap_index[9]  <= ff_shift_key;
             end
             //  ここからは、現在押された/放されたキーに対応する MSXマトリクスのビットを適切な値で上書きする
             else if( ff_matupd_state == MATUPD_ST_KEYMAP_READ2 ) begin
