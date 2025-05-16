@@ -76,7 +76,6 @@ module eseps2 #(
     reg             ff_e1_detect;
     reg             ff_ps2_send;
     reg             ff_ps2_virtual_shift;
-    reg             ff_e0_detect_dl;
 
     // ------------------------------------------------------------------------
     //  PS2 State Machine
@@ -719,9 +718,8 @@ module eseps2 #(
             else if( ff_matupd_state == MATUPD_ST_IDLE ) begin
                 ff_matupd_we    <= 1'b0;
                 if( w_clkena && (ff_ps2_state == PS2_ST_RCV_SCAN) && (ff_ps2_sub_state == PS2_SUB_WAIT) && !ff_e1_detect ) begin
-                    ff_matupd_state <= MATUPD_ST_KEYMAP_READ1;
+                    ff_matupd_state <= Kmap == 1'b1 ? MATUPD_ST_KEYMAP_READ1 : MATUPD_ST_KEYMAP_READ2;
                     ff_key_unpress  <= ff_f0_detect;
-                    ff_e0_detect_dl <= ff_e0_detect;
                     ff_keymap_index <= { ~Kmap, ~ff_shift_key & Kmap, ff_e0_detect, ff_ps2_rcv_dat };
                     ff_matupd_ppi_c <= 1'b0;
                 end
@@ -739,6 +737,7 @@ module eseps2 #(
             else if( ff_matupd_state == MATUPD_ST_MATRIX_READ1_REQ ) begin
                 if( w_keymap_dat == 8'hFF ) begin
                     ff_matupd_state <= MATUPD_ST_KEYMAP_READ2;
+                    ff_keymap_index[9] <= ff_shift_key;
                 end
                 else begin
                     ff_matupd_state <= MATUPD_ST_MATRIX_READ1_RES;
@@ -753,7 +752,7 @@ module eseps2 #(
                 ff_matupd_state <= MATUPD_ST_KEYMAP_READ2;
                 ff_matupd_we    <= 1'b1;
                 ff_matupd_keys  <= w_matrix | w_mask;
-                ff_keymap_index <= { ~Kmap, ff_shift_key & Kmap, ff_e0_detect_dl, ff_ps2_rcv_dat };
+                ff_keymap_index[9] <= ff_shift_key;
             end
             //  ここからは、現在押された/放されたキーに対応する MSXマトリクスのビットを適切な値で上書きする
             else if( ff_matupd_state == MATUPD_ST_KEYMAP_READ2 ) begin
