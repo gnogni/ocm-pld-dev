@@ -68,7 +68,8 @@ module eseps2 #(
 );
     reg     [3:0]   ff_div;
     wire            w_clkena;
-    reg     [14:0]  ff_timer;
+    reg     [15:0]  ff_timer;
+    wire    [15:0]  w_timer_lfsr;
     wire            w_timeout;
     reg     [7:0]   ff_ps2_rcv_dat;
     reg             ff_f0_detect;
@@ -411,10 +412,12 @@ module eseps2 #(
     // ------------------------------------------------------------------------
     //  Timer
     // ------------------------------------------------------------------------
-    localparam      TIMER_107USEC = 15'd24;         //  4.469usec * 24clock    = 107.256usec
-    localparam      TIMER_146MSEC = 15'd32767;      //  4.469usec * 32767clock = 146.435msec
+    localparam      TIMER_107USEC = 16'h5ad0;       //  4.469usec * 24clock    = 107.256usec
+    localparam      TIMER_146MSEC = 16'h7f80;       //  4.469usec * 32767clock = 146.435msec
 
-    assign w_timeout    = (ff_timer == 15'h0000) ? 1'b1 : 1'b0;
+    assign w_timer_lfsr = {ff_timer[14:0],(ff_timer[15] ^ ff_timer[13] ^ ff_timer[12] ^ ff_timer[10])};
+
+    assign w_timeout    = (ff_timer == 16'h0001) ? 1'b1 : 1'b0;
 
     always @( posedge reset or posedge clk21m ) begin
         if( reset ) begin
@@ -436,7 +439,7 @@ module eseps2 #(
                 end
             end
             else if( !w_timeout ) begin
-                ff_timer <= ff_timer - 15'd1;
+                ff_timer <= w_timer_lfsr;
             end
             else begin
                 //  hold
