@@ -114,7 +114,7 @@ begin
         if( reset = '1' )then
             rega <= (others => '0');
         elsif( clk21m'event and clk21m = '1' )then
-            -- psg register #15 bit6 - joystick select : 0=porta, 1=portb
+            -- psg register #15 bit6 - joystick select : 0=port-a, 1=port-b
             if( regb(6) = '0' )then
                 rega(5 downto 0) <= joya_in;
             else
@@ -164,35 +164,31 @@ begin
 
     process( reset, clk21m )
     begin
-        if( clk21m'event and clk21m = '1' )then
-            if( reset = '1' )then
-                joya_out <= (others => 'Z');
-            else
-                -- trigger a/b output joystick porta
-                case regb(1 downto 0) is
-                    when "00"   => joya_out(1 downto 0) <= "00";
-                    when "01"   => joya_out(1 downto 0) <= "0Z";
-                    when "10"   => joya_out(1 downto 0) <= "Z0";
-                    when others => joya_out(1 downto 0) <= "ZZ";
-                end case;
-            end if;
+        if( reset = '1' )then
+            joya_out <= "ZZ";
+        elsif( clk21m'event and clk21m = '1' )then
+            -- trigger a/b output joystick port-a
+            case regb(1 downto 0) is
+                when "00"   => joya_out <= "00";
+                when "01"   => joya_out <= "0Z";
+                when "10"   => joya_out <= "Z0";
+                when others => joya_out <= "ZZ";
+            end case;
         end if;
     end process;
 
     process( reset, clk21m )
     begin
-        if( clk21m'event and clk21m = '1' )then
-            if( reset = '1' )then
-                joyb_out <= (others => 'Z');
-            else
-                -- trigger a/b output joystick portb
-                case regb(3 downto 2) is
-                    when "00"   => joyb_out(1 downto 0) <= "00";
-                    when "01"   => joyb_out(1 downto 0) <= "0Z";
-                    when "10"   => joyb_out(1 downto 0) <= "Z0";
-                    when others => joyb_out(1 downto 0) <= "ZZ";
-                end case;
-            end if;
+        if( reset = '1' )then
+            joyb_out <= "ZZ";
+        elsif( clk21m'event and clk21m = '1' )then
+            -- trigger a/b output joystick port-b
+            case regb(3 downto 2) is
+                when "00"   => joyb_out <= "00";
+                when "01"   => joyb_out <= "0Z";
+                when "10"   => joyb_out <= "Z0";
+                when others => joyb_out <= "ZZ";
+            end case;
         end if;
     end process;
 
