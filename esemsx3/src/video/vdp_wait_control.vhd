@@ -1,9 +1,10 @@
 --
 -- vdp_wait_control.vhd
 --   VDP wait controller for VDP command
---   Revision 1.00
+--   Revision 2.00
 --
 -- Copyright (c) 2008 Takayuki Hara
+-- Copyright (c) 2025 KdL
 -- All rights reserved.
 --
 -- Redistribution and use of this source code or any derivative works, are
@@ -31,6 +32,9 @@
 --
 -- Revision History
 --
+-- 27th,Apr,2025 modified by KdL
+--  - Converted from a constant array to block RAM for resource optimization
+--
 -- 2nd,Jun,2021 modified by KdL
 --  - LMMV is reverted to previous speed in accordance with current VDP module
 --
@@ -44,7 +48,7 @@
 --
 -- 14th,May,2018 modified by KdL
 --  - Improved the speed accuracy of SRCH, LINE, LMMV, LMMM, HMMV, HMMM and YMMM
---  - Guidelines at http://map.grauw.nl/articles/vdp_commands_speed.php
+--  - Guidelines at https://map.grauw.nl/articles/vdp_commands_speed.php
 --
 --  - Some evaluation tests:
 --    - overall duration of the SPACE MANBOW game intro at 3.58MHz
@@ -53,8 +57,9 @@
 --
 
 LIBRARY IEEE;
-    USE IEEE.STD_LOGIC_1164.ALL;
-    USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY VDP_WAIT_CONTROL IS
     PORT(
@@ -79,131 +84,165 @@ ARCHITECTURE RTL OF VDP_WAIT_CONTROL IS
 
     SIGNAL FF_WAIT_CNT  : STD_LOGIC_VECTOR( 15 DOWNTO  0 );
 
-    TYPE WAIT_TABLE_T IS ARRAY(  0 TO 15 ) OF STD_LOGIC_VECTOR( 15 DOWNTO  0 );
-    ---------------------------------------------------------------------------
-    --   "STOP",  "XXXX",  "XXXX",  "XXXX", "POINT",  "PSET",  "SRCH",  "LINE",
-    --   "LMMV",  "LMMM",  "LMCM",  "LMMC",  "HMMV",  "HMMM",  "YMMM",  "HMMC"
-    ---------------------------------------------------------------------------
-    -- Sprite On, 212 Lines, 50Hz
-    CONSTANT C_WAIT_TABLE_501 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"19E4", X"0F30",
-        X"10F8", X"1288", X"8000", X"8000", X"119C", X"1964", X"1590", X"8000"
+    TYPE WAIT_ROM_ARRAY_T IS ARRAY( 0 TO 255 ) OF STD_LOGIC_VECTOR( 15 DOWNTO  0 );
+    SIGNAL WAIT_ROM : WAIT_ROM_ARRAY_T := (
+        ---------------------------------------------------------------
+        --      "STOP",         "XXXX",         "XXXX",         "XXXX",
+        --      "POINT",        "PSET",         "SRCH",         "LINE",
+        --      "LMMV",         "LMMM",         "LMCM",         "LMMC",
+        --      "HMMV",         "HMMM",         "YMMM",         "HMMC",
+        ---------------------------------------------------------------
+        -- C_WAIT_TABLE_501 : Sprite On, 212 Lines, 50Hz
+        0   => X"8000", 1   => X"8000", 2   => X"8000", 3   => X"8000",
+        4   => X"8000", 5   => X"8000", 6   => X"19E5", 7   => X"0F31",
+        8   => X"10F9", 9   => X"1289", 10  => X"8000", 11  => X"8000",
+        12  => X"119D", 13  => X"1965", 14  => X"1591", 15  => X"8000",
+
+        -- C_WAIT_TABLE_502 : Sprite On, 192 Lines, 50Hz
+        16  => X"8000", 17  => X"8000", 18  => X"8000", 19  => X"8000",
+        20  => X"8000", 21  => X"8000", 22  => X"18C9", 23  => X"0E81",
+        24  => X"1019", 25  => X"11B5", 26  => X"8000", 27  => X"8000",
+        28  => X"10B1", 29  => X"1849", 30  => X"1515", 31  => X"8000",
+
+        -- C_WAIT_TABLE_503 : Sprite Off, 212 Lines, 50Hz
+        32  => X"8000", 33  => X"8000", 34  => X"8000", 35  => X"8000",
+        36  => X"8000", 37  => X"8000", 38  => X"1679", 39  => X"0A11",
+        40  => X"0CE5", 41  => X"10AD", 42  => X"8000", 43  => X"8000",
+        44  => X"0CA9", 45  => X"15F9", 46  => X"1521", 47  => X"8000",
+
+        -- C_WAIT_TABLE_504 : Sprite Off, 192 Lines, 50Hz
+        48  => X"8000", 49  => X"8000", 50  => X"8000", 51  => X"8000",
+        52  => X"8000", 53  => X"8000", 54  => X"15B9", 55  => X"0A01",
+        56  => X"0C79", 57  => X"0FFD", 58  => X"8000", 59  => X"8000",
+        60  => X"0C5D", 61  => X"1539", 62  => X"144D", 63  => X"8000",
+
+        -- C_WAIT_TABLE_505 : Blank, 50Hz (Test: Sprite On, 212 Lines)
+        64  => X"8000", 65  => X"8000", 66  => X"8000", 67  => X"8000",
+        68  => X"8000", 69  => X"8000", 70  => X"13C5", 71  => X"08D5",
+        72  => X"0CC5", 73  => X"0E69", 74  => X"8000", 75  => X"8000",
+        76  => X"0CAD", 77  => X"1385", 78  => X"12DD", 79  => X"8000",
+
+        ---------------------------------------------------------------
+        --      "STOP",         "XXXX",         "XXXX",         "XXXX",
+        --      "POINT",        "PSET",         "SRCH",         "LINE",
+        --      "LMMV",         "LMMM",         "LMCM",         "LMMC",
+        --      "HMMV",         "HMMM",         "YMMM",         "HMMC",
+        ---------------------------------------------------------------
+        -- C_WAIT_TABLE_601 : Sprite On, 212 Lines, 60Hz
+        80  => X"8000", 81  => X"8000", 82  => X"8000", 83  => X"8000",
+        84  => X"8000", 85  => X"8000", 86  => X"1AC5", 87  => X"10F1",
+        88  => X"13DD", 89  => X"15B5", 90  => X"8000", 91  => X"8000",
+        92  => X"14CD", 93  => X"1A45", 94  => X"182D", 95  => X"8000",
+
+        -- C_WAIT_TABLE_602 : Sprite On, 192 Lines, 60Hz
+        96  => X"8000", 97  => X"8000", 98  => X"8000", 99  => X"8000",
+        100 => X"8000", 101 => X"8000", 102 => X"18E5", 103 => X"0FC1",
+        104 => X"1275", 105 => X"1425", 106 => X"8000", 107 => X"8000",
+        108 => X"1319", 109 => X"1865", 110 => X"16FD", 111 => X"8000",
+
+        -- C_WAIT_TABLE_603 : Sprite Off, 212 Lines, 60Hz
+        112 => X"8000", 113 => X"8000", 114 => X"8000", 115 => X"8000",
+        116 => X"8000", 117 => X"8000", 118 => X"1675", 119 => X"0AB1",
+        120 => X"0E25", 121 => X"12B5", 122 => X"8000", 123 => X"8000",
+        124 => X"0DFD", 125 => X"15F5", 126 => X"17B5", 127 => X"8000",
+
+        -- C_WAIT_TABLE_604 : Sprite Off, 192 Lines, 60Hz
+        128 => X"8000", 129 => X"8000", 130 => X"8000", 131 => X"8000",
+        132 => X"8000", 133 => X"8000", 134 => X"1565", 135 => X"0A41",
+        136 => X"0D7D", 137 => X"11AD", 138 => X"8000", 139 => X"8000",
+        140 => X"0D59", 141 => X"14E5", 142 => X"167D", 143 => X"8000",
+
+        -- C_WAIT_TABLE_605 : Blank, 60Hz (Test: Sprite On, 212 Lines)
+        144 => X"8000", 145 => X"8000", 146 => X"8000", 147 => X"8000",
+        148 => X"8000", 149 => X"8000", 150 => X"1279", 151 => X"08F1",
+        152 => X"0D59", 153 => X"0EFD", 154 => X"8000", 155 => X"8000",
+        156 => X"0D39", 157 => X"11F9", 158 => X"13D5", 159 => X"8000",
+
+        -- Reserved / Unused (Set to zero)
+        OTHERS => X"0000"
     );
-    -- Sprite On, 192 Lines, 50Hz
-    CONSTANT C_WAIT_TABLE_502 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"18C8", X"0E80",
-        X"1018", X"11B4", X"8000", X"8000", X"10B0", X"1848", X"1514", X"8000"
-    );
-    -- Sprite Off, 212 Lines, 50Hz
-    CONSTANT C_WAIT_TABLE_503 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"1678", X"0A10",
-        X"0CE4", X"10AC", X"8000", X"8000", X"0CA8", X"15F8", X"1520", X"8000"
-    );
-    -- Sprite Off, 192 Lines, 50Hz
-    CONSTANT C_WAIT_TABLE_504 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"15B8", X"0A00",
-        X"0C78", X"0FFC", X"8000", X"8000", X"0C5C", X"1538", X"144C", X"8000"
-    );
-    -- Blank, 50Hz (Test: Sprite On, 212 Lines)
-    CONSTANT C_WAIT_TABLE_505 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"13C4", X"08D4",
-        X"0CC4", X"0E68", X"8000", X"8000", X"0CAC", X"1384", X"12DC", X"8000"
-    );
-    ---------------------------------------------------------------------------
-    --   "STOP",  "XXXX",  "XXXX",  "XXXX", "POINT",  "PSET",  "SRCH",  "LINE",
-    --   "LMMV",  "LMMM",  "LMCM",  "LMMC",  "HMMV",  "HMMM",  "YMMM",  "HMMC"
-    ---------------------------------------------------------------------------
-    -- Sprite On, 212 Lines, 60Hz
-    CONSTANT C_WAIT_TABLE_601 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"1AC4", X"10F0",
-        X"13DC", X"15B4", X"8000", X"8000", X"14CC", X"1A44", X"182C", X"8000"
-    );
-    -- Sprite On, 192 Lines, 60Hz
-    CONSTANT C_WAIT_TABLE_602 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"18E4", X"0FC0",
-        X"1274", X"1424", X"8000", X"8000", X"1318", X"1864", X"16FC", X"8000"
-    );
-    -- Sprite Off, 212 Lines, 60Hz
-    CONSTANT C_WAIT_TABLE_603 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"1674", X"0AB0",
-        X"0E24", X"12B4", X"8000", X"8000", X"0DFC", X"15F4", X"17B4", X"8000"
-    );
-    -- Sprite Off, 192 Lines, 60Hz
-    CONSTANT C_WAIT_TABLE_604 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"1564", X"0A40",
-        X"0D7C", X"11AC", X"8000", X"8000", X"0D58", X"14E4", X"167C", X"8000"
-    );
-    -- Blank, 60Hz (Test: Sprite On, 212 Lines)
-    CONSTANT C_WAIT_TABLE_605 : WAIT_TABLE_T :=(
-        X"8000", X"8000", X"8000", X"8000", X"8000", X"8000", X"1278", X"08F0",
-        X"0D58", X"0EFC", X"8000", X"8000", X"0D38", X"11F8", X"13D4", X"8000"
-    );
+
+    SIGNAL TABLE_IDX         : INTEGER  RANGE 0 TO 9;
+    SIGNAL COMBINED_ADDR     : INTEGER  RANGE 0 TO 255;
+    SIGNAL COMBINED_ADDR_REG : INTEGER  RANGE 0 TO 255;
+    SIGNAL WAIT_ROM_Q        : STD_LOGIC_VECTOR( 15 DOWNTO  0 );
+
 BEGIN
 
     PROCESS( RESET, CLK21M )
     BEGIN
-        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( RESET = '1' )THEN
-                FF_WAIT_CNT <= (OTHERS => '0');
-            ELSE
-                IF( DRIVE = '1' )THEN
-                    -- 50Hz (PAL)
-                    IF( VDPR9PALMODE = '1' )THEN
-                        -- Display On
-                        IF( REG_R1_DISP_ON = '1' )THEN
-                            -- Sprite On
-                            IF( REG_R8_SP_OFF = '0' )THEN
-                                -- 212 Lines
-                                IF( REG_R9_Y_DOTS = '1' )THEN
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_501( CONV_INTEGER( VDP_COMMAND ) );
-                                -- 192 Lines
-                                ELSE
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_502( CONV_INTEGER( VDP_COMMAND ) );
-                                END IF;
-                            -- Sprite Off
+        IF( RESET = '1' )THEN
+            FF_WAIT_CNT         <= (OTHERS => '0');
+            COMBINED_ADDR_REG   <= 0;
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
+            IF( DRIVE = '1' )THEN
+                -- 50Hz (PAL)
+                IF( VDPR9PALMODE = '1' )THEN
+                    -- Display On
+                    IF( REG_R1_DISP_ON = '1' )THEN
+                        -- Sprite On
+                        IF( REG_R8_SP_OFF = '0' )THEN
+                            -- 212 Lines
+                            IF( REG_R9_Y_DOTS = '1' )THEN
+                                TABLE_IDX   <= 0;           -- C_WAIT_TABLE_501
+                            -- 192 Lines
                             ELSE
-                                -- 212 Lines
-                                IF( REG_R9_Y_DOTS = '1' )THEN
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_503( CONV_INTEGER( VDP_COMMAND ) );
-                                -- 192 Lines
-                                ELSE
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_504( CONV_INTEGER( VDP_COMMAND ) );
-                                END IF;
+                                TABLE_IDX   <= 1;           -- C_WAIT_TABLE_502
                             END IF;
-                        -- Display Off (Blank)
+                        -- Sprite Off
                         ELSE
-                            FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_505( CONV_INTEGER( VDP_COMMAND ) );
+                            -- 212 Lines
+                            IF( REG_R9_Y_DOTS = '1' )THEN
+                                TABLE_IDX   <= 2;           -- C_WAIT_TABLE_503
+                            -- 192 Lines
+                            ELSE
+                                TABLE_IDX   <= 3;           -- C_WAIT_TABLE_504
+                            END IF;
                         END IF;
-                    -- 60Hz (NTSC)
+                    -- Display Off (Blank)
                     ELSE
-                        -- Display On
-                        IF( REG_R1_DISP_ON = '1' )THEN
-                            -- Sprite On
-                            IF( REG_R8_SP_OFF = '0' )THEN
-                                -- 212 Lines
-                                IF( REG_R9_Y_DOTS = '1' )THEN
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_601( CONV_INTEGER( VDP_COMMAND ) );
-                                -- 192 Lines
-                                ELSE
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_602( CONV_INTEGER( VDP_COMMAND ) );
-                                END IF;
-                            -- Sprite Off
+                        TABLE_IDX   <= 4;                   -- C_WAIT_TABLE_505
+                    END IF;
+                -- 60Hz (NTSC)
+                ELSE
+                    -- Display On
+                    IF( REG_R1_DISP_ON = '1' )THEN
+                        -- Sprite On
+                        IF( REG_R8_SP_OFF = '0' )THEN
+                            -- 212 Lines
+                            IF( REG_R9_Y_DOTS = '1' )THEN
+                                TABLE_IDX   <= 5;           -- C_WAIT_TABLE_601
+                            -- 192 Lines
                             ELSE
-                                -- 212 Lines
-                                IF( REG_R9_Y_DOTS = '1' )THEN
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_603( CONV_INTEGER( VDP_COMMAND ) );
-                                -- 192 Lines
-                                ELSE
-                                    FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_604( CONV_INTEGER( VDP_COMMAND ) );
-                                END IF;
+                                TABLE_IDX   <= 6;           -- C_WAIT_TABLE_602
                             END IF;
-                        -- Display Off (Blank)
+                        -- Sprite Off
                         ELSE
-                            FF_WAIT_CNT <= ('0' & FF_WAIT_CNT(14 DOWNTO  0)) + C_WAIT_TABLE_605( CONV_INTEGER( VDP_COMMAND ) );
+                            -- 212 Lines
+                            IF( REG_R9_Y_DOTS = '1' )THEN
+                                TABLE_IDX   <= 7;           -- C_WAIT_TABLE_603
+                            -- 192 Lines
+                            ELSE
+                                TABLE_IDX   <= 8;           -- C_WAIT_TABLE_604
+                            END IF;
                         END IF;
+                    -- Display Off (Blank)
+                    ELSE
+                        TABLE_IDX   <= 9;                   -- C_WAIT_TABLE_605
                     END IF;
                 END IF;
+                COMBINED_ADDR       <= TABLE_IDX * 16 + TO_INTEGER(UNSIGNED(VDP_COMMAND));
+                -- Pipeline stage: separation for ROM read
+                COMBINED_ADDR_REG   <= COMBINED_ADDR;
+                FF_WAIT_CNT         <= ('0' & FF_WAIT_CNT( 14 DOWNTO  0 )) + WAIT_ROM_Q;
             END IF;
+        END IF;
+    END PROCESS;
+
+    PROCESS( CLK21M )
+    BEGIN
+        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
+            WAIT_ROM_Q <= WAIT_ROM(COMBINED_ADDR_REG);
         END IF;
     END PROCESS;
 
