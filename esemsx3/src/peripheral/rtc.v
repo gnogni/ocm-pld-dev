@@ -32,16 +32,16 @@
 // ============================================================================
 // History
 // 2008/??/??  t.hara
-//   First release
+//   First release.
 // 2021/02/11  t.hara
 //   Changed the reference clock from 10Hz to 3,579,545Hz.
 //   Added an initial value to FlipFlop for time.
 // 2021/02/12  KdL
-//   PreScaler with lfsr counter
+//   PreScaler with lfsr counter.
 // 2021/02/13  t.hara
-//   Optimize logic by t.hara
+//   Optimize logic.
 // 2021/02/21  t.hara
-//   Transcode to VerilogHDL from VHDL
+//   Transcode to VerilogHDL from VHDL.
 // 2021/02/24  t.hara
 //   Fixed a bug that was added during transcoding.
 //   Fixed to reset the one-second counter when updating the time.
@@ -62,10 +62,10 @@ module rtc (
         input   [ 7:0]  dbo
     );
 
-//  for XTAL 21.47727MHz => clk21m / 6 = 3,579,545.454 MHz
+//  for XTAL 21.47727MHz => clk21m / 6 = 3,579,545.454MHz
     localparam c_1sec_cnt0  = 22'h2D94A3;   // LFSR count = 3579547 clock ticks (approx +1.546)
 
-//  for XTAL 50.00000MHz => clk21m / 6 = 3,580,729.167 MHz
+//  for XTAL 50.00000MHz => clk21m / 6 = 3,580,729.167MHz
 //  localparam c_1sec_cnt0  = 22'h1F53BB;   // LFSR count = 3580730 clock ticks (approx +0.833)
 
     // ff
