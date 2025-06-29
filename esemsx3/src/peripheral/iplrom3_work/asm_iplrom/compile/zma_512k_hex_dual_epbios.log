@@ -19,7 +19,7 @@ Programmed by t.hara
 00f002: 30 03
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f004: 32 00 f6
+00f004: 32 69 f6
 
 [NOT_POWER_ON_RESET :]
 	label address: 0x00f007
@@ -31,12 +31,12 @@ Programmed by t.hara
 00f007: 31 ff ff
 
 [	LD BC , END_OF_CODE - INIT_STACK] Z80:11cyc, R800:3cyc
-00f00a: 01 e0 05
+00f00a: 01 49 06
 
 [	LD DE , INIT_STACK] Z80:11cyc, R800:3cyc
 00f00d: 11 17 f0
 
-[	LD HL , INIT_STACK - BEGIN_OF_CODE + 0XB400] Z80:11cyc, R800:3cyc
+[	LD HL , INIT_STACK - BEGIN_OF_CODE + DESTINATION_ADDRESS] Z80:11cyc, R800:3cyc
 00f010: 21 17 b4
 
 [	PUSH DE] Z80:12cyc, R800:6cyc
@@ -59,7 +59,7 @@ Programmed by t.hara
 	global label address: 0x00f017
 
 [	LD HL , VDP_CONTROL_REGS] Z80:11cyc, R800:3cyc
-00f017: 21 95 f4
+00f017: 21 fe f4
 
 [	LD BC , ( ( VDP_CONTROL_REGS_END - VDP_CONTROL_REGS ) << 8 ) | VDP_PORT1] Z80:11cyc, R800:3cyc
 00f01a: 01 99 12
@@ -147,201 +147,291 @@ Programmed by t.hara
 [INIT_SWITCH_IO ::]
 	global label address: 0x00f049
 
+[LOAD_SMART_PROFILE ::]
+	global label address: 0x00f049
+
+[	IN A , [ 0X48 ]] Z80:12cyc, R800:10 or 9cyc
+00f049: db 48
+
+[	BIT 5 , A] Z80:10cyc, R800:2cyc
+00f04b: cb 6f
+
+[	JR NZ , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f04d: 20 26
+
+[	LD HL , SMART_PROFILE_LOCATION + DESTINATION_ADDRESS] Z80:11cyc, R800:3cyc
+00f04f: 21 80 bf
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00f052: 7e
+
+[	CP A , 73] Z80:8cyc, R800:2cyc
+00f053: fe 49
+
+[	JR NZ , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f055: 20 1e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00f057: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00f058: 7e
+
+[	CP A , 71] Z80:8cyc, R800:2cyc
+00f059: fe 47
+
+[	JR NZ , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f05b: 20 18
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00f05d: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00f05e: 7e
+
+[	CP A , 50] Z80:8cyc, R800:2cyc
+00f05f: fe 32
+
+[	JR NZ , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f061: 20 12
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00f063: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00f064: 7e
+
+[	CP A , 0X80] Z80:8cyc, R800:2cyc
+00f065: fe 80
+
+[	JR NZ , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f067: 20 0c
+
+[	SUB A , 4] Z80:8cyc, R800:2cyc
+00f069: d6 04
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00f06b: 47
+
+[LOOP_SMART_PROFILE :]
+	label address: 0x00f06c
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00f06c: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00f06d: 7e
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00f06e: b7
+
+[	JR Z , SKIP_SMART_PROFILE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f06f: 28 04
+
+[	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f071: d3 41
+
+[	DJNZ LOOP_SMART_PROFILE] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f073: 10 f7
+
+[SKIP_SMART_PROFILE :]
+	label address: 0x00f075
+
 [	CALL SD_INITIALIZE] Z80:18cyc, R800:5cyc
-00f049: cd 80 f3
+00f075: cd e9 f3
 
 [CHECK_ALREADY_LOADED ::]
-	global label address: 0x00f04c
+	global label address: 0x00f078
 
 [	LD A , [ BIOS_UPDATING ]] Z80:14cyc, R800:6cyc
-00f04c: 3a 00 f6
+00f078: 3a 69 f6
 
 [	CP A , 0XD4] Z80:8cyc, R800:2cyc
-00f04f: fe d4
+00f07b: fe d4
 
 [	LD A , DOS_ROM1_BANK] Z80:8cyc, R800:2cyc
-00f051: 3e 80
+00f07d: 3e 80
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
-00f053: 32 00 70
+00f07f: 32 00 70
 
 [	JR Z , FORCE_BIOS_LOAD_FROM_EPBIOS] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f056: 28 13
+00f082: 28 13
 
 [	CALL AB_CHECK] Z80:18cyc, R800:5cyc
-00f058: cd a5 f2
+00f084: cd ff f2
 
 [	JR NZ , FORCE_BIOS_LOAD_FROM_SDCARD] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f05b: 20 0b
+00f087: 20 0b
 
 [	LD A , OPT_ROM_BANK] Z80:8cyc, R800:2cyc
-00f05d: 3e 9e
+00f089: 3e 9e
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
-00f05f: 32 00 70
+00f08b: 32 00 70
 
 [	CALL CBIOS_CHECK] Z80:18cyc, R800:5cyc
-00f062: cd b2 f2
+00f08e: cd 0c f3
 
 [	JP BOOT_UP_BIOS] Z80:11cyc, R800:5cyc
-00f065: c3 4d f2
+00f091: c3 a7 f2
 
 [FORCE_BIOS_LOAD_FROM_SDCARD ::]
-	global label address: 0x00f068
+	global label address: 0x00f094
 
 [	CALL LOAD_FROM_SDCARD] Z80:18cyc, R800:5cyc
-00f068: cd ab f0
+00f094: cd d7 f0
 
 [FORCE_BIOS_LOAD_FROM_EPBIOS ::]
-	global label address: 0x00f06b
+	global label address: 0x00f097
 
 [	CALL LOAD_FROM_EPCS] Z80:18cyc, R800:5cyc
-00f06b: cd ab f1
+00f097: cd d7 f1
 
 [	LD A , ICON_ERROR] Z80:8cyc, R800:2cyc
-00f06e: 3e 01
+00f09a: 3e 01
 
 [STOP_WITH_ERROR ::]
-	global label address: 0x00f070
+	global label address: 0x00f09c
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f070: cd e1 f5
+00f09c: cd 4a f6
 
 [	LD A , 0X35] Z80:8cyc, R800:2cyc
-00f073: 3e 35
+00f09f: 3e 35
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f075: d3 41
+00f0a1: d3 41
 
 [	LD A , 0X1F] Z80:8cyc, R800:2cyc
-00f077: 3e 1f
+00f0a3: 3e 1f
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f079: d3 41
+00f0a5: d3 41
 
 [	LD A , 0X23] Z80:8cyc, R800:2cyc
-00f07b: 3e 23
+00f0a7: 3e 23
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f07d: d3 41
+00f0a9: d3 41
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f07f: 32 00 f6
+00f0ab: 32 69 f6
 
 [	HALT] Z80:5cyc, R800:2cyc and wait interrupt
-00f082: 76
+00f0ae: 76
 
 [EPBIOS_IMAGE_TABLE ::]
-	global label address: 0x00f083
+	global label address: 0x00f0af
 
 [SDBIOS_IMAGE_TABLE ::]
-	global label address: 0x00f083
+	global label address: 0x00f0af
 
 [	DB 32]
-00f083: 20
+00f0af: 20
 
 [	DB 0XFF]
-00f084: ff
+00f0b0: ff
 
 [	INCLUDE ".//../subroutine/ocm_iplrom_serial_rom.asm"] begin
 [	SCOPE READ_SECTOR_FROM_EPCS]
 	Scope path: READ_SECTOR_FROM_EPCS:
 
 [READ_SECTOR_FROM_EPCS ::]
-	global label address: 0x00f085
+	global label address: 0x00f0b1
 
 [	PUSH DE] Z80:12cyc, R800:6cyc
-00f085: d5
+00f0b1: d5
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f086: eb
+00f0b2: eb
 
 [	ADD HL , HL] Z80:12cyc, R800:1cyc
-00f087: 29
+00f0b3: 29
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f088: eb
+00f0b4: eb
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f089: af
+00f0b5: af
 
 [	LD C , B] Z80:5cyc, R800:2cyc
-00f08a: 48
+00f0b6: 48
 
 [	LD B , A] Z80:5cyc, R800:2cyc
-00f08b: 47
+00f0b7: 47
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f08c: c5
+00f0b8: c5
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f08d: e5
+00f0b9: e5
 
 [	LD HL , MEGASD_SD_REGISTER | ( 0 << 12 )] Z80:11cyc, R800:3cyc
-00f08e: 21 00 40
+00f0ba: 21 00 40
 
 [	LD [ HL ] , EPCS_READ_BYTES] Z80:11cyc, R800:5cyc
-00f091: 36 03
+00f0bd: 36 03
 
 [	LD [ HL ] , D] Z80:8cyc, R800:4cyc
-00f093: 72
+00f0bf: 72
 
 [	LD [ HL ] , E] Z80:8cyc, R800:4cyc
-00f094: 73
+00f0c0: 73
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f095: 77
+00f0c1: 77
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f096: be
+00f0c2: be
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f097: d1
+00f0c3: d1
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f098: 79
+00f0c4: 79
 
 [	LD C , B] Z80:5cyc, R800:2cyc
-00f099: 48
+00f0c5: 48
 
 [READ_ALL :]
-	label address: 0x00f09a
+	label address: 0x00f0c6
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f09a: e5
+00f0c6: e5
 
 [	LD B , 2] Z80:8cyc, R800:2cyc
-00f09b: 06 02
+00f0c7: 06 02
 
 [	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
-00f09d: ed b0
+00f0c9: ed b0
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f09f: e1
+00f0cb: e1
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f0a0: 3d
+00f0cc: 3d
 
 [	JR NZ , READ_ALL] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f0a1: 20 f7
+00f0cd: 20 f7
 
 [	LD A , [ MEGASD_SD_REGISTER | ( 1 << 12 ) ]] Z80:14cyc, R800:6cyc
-00f0a3: 3a 00 50
+00f0cf: 3a 00 50
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f0a6: e1
+00f0d2: e1
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f0a7: d1
+00f0d3: d1
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f0a8: 19
+00f0d4: 19
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f0a9: eb
+00f0d5: eb
 
 [	RET] Z80:11cyc, R800:5cyc
-00f0aa: c9
+00f0d6: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -353,160 +443,160 @@ Programmed by t.hara
 	Scope path: LOAD_FROM_SDCARD:
 
 [LOAD_FROM_SDCARD ::]
-	global label address: 0x00f0ab
+	global label address: 0x00f0d7
 
 [	LD A , ICON_SD_ANI + 2 * ( 1 - SD_ANI_ENABLER )] Z80:8cyc, R800:2cyc
-00f0ab: 3e 1d
+00f0d7: 3e 1d
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f0ad: 32 03 f6
+00f0d9: 32 6c f6
 
 [	LD A , ICON_SD_ANI + 2] Z80:8cyc, R800:2cyc
-00f0b0: 3e 1f
+00f0dc: 3e 1f
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f0b2: 32 02 f6
+00f0de: 32 6b f6
 
 [	LD A , ICON_SD_CARD] Z80:8cyc, R800:2cyc
-00f0b5: 3e 0d
+00f0e1: 3e 0d
 
 [	LD [ ANIMATION_ID ] , A] Z80:14cyc, R800:6cyc
-00f0b7: 32 01 f6
+00f0e3: 32 6a f6
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f0ba: cd e1 f5
+00f0e6: cd 4a f6
 
 [SD_FIRST_PROCESS :]
-	label address: 0x00f0bd
+	label address: 0x00f0e9
 
 [	LD BC , 0X0100] Z80:11cyc, R800:3cyc
-00f0bd: 01 00 01
+00f0e9: 01 00 01
 
 [	LD D , C] Z80:5cyc, R800:2cyc
-00f0c0: 51
+00f0ec: 51
 
 [	LD E , C] Z80:5cyc, R800:2cyc
-00f0c1: 59
+00f0ed: 59
 
 [	LD HL , BUFFER] Z80:11cyc, R800:3cyc
-00f0c2: 21 00 c0
+00f0ee: 21 00 c0
 
 [	CALL SD_READ_SECTOR] Z80:18cyc, R800:5cyc
-00f0c5: cd 5d f4
+00f0f1: cd c6 f4
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f0c8: d8
+00f0f4: d8
 
 [SEARCH_ACTIVE_PARTITION_ON_MBR ::]
-	global label address: 0x00f0c9
+	global label address: 0x00f0f5
 
 [	LD B , 4] Z80:8cyc, R800:2cyc
-00f0c9: 06 04
+00f0f5: 06 04
 
 [	LD HL , BUFFER + MBR_1ST_PARTITION + MBR_PARTITION_LBA_BEGIN_SECTOR] Z80:11cyc, R800:3cyc
-00f0cb: 21 c6 c1
+00f0f7: 21 c6 c1
 
 [TEST_PARTITION_LOOP :]
-	label address: 0x00f0ce
+	label address: 0x00f0fa
 
 [	LD E , [ HL ]] Z80:8cyc, R800:4cyc
-00f0ce: 5e
+00f0fa: 5e
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f0cf: 23
+00f0fb: 23
 
 [	LD D , [ HL ]] Z80:8cyc, R800:4cyc
-00f0d0: 56
+00f0fc: 56
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f0d1: 23
+00f0fd: 23
 
 [	LD C , [ HL ]] Z80:8cyc, R800:4cyc
-00f0d2: 4e
+00f0fe: 4e
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f0d3: 79
+00f0ff: 79
 
 [	OR A , D] Z80:5cyc, R800:1cyc
-00f0d4: b2
+00f100: b2
 
 [	OR A , E] Z80:5cyc, R800:1cyc
-00f0d5: b3
+00f101: b3
 
 [	JR NZ , FOUND_PARTITION] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f0d6: 20 07
+00f102: 20 07
 
 [	LD E , 16 - 2] Z80:8cyc, R800:2cyc
-00f0d8: 1e 0e
+00f104: 1e 0e
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f0da: 19
+00f106: 19
 
 [	DJNZ TEST_PARTITION_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f0db: 10 f1
+00f107: 10 f1
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f0dd: 37
+00f109: 37
 
 [	RET] Z80:11cyc, R800:5cyc
-00f0de: c9
+00f10a: c9
 
 [FOUND_PARTITION :]
-	label address: 0x00f0df
+	label address: 0x00f10b
 
 [	LD B , 1] Z80:8cyc, R800:2cyc
-00f0df: 06 01
+00f10b: 06 01
 
 [	LD HL , BUFFER] Z80:11cyc, R800:3cyc
-00f0e1: 21 00 c0
+00f10d: 21 00 c0
 
 [	CALL SD_READ_SECTOR] Z80:18cyc, R800:5cyc
-00f0e4: cd 5d f4
+00f110: cd c6 f4
 
 [SD_CARD_IS_FAT :]
-	label address: 0x00f0e7
+	label address: 0x00f113
 
 [	LD HL , [ BUFFER + PBR_RESERVED_SECTORS ]] Z80:17cyc, R800:7cyc
-00f0e7: 2a 0e c0
+00f113: 2a 0e c0
 
 [	DEC HL] Z80:7cyc, R800:1cyc
-00f0ea: 2b
+00f116: 2b
 
 [	LD A , [ BUFFER + PBR_NUM_OF_FAT ]] Z80:14cyc, R800:6cyc
-00f0eb: 3a 10 c0
+00f117: 3a 10 c0
 
 [	LD B , A] Z80:5cyc, R800:2cyc
-00f0ee: 47
+00f11a: 47
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f0ef: 79
+00f11b: 79
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f0f0: 19
+00f11c: 19
 
 [	ADC A , 0] Z80:8cyc, R800:2cyc
-00f0f1: ce 00
+00f11d: ce 00
 
 [	LD DE , [ BUFFER + PBR_SECTORS_PER_FAT ]] Z80:22cyc, R800:8cyc
-00f0f3: ed 5b 16 c0
+00f11f: ed 5b 16 c0
 
 [ADD_FAT_SIZE :]
-	label address: 0x00f0f7
+	label address: 0x00f123
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f0f7: 19
+00f123: 19
 
 [	ADC A , 0] Z80:8cyc, R800:2cyc
-00f0f8: ce 00
+00f124: ce 00
 
 [	DJNZ ADD_FAT_SIZE] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f0fa: 10 fb
+00f126: 10 fb
 
 [	LD C , A] Z80:5cyc, R800:2cyc
-00f0fc: 4f
+00f128: 4f
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f0fd: eb
+00f129: eb
 
 [	ENDSCOPE]
 	Scope path: 
@@ -515,221 +605,221 @@ Programmed by t.hara
 	Scope path: SEARCH_BIOS_NAME:
 
 [SEARCH_BIOS_NAME ::]
-	global label address: 0x00f0fe
+	global label address: 0x00f12a
 
 [	LD HL , [ BUFFER + PBR_SECTORS_PER_FAT ]] Z80:17cyc, R800:7cyc
-00f0fe: 2a 16 c0
+00f12a: 2a 16 c0
 
 [	LD [ REMAIN_FAT_SECTORS ] , HL] Z80:17cyc, R800:7cyc
-00f101: 22 f7 f5
+00f12d: 22 60 f6
 
 [	LD HL , [ BUFFER + PBR_ROOT_ENTRIES ]] Z80:17cyc, R800:7cyc
-00f104: 2a 11 c0
+00f130: 2a 11 c0
 
 [	LD A , L] Z80:5cyc, R800:2cyc
-00f107: 7d
+00f133: 7d
 
 [	LD B , 4] Z80:8cyc, R800:2cyc
-00f108: 06 04
+00f134: 06 04
 
 [ENTRIES_TO_SECTORS :]
-	label address: 0x00f10a
+	label address: 0x00f136
 
 [	SRL H] Z80:10cyc, R800:2cyc
-00f10a: cb 3c
+00f136: cb 3c
 
 [	RR L] Z80:10cyc, R800:2cyc
-00f10c: cb 1d
+00f138: cb 1d
 
 [	DJNZ ENTRIES_TO_SECTORS] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f10e: 10 fa
+00f13a: 10 fa
 
 [	AND A , 0X0F] Z80:8cyc, R800:2cyc
-00f110: e6 0f
+00f13c: e6 0f
 
 [	JR Z , SKIP_INC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f112: 28 01
+00f13e: 28 01
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f114: 23
+00f140: 23
 
 [SKIP_INC :]
-	label address: 0x00f115
+	label address: 0x00f141
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f115: 79
+00f141: 79
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f116: 19
+00f142: 19
 
 [	ADC A , B] Z80:5cyc, R800:1cyc
-00f117: 88
+00f143: 88
 
 [	LD [ DATA_AREA + 0 ] , HL] Z80:17cyc, R800:7cyc
-00f118: 22 fc f5
+00f144: 22 65 f6
 
 [	LD [ DATA_AREA + 2 ] , A] Z80:14cyc, R800:6cyc
-00f11b: 32 fe f5
+00f147: 32 67 f6
 
 [GET_NEXT_SECTOR :]
-	label address: 0x00f11e
+	label address: 0x00f14a
 
 [	INC B] Z80:5cyc, R800:1cyc
-00f11e: 04
+00f14a: 04
 
 [	LD HL , FAT_BUFFER] Z80:11cyc, R800:3cyc
-00f11f: 21 00 c2
+00f14b: 21 00 c2
 
 [	CALL SD_READ_SECTOR] Z80:18cyc, R800:5cyc
-00f122: cd 5d f4
+00f14e: cd c6 f4
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f125: 79
+00f151: 79
 
 [	LD [ ROOT_ENTRIES + 0 ] , DE] Z80:22cyc, R800:8cyc
-00f126: ed 53 f9 f5
+00f152: ed 53 62 f6
 
 [	LD [ ROOT_ENTRIES + 2 ] , A] Z80:14cyc, R800:6cyc
-00f12a: 32 fb f5
+00f156: 32 64 f6
 
 [	LD B , 512 / DIR_ENTRY_SIZE] Z80:8cyc, R800:2cyc
-00f12d: 06 10
+00f159: 06 10
 
 [	LD HL , FAT_BUFFER + 10] Z80:11cyc, R800:3cyc
-00f12f: 21 0a c2
+00f15b: 21 0a c2
 
 [SEARCH_LOOP :]
-	label address: 0x00f132
+	label address: 0x00f15e
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f132: e5
+00f15e: e5
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f133: c5
+00f15f: c5
 
 [	LD DE , BIOS_NAME + 10] Z80:11cyc, R800:3cyc
-00f134: 11 7c f1
+00f160: 11 a8 f1
 
 [	LD A , 48] Z80:8cyc, R800:2cyc
-00f137: 3e 30
+00f163: 3e 30
 
 [	LD B , 10] Z80:8cyc, R800:2cyc
-00f139: 06 0a
+00f165: 06 0a
 
 [NUMCMP :]
-	label address: 0x00f13b
+	label address: 0x00f167
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f13b: be
+00f167: be
 
 [	JR Z , CHAR_FOUND] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f13c: 28 07
+00f168: 28 07
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f13e: 3c
+00f16a: 3c
 
 [	DJNZ NUMCMP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f13f: 10 fa
+00f16b: 10 fa
 
 [	LD B , 11] Z80:8cyc, R800:2cyc
-00f141: 06 0b
+00f16d: 06 0b
 
 [	JR STRCMP] Z80:13cyc, R800:3cyc
-00f143: 18 04
+00f16f: 18 04
 
 [CHAR_FOUND :]
-	label address: 0x00f145
+	label address: 0x00f171
 
 [	LD B , 10] Z80:8cyc, R800:2cyc
-00f145: 06 0a
+00f171: 06 0a
 
 [	DEC DE] Z80:7cyc, R800:1cyc
-00f147: 1b
+00f173: 1b
 
 [	DEC HL] Z80:7cyc, R800:1cyc
-00f148: 2b
+00f174: 2b
 
 [STRCMP :]
-	label address: 0x00f149
+	label address: 0x00f175
 
 [	LD A , [ DE ]] Z80:8cyc, R800:4cyc
-00f149: 1a
+00f175: 1a
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f14a: be
+00f176: be
 
 [	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f14b: 20 04
+00f177: 20 04
 
 [	DEC DE] Z80:7cyc, R800:1cyc
-00f14d: 1b
+00f179: 1b
 
 [	DEC HL] Z80:7cyc, R800:1cyc
-00f14e: 2b
+00f17a: 2b
 
 [	DJNZ STRCMP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f14f: 10 f8
+00f17b: 10 f8
 
 [NO_MATCH :]
-	label address: 0x00f151
+	label address: 0x00f17d
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f151: c1
+00f17d: c1
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f152: e1
+00f17e: e1
 
 [	JR Z , FOUND_BIOS_NAME] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f153: 28 28
+00f17f: 28 28
 
 [	LD DE , DIR_ENTRY_SIZE] Z80:11cyc, R800:3cyc
-00f155: 11 20 00
+00f181: 11 20 00
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f158: 19
+00f184: 19
 
 [	DJNZ SEARCH_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f159: 10 d7
+00f185: 10 d7
 
 [	LD DE , [ REMAIN_FAT_SECTORS ]] Z80:22cyc, R800:8cyc
-00f15b: ed 5b f7 f5
+00f187: ed 5b 60 f6
 
 [	DEC DE] Z80:7cyc, R800:1cyc
-00f15f: 1b
+00f18b: 1b
 
 [	LD [ REMAIN_FAT_SECTORS ] , DE] Z80:22cyc, R800:8cyc
-00f160: ed 53 f7 f5
+00f18c: ed 53 60 f6
 
 [	LD A , D] Z80:5cyc, R800:2cyc
-00f164: 7a
+00f190: 7a
 
 [	OR A , E] Z80:5cyc, R800:1cyc
-00f165: b3
+00f191: b3
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f166: 37
+00f192: 37
 
 [	RET Z] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f167: c8
+00f193: c8
 
 [	LD A , [ ROOT_ENTRIES + 2 ]] Z80:14cyc, R800:6cyc
-00f168: 3a fb f5
+00f194: 3a 64 f6
 
 [	LD DE , [ ROOT_ENTRIES + 0 ]] Z80:22cyc, R800:8cyc
-00f16b: ed 5b f9 f5
+00f197: ed 5b 62 f6
 
 [	LD C , A] Z80:5cyc, R800:2cyc
-00f16f: 4f
+00f19b: 4f
 
 [	JR GET_NEXT_SECTOR] Z80:13cyc, R800:3cyc
-00f170: 18 ac
+00f19c: 18 ac
 
 [BIOS_NAME :]
-	label address: 0x00f172
+	label address: 0x00f19e
 
 [	DS "OCM-BIOSDAT"]
-00f172: 4f 43 4d 2d 42 49 4f 53
-00f17a: 44 41 54
+00f19e: 4f 43 4d 2d 42 49 4f 53
+00f1a6: 44 41 54
 
 [	ENDSCOPE]
 	Scope path: 
@@ -738,100 +828,100 @@ Programmed by t.hara
 	Scope path: FOUND_BIOS_NAME:
 
 [FOUND_BIOS_NAME ::]
-	global label address: 0x00f17d
+	global label address: 0x00f1a9
 
 [	LD DE , DIR_ATTRIBUTE - 10] Z80:11cyc, R800:3cyc
-00f17d: 11 01 00
+00f1a9: 11 01 00
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f180: 19
+00f1ac: 19
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f181: 7e
+00f1ad: 7e
 
 [	AND A , ATTR_VOLUME_ID | ATTR_DIRECTORY] Z80:8cyc, R800:2cyc
-00f182: e6 18
+00f1ae: e6 18
 
 [NO_MATCH_EXIT ::]
-	global label address: 0x00f184
+	global label address: 0x00f1b0
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f184: 37
+00f1b0: 37
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f185: c0
+00f1b1: c0
 
 [	LD E , - DIR_ATTRIBUTE + DIR_FST_CLUS_LO] Z80:8cyc, R800:2cyc
-00f186: 1e 0f
+00f1b2: 1e 0f
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f188: 19
+00f1b4: 19
 
 [	LD E , [ HL ]] Z80:8cyc, R800:4cyc
-00f189: 5e
+00f1b5: 5e
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f18a: 23
+00f1b6: 23
 
 [	LD D , [ HL ]] Z80:8cyc, R800:4cyc
-00f18b: 56
+00f1b7: 56
 
 [	DEC DE] Z80:7cyc, R800:1cyc
-00f18c: 1b
+00f1b8: 1b
 
 [	DEC DE] Z80:7cyc, R800:1cyc
-00f18d: 1b
+00f1b9: 1b
 
 [	LD A , [ BUFFER + PBR_SECTORS_PER_CLUSTER ]] Z80:14cyc, R800:6cyc
-00f18e: 3a 0d c0
+00f1ba: 3a 0d c0
 
 [	LD B , A] Z80:5cyc, R800:2cyc
-00f191: 47
+00f1bd: 47
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f192: af
+00f1be: af
 
 [	LD H , A] Z80:5cyc, R800:2cyc
-00f193: 67
+00f1bf: 67
 
 [	LD L , A] Z80:5cyc, R800:2cyc
-00f194: 6f
+00f1c0: 6f
 
 [	LD C , A] Z80:5cyc, R800:2cyc
-00f195: 4f
+00f1c1: 4f
 
 [LOOP :]
-	label address: 0x00f196
+	label address: 0x00f1c2
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f196: 19
+00f1c2: 19
 
 [	ADC A , C] Z80:5cyc, R800:1cyc
-00f197: 89
+00f1c3: 89
 
 [	DJNZ LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f198: 10 fc
+00f1c4: 10 fc
 
 [	LD C , A] Z80:5cyc, R800:2cyc
-00f19a: 4f
+00f1c6: 4f
 
 [	LD DE , [ DATA_AREA + 0 ]] Z80:22cyc, R800:8cyc
-00f19b: ed 5b fc f5
+00f1c7: ed 5b 65 f6
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
-00f19f: 19
+00f1cb: 19
 
 [	LD A , [ DATA_AREA + 2 ]] Z80:14cyc, R800:6cyc
-00f1a0: 3a fe f5
+00f1cc: 3a 67 f6
 
 [	ADC A , C] Z80:5cyc, R800:1cyc
-00f1a3: 89
+00f1cf: 89
 
 [	LD C , A] Z80:5cyc, R800:2cyc
-00f1a4: 4f
+00f1d0: 4f
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f1a5: eb
+00f1d1: eb
 
 [	ENDSCOPE]
 	Scope path: 
@@ -840,13 +930,13 @@ Programmed by t.hara
 	Scope path: LOAD_SDBIOS:
 
 [LOAD_SDBIOS ::]
-	global label address: 0x00f1a6
+	global label address: 0x00f1d2
 
 [	LD HL , SDBIOS_IMAGE_TABLE] Z80:11cyc, R800:3cyc
-00f1a6: 21 83 f0
+00f1d2: 21 af f0
 
 [	JR LOAD_BIOS] Z80:13cyc, R800:3cyc
-00f1a9: 18 4a
+00f1d5: 18 4a
 
 [	ENDSCOPE]
 	Scope path: 
@@ -858,106 +948,106 @@ Programmed by t.hara
 	Scope path: LOAD_FROM_EPCS:
 
 [LOAD_FROM_EPCS ::]
-	global label address: 0x00f1ab
+	global label address: 0x00f1d7
 
 [	LD HL , READ_SECTOR_FROM_EPCS] Z80:11cyc, R800:3cyc
-00f1ab: 21 85 f0
+00f1d7: 21 b1 f0
 
 [	LD [ READ_SECTOR_CBR ] , HL] Z80:17cyc, R800:7cyc
-00f1ae: 22 86 f2
+00f1da: 22 e0 f2
 
 [	LD A , 0X60] Z80:8cyc, R800:2cyc
-00f1b1: 3e 60
+00f1dd: 3e 60
 
 [	LD [ ESERAM8K_BANK0 ] , A] Z80:14cyc, R800:6cyc
-00f1b3: 32 00 60
+00f1df: 32 00 60
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f1b6: 3c
+00f1e2: 3c
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f1b7: 32 00 58
+00f1e3: 32 00 58
 
 [	LD B , 160] Z80:8cyc, R800:2cyc
-00f1ba: 06 a0
+00f1e6: 06 a0
 
 [DUMMY_READ :]
-	label address: 0x00f1bc
+	label address: 0x00f1e8
 
 [	LD A , [ MEGASD_SD_REGISTER | ( 1 << 12 ) ]] Z80:14cyc, R800:6cyc
-00f1bc: 3a 00 50
+00f1e8: 3a 00 50
 
 [	NOP] Z80:5cyc, R800:1cyc
-00f1bf: 00
+00f1eb: 00
 
 [	DJNZ DUMMY_READ] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f1c0: 10 fa
+00f1ec: 10 fa
 
 [	LD A , [ MEGASD_SD_REGISTER | ( 0 << 12 ) ]] Z80:14cyc, R800:6cyc
-00f1c2: 3a 00 40
+00f1ee: 3a 00 40
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f1c5: af
+00f1f1: af
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f1c6: 32 00 58
+00f1f2: 32 00 58
 
 [	LD DE , EPCS_BIOS1_START_ADDRESS] Z80:11cyc, R800:3cyc
-00f1c9: 11 00 08
+00f1f5: 11 00 08
 
 [	IN A , [ 0X4C ]] Z80:12cyc, R800:10 or 9cyc
-00f1cc: db 4c
+00f1f8: db 4c
 
 [	AND A , 0B01000000] Z80:8cyc, R800:2cyc
-00f1ce: e6 40
+00f1fa: e6 40
 
 [	LD A , ICON_EPCS1_ANI + 2 * ( 1 - EPCS_ANI_ENABLER )] Z80:8cyc, R800:2cyc
-00f1d0: 3e 15
+00f1fc: 3e 15
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f1d2: 32 03 f6
+00f1fe: 32 6c f6
 
 [	LD A , ICON_EPCS1_ANI + 2] Z80:8cyc, R800:2cyc
-00f1d5: 3e 17
+00f201: 3e 17
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f1d7: 32 02 f6
+00f203: 32 6b f6
 
 [	LD A , ICON_EPCS1] Z80:8cyc, R800:2cyc
-00f1da: 3e 05
+00f206: 3e 05
 
 [	JR Z , LOAD_EPBIOS_START] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f1dc: 28 0e
+00f208: 28 0e
 
 [	LD A , ICON_EPCS2_ANI + 2 * ( 1 - EPCS_ANI_ENABLER )] Z80:8cyc, R800:2cyc
-00f1de: 3e 19
+00f20a: 3e 19
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f1e0: 32 03 f6
+00f20c: 32 6c f6
 
 [	LD A , ICON_EPCS2_ANI + 2] Z80:8cyc, R800:2cyc
-00f1e3: 3e 1b
+00f20f: 3e 1b
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f1e5: 32 02 f6
+00f211: 32 6b f6
 
 [	LD A , ICON_EPCS2] Z80:8cyc, R800:2cyc
-00f1e8: 3e 09
+00f214: 3e 09
 
 [	LD D , EPCS_BIOS2_START_ADDRESS >> 8] Z80:8cyc, R800:2cyc
-00f1ea: 16 0c
+00f216: 16 0c
 
 [LOAD_EPBIOS_START ::]
-	global label address: 0x00f1ec
+	global label address: 0x00f218
 
 [	LD [ ANIMATION_ID ] , A] Z80:14cyc, R800:6cyc
-00f1ec: 32 01 f6
+00f218: 32 6a f6
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f1ef: cd e1 f5
+00f21b: cd 4a f6
 
 [	LD HL , EPBIOS_IMAGE_TABLE] Z80:11cyc, R800:3cyc
-00f1f2: 21 83 f0
+00f21e: 21 af f0
 
 [	ENDSCOPE]
 	Scope path: 
@@ -975,238 +1065,325 @@ Programmed by t.hara
 	Scope path: LOAD_BIOS:
 
 [LOAD_BIOS ::]
-	global label address: 0x00f1f5
+	global label address: 0x00f221
 
 [	LD A , 0XD4] Z80:8cyc, R800:2cyc
-00f1f5: 3e d4
+00f221: 3e d4
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f1f7: 32 00 f6
+00f223: 32 69 f6
 
 [	LD A , DOS_ROM1_BANK] Z80:8cyc, R800:2cyc
-00f1fa: 3e 80
+00f226: 3e 80
 
 [	LD [ BANK_ID ] , A] Z80:14cyc, R800:6cyc
-00f1fc: 32 ff f5
+00f228: 32 68 f6
 
 [LOAD_BLOCK_LOOP ::]
-	global label address: 0x00f1ff
+	global label address: 0x00f22b
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f1ff: 7e
+00f22b: 7e
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f200: 23
+00f22c: 23
 
 [	CP A , 0X40] Z80:8cyc, R800:2cyc
-00f201: fe 40
+00f22d: fe 40
 
-[	JR C , LOAD_BIOS_IMAGES] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f203: 38 76
+[	JP C , LOAD_BIOS_IMAGES] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00f22f: da d5 f2
 
 [	JP Z , FILL_FF_OR_C9] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
-00f205: ca cf f2
+00f232: ca 2d f3
 
 [	CP A , 0XFE - 1] Z80:8cyc, R800:2cyc
-00f208: fe fd
+00f235: fe fd
 
 [	JR NC , EXIT_LOAD_BIOS] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f20a: 30 0e
+00f237: 30 0e
 
 [FILL_ZERO :]
-	label address: 0x00f20c
+	label address: 0x00f239
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f20c: e5
+00f239: e5
 
 [	AND A , 0X3F] Z80:8cyc, R800:2cyc
-00f20d: e6 3f
+00f23a: e6 3f
 
 [	LD B , A] Z80:5cyc, R800:2cyc
-00f20f: 47
+00f23c: 47
 
 [	LD C , 0] Z80:8cyc, R800:2cyc
-00f210: 0e 00
+00f23d: 0e 00
 
 [FILL_ZERO_LOOP :]
-	label address: 0x00f212
+	label address: 0x00f23f
 
 [	CALL FILL_BANK] Z80:18cyc, R800:5cyc
-00f212: cd e9 f2
+00f23f: cd 47 f3
 
 [	DJNZ FILL_ZERO_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f215: 10 fb
+00f242: 10 fb
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f217: e1
+00f244: e1
 
 [	JR LOAD_BLOCK_LOOP] Z80:13cyc, R800:3cyc
-00f218: 18 e5
+00f245: 18 e4
 
 [EXIT_LOAD_BIOS :]
-	label address: 0x00f21a
+	label address: 0x00f247
 
 [	RRCA] Z80:5cyc, R800:1cyc
-00f21a: 0f
+00f247: 0f
 
 [	CPL] Z80:5cyc, R800:1cyc
-00f21b: 2f
+00f248: 2f
 
 [	OUT [ 0X4E ] , A] Z80:12cyc, R800:10 or 9cyc
-00f21c: d3 4e
+00f249: d3 4e
 
 [	LD A , [ ANIMATION_ID ]] Z80:14cyc, R800:6cyc
-00f21e: 3a 01 f6
+00f24b: 3a 6a f6
 
 [	CALL VDP_PUT_ICON] Z80:18cyc, R800:5cyc
-00f221: cd e1 f5
+00f24e: cd 4a f6
 
 [SET_F4_DEVICE ::]
-	global label address: 0x00f224
+	global label address: 0x00f251
 
 [	CALL GET_MSX_VERSION] Z80:18cyc, R800:5cyc
-00f224: cd e0 f2
+00f251: cd 3e f3
 
 [	OUT [ 0X4C ] , A] Z80:12cyc, R800:10 or 9cyc
-00f227: d3 4c
+00f254: d3 4c
 
 [	SUB A , 3] Z80:8cyc, R800:2cyc
-00f229: d6 03
+00f256: d6 03
 
 [	JR Z , S1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f22b: 28 01
+00f258: 28 01
 
 [	RET NC] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f22d: d0
+00f25a: d0
 
 [S1 :]
-	label address: 0x00f22e
+	label address: 0x00f25b
 
 [	OUT [ 0X4F ] , A] Z80:12cyc, R800:10 or 9cyc
-00f22e: d3 4f
+00f25b: d3 4f
 
 [	OUT [ 0XF4 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f230: d3 f4
+00f25d: d3 f4
 
-[ENFORCE_SLOT0_PRIMARY_MODE ::]
-	global label address: 0x00f232
+[SAFE_MODE ::]
+	global label address: 0x00f25f
 
-[	IN A , [ 0XAA ]] Z80:12cyc, R800:10 or 9cyc
-00f232: db aa
+[	LD B , 0X08] Z80:8cyc, R800:2cyc
+00f25f: 06 08
 
-[	AND A , 0XF0] Z80:8cyc, R800:2cyc
-00f234: e6 f0
-
-[	ADD A , 0X0B] Z80:8cyc, R800:2cyc
-00f236: c6 0b
-
-[	OUT [ 0XAA ] , A] Z80:12cyc, R800:10 or 9cyc
-00f238: d3 aa
-
-[	IN A , [ 0XA9 ]] Z80:12cyc, R800:10 or 9cyc
-00f23a: db a9
+[	CALL GET_ROW_FLAGS] Z80:18cyc, R800:5cyc
+00f261: cd 7e f3
 
 [	BIT 3 , A] Z80:10cyc, R800:2cyc
-00f23c: cb 5f
+00f264: cb 5f
 
-[	JR NZ , ENFORCE_EXTRA_MAPPER] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f23e: 20 05
+[	JR NZ , EXIT_SAFE_MODE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f266: 20 04
 
-[	LD A , 0XF9] Z80:8cyc, R800:2cyc
-00f240: 3e f9
+[	LD A , 0XFF] Z80:8cyc, R800:2cyc
+00f268: 3e ff
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f242: d3 41
+00f26a: d3 41
 
-[	CPL] Z80:5cyc, R800:1cyc
-00f244: 2f
+[EXIT_SAFE_MODE :]
+	label address: 0x00f26c
 
-[ENFORCE_EXTRA_MAPPER :]
-	label address: 0x00f245
+[TOGGLE_SLOT0 ::]
+	global label address: 0x00f26c
+
+[	IN A , [ 0X44 ]] Z80:12cyc, R800:10 or 9cyc
+00f26c: db 44
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+00f26e: 4f
+
+[	LD B , 0X0B] Z80:8cyc, R800:2cyc
+00f26f: 06 0b
+
+[	CALL GET_ROW_FLAGS] Z80:18cyc, R800:5cyc
+00f271: cd 7e f3
+
+[	BIT 3 , A] Z80:10cyc, R800:2cyc
+00f274: cb 5f
+
+[	JR NZ , TOGGLE_EXTRA_MAPPER] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f276: 20 15
+
+[	IN A , [ 0XF4 ]] Z80:12cyc, R800:10 or 9cyc
+00f278: db f4
+
+[	XOR A , 0X80] Z80:8cyc, R800:2cyc
+00f27a: ee 80
+
+[	OUT [ 0XF4 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f27c: d3 f4
+
+[	LD A , 0XFF] Z80:8cyc, R800:2cyc
+00f27e: 3e ff
+
+[	OUT [ 0X44 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f280: d3 44
+
+[	IN A , [ 0X4B ]] Z80:12cyc, R800:10 or 9cyc
+00f282: db 4b
+
+[	BIT 7 , A] Z80:10cyc, R800:2cyc
+00f284: cb 7f
+
+[	JR NZ , SET_SLOT0_PRIMARY_MODE] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f286: 20 17
+
+[	LD A , 0XFA] Z80:8cyc, R800:2cyc
+00f288: 3e fa
+
+[	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f28a: d3 41
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+00f28c: 78
+
+[TOGGLE_EXTRA_MAPPER :]
+	label address: 0x00f28d
 
 [	BIT 1 , A] Z80:10cyc, R800:2cyc
-00f245: cb 4f
+00f28d: cb 4f
 
-[	JR NZ , BOOT_UP_BIOS] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f247: 20 04
+[	JR NZ , EXIT_TOGGLES] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f28f: 20 12
+
+[	IN A , [ 0X4B ]] Z80:12cyc, R800:10 or 9cyc
+00f291: db 4b
+
+[	BIT 6 , A] Z80:10cyc, R800:2cyc
+00f293: cb 77
+
+[	JR NZ , DISABLE_EXTRA_MAPPER] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00f295: 20 04
 
 [	LD A , 0X57] Z80:8cyc, R800:2cyc
-00f249: 3e 57
+00f297: 3e 57
+
+[	JR EXIT_OUT_0X41] Z80:13cyc, R800:3cyc
+00f299: 18 06
+
+[DISABLE_EXTRA_MAPPER :]
+	label address: 0x00f29b
+
+[	LD A , 0X56] Z80:8cyc, R800:2cyc
+00f29b: 3e 56
+
+[	JR EXIT_OUT_0X41] Z80:13cyc, R800:3cyc
+00f29d: 18 02
+
+[SET_SLOT0_PRIMARY_MODE :]
+	label address: 0x00f29f
+
+[	LD A , 0XF9] Z80:8cyc, R800:2cyc
+00f29f: 3e f9
+
+[EXIT_OUT_0X41 :]
+	label address: 0x00f2a1
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f24b: d3 41
+00f2a1: d3 41
+
+[EXIT_TOGGLES :]
+	label address: 0x00f2a3
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+00f2a3: 79
+
+[	CPL] Z80:5cyc, R800:1cyc
+00f2a4: 2f
+
+[	OUT [ 0X44 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f2a5: d3 44
 
 [BOOT_UP_BIOS ::]
-	global label address: 0x00f24d
+	global label address: 0x00f2a7
 
 [	CALL GET_MSX_VERSION] Z80:18cyc, R800:5cyc
-00f24d: cd e0 f2
+00f2a7: cd 3e f3
 
 [	OR A , A] Z80:5cyc, R800:1cyc
-00f250: b7
+00f2aa: b7
 
 [	JR Z , BANK_INIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f251: 28 10
+00f2ab: 28 10
 
 [SET_MSX2_PALETTE :]
-	label address: 0x00f253
+	label address: 0x00f2ad
 
 [	LD A , 2] Z80:8cyc, R800:2cyc
-00f253: 3e 02
+00f2ad: 3e 02
 
 [	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f255: d3 99
+00f2af: d3 99
 
 [	LD A , 0X90] Z80:8cyc, R800:2cyc
-00f257: 3e 90
+00f2b1: 3e 90
 
 [	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f259: d3 99
+00f2b3: d3 99
 
 [	LD BC , ( ( VDP_MSX2_PALETTE_REGS_END - VDP_MSX2_PALETTE_REGS ) << 8 ) | VDP_PORT2] Z80:11cyc, R800:3cyc
-00f25b: 01 9a 1a
+00f2b5: 01 9a 1a
 
 [	LD HL , VDP_MSX2_PALETTE_REGS] Z80:11cyc, R800:3cyc
-00f25e: 21 c7 f5
+00f2b8: 21 30 f6
 
 [	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
-00f261: ed b3
+00f2bb: ed b3
 
 [BANK_INIT :]
-	label address: 0x00f263
+	label address: 0x00f2bd
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f263: af
+00f2bd: af
 
 [	OUT [ EXP_IO_VENDOR_ID_PORT ] , A] Z80:12cyc, R800:10 or 9cyc
-00f264: d3 40
+00f2be: d3 40
 
 [	LD [ BIOS_UPDATING ] , A] Z80:14cyc, R800:6cyc
-00f266: 32 00 f6
+00f2c0: 32 69 f6
 
 [	LD [ ESERAM8K_BANK0 ] , A] Z80:14cyc, R800:6cyc
-00f269: 32 00 60
+00f2c3: 32 00 60
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f26c: 3c
+00f2c6: 3c
 
 [	LD [ ESERAM8K_BANK1 ] , A] Z80:14cyc, R800:6cyc
-00f26d: 32 00 68
+00f2c7: 32 00 68
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
-00f270: 32 00 70
+00f2ca: 32 00 70
 
 [	LD [ ESERAM8K_BANK3 ] , A] Z80:14cyc, R800:6cyc
-00f273: 32 00 78
+00f2cd: 32 00 78
 
 [	LD A , 0XC0] Z80:8cyc, R800:2cyc
-00f276: 3e c0
+00f2d0: 3e c0
 
 [	OUT [ PRIMARY_SLOT_REGISTER ] , A] Z80:12cyc, R800:10 or 9cyc
-00f278: d3 a8
+00f2d2: d3 a8
 
 [	RST 00] Z80:12cyc, R800:6 or 7cyc
-00f27a: c7
+00f2d4: c7
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1215,79 +1392,79 @@ Programmed by t.hara
 	Scope path: LOAD_BIOS_IMAGES:
 
 [LOAD_BIOS_IMAGES ::]
-	global label address: 0x00f27b
+	global label address: 0x00f2d5
 
 [LOOP :]
-	label address: 0x00f27b
+	label address: 0x00f2d5
 
 [	EX AF , AF'] Z80:5cyc, R800:1cyc
-00f27b: 08
+00f2d5: 08
 
 [	CALL SET_BANK] Z80:18cyc, R800:5cyc
-00f27c: cd fc f2
+00f2d6: cd 5a f3
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f27f: e5
+00f2d9: e5
 
 [	LD B , 16384 / 512] Z80:8cyc, R800:2cyc
-00f280: 06 20
+00f2da: 06 20
 
 [	LD HL , 0X8000] Z80:11cyc, R800:3cyc
-00f282: 21 00 80
+00f2dc: 21 00 80
 
 [	CALL SD_READ_SECTOR] Z80:18cyc, R800:5cyc
-00f285: cd 5d f4
+00f2df: cd c6 f4
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f288: e1
+00f2e2: e1
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f289: d8
+00f2e3: d8
 
 [	LD A , [ BANK_ID ]] Z80:14cyc, R800:6cyc
-00f28a: 3a ff f5
+00f2e4: 3a 68 f6
 
 [	CP A , JIS1_KANJI1_BANK] Z80:8cyc, R800:2cyc
-00f28d: fe a0
+00f2e7: fe a0
 
 [	JR Z , MAKE_CBIOS_CHECK] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f28f: 28 0f
+00f2e9: 28 0f
 
 [	CP A , DOS_ROM2_BANK] Z80:8cyc, R800:2cyc
-00f291: fe 82
+00f2eb: fe 82
 
 [	JR NZ , SKIP_AB_CHECK] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f293: 20 04
+00f2ed: 20 04
 
 [	CALL AB_CHECK] Z80:18cyc, R800:5cyc
-00f295: cd a5 f2
+00f2ef: cd ff f2
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f298: c0
+00f2f2: c0
 
 [SKIP_AB_CHECK :]
-	label address: 0x00f299
+	label address: 0x00f2f3
 
 [	EX AF , AF'] Z80:5cyc, R800:1cyc
-00f299: 08
+00f2f3: 08
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f29a: 3d
+00f2f4: 3d
 
 [	JR NZ , LOOP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f29b: 20 de
+00f2f5: 20 de
 
 [	JP LOAD_BLOCK_LOOP] Z80:11cyc, R800:5cyc
-00f29d: c3 ff f1
+00f2f7: c3 2b f2
 
 [MAKE_CBIOS_CHECK :]
-	label address: 0x00f2a0
+	label address: 0x00f2fa
 
 [	CALL CBIOS_CHECK] Z80:18cyc, R800:5cyc
-00f2a0: cd b2 f2
+00f2fa: cd 0c f3
 
 [	JR SKIP_AB_CHECK] Z80:13cyc, R800:3cyc
-00f2a3: 18 f4
+00f2fd: 18 f4
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1296,34 +1473,34 @@ Programmed by t.hara
 	Scope path: AB_CHECK:
 
 [AB_CHECK ::]
-	global label address: 0x00f2a5
+	global label address: 0x00f2ff
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f2a5: e5
+00f2ff: e5
 
 [	LD HL , 0X8000] Z80:11cyc, R800:3cyc
-00f2a6: 21 00 80
+00f300: 21 00 80
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f2a9: 7e
+00f303: 7e
 
 [	XOR A , 65] Z80:8cyc, R800:2cyc
-00f2aa: ee 41
+00f304: ee 41
 
 [	XOR A , 66] Z80:8cyc, R800:2cyc
-00f2ac: ee 42
+00f306: ee 42
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f2ae: 23
+00f308: 23
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f2af: be
+00f309: be
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f2b0: e1
+00f30a: e1
 
 [	RET] Z80:11cyc, R800:5cyc
-00f2b1: c9
+00f30b: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1332,67 +1509,73 @@ Programmed by t.hara
 	Scope path: CBIOS_CHECK:
 
 [CBIOS_CHECK ::]
-	global label address: 0x00f2b2
+	global label address: 0x00f30c
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f2b2: e5
+00f30c: e5
 
 [	LD HL , 0X8000] Z80:11cyc, R800:3cyc
-00f2b3: 21 00 80
+00f30d: 21 00 80
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f2b6: 7e
+00f310: 7e
 
 [	XOR A , 67] Z80:8cyc, R800:2cyc
-00f2b7: ee 43
+00f311: ee 43
 
 [	XOR A , 45] Z80:8cyc, R800:2cyc
-00f2b9: ee 2d
+00f313: ee 2d
 
 [	INC HL] Z80:7cyc, R800:1cyc
-00f2bb: 23
+00f315: 23
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f2bc: be
+00f316: be
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f2bd: e1
+00f317: e1
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f2be: c0
+00f318: c0
 
-[	LD A , 0XF9] Z80:8cyc, R800:2cyc
-00f2bf: 3e f9
+[	LD A , 0XD4] Z80:8cyc, R800:2cyc
+00f319: 3e d4
 
 [	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f2c1: d3 41
+00f31b: d3 41
+
+[	LD A , 0XF9] Z80:8cyc, R800:2cyc
+00f31d: 3e f9
+
+[	OUT [ 0X41 ] , A] Z80:12cyc, R800:10 or 9cyc
+00f31f: d3 41
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f2c3: c5
+00f321: c5
 
 [	LD BC , 0XC000] Z80:11cyc, R800:3cyc
-00f2c4: 01 00 c0
+00f322: 01 00 c0
 
 [WAIT_A_MOMENT :]
-	label address: 0x00f2c7
+	label address: 0x00f325
 
 [	DEC C] Z80:5cyc, R800:1cyc
-00f2c7: 0d
+00f325: 0d
 
 [	CP A , C] Z80:5cyc, R800:1cyc
-00f2c8: b9
+00f326: b9
 
 [	JR NZ , WAIT_A_MOMENT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f2c9: 20 fc
+00f327: 20 fc
 
 [	DJNZ WAIT_A_MOMENT] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f2cb: 10 fa
+00f329: 10 fa
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f2cd: c1
+00f32b: c1
 
 [	RET] Z80:11cyc, R800:5cyc
-00f2ce: c9
+00f32c: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1401,31 +1584,31 @@ Programmed by t.hara
 	Scope path: FILL_FF_OR_C9:
 
 [FILL_FF_OR_C9 ::]
-	global label address: 0x00f2cf
+	global label address: 0x00f32d
 
 [	CALL GET_MSX_VERSION] Z80:18cyc, R800:5cyc
-00f2cf: cd e0 f2
+00f32d: cd 3e f3
 
 [	CP A , 3] Z80:8cyc, R800:2cyc
-00f2d2: fe 03
+00f330: fe 03
 
 [	LD C , 0XFF] Z80:8cyc, R800:2cyc
-00f2d4: 0e ff
+00f332: 0e ff
 
 [	JR C , FILL_FF] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f2d6: 38 02
+00f334: 38 02
 
 [	LD C , 0XC9] Z80:8cyc, R800:2cyc
-00f2d8: 0e c9
+00f336: 0e c9
 
 [FILL_FF :]
-	label address: 0x00f2da
+	label address: 0x00f338
 
 [	CALL FILL_BANK] Z80:18cyc, R800:5cyc
-00f2da: cd e9 f2
+00f338: cd 47 f3
 
 [	JP LOAD_BLOCK_LOOP] Z80:11cyc, R800:5cyc
-00f2dd: c3 ff f1
+00f33b: c3 2b f2
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1434,19 +1617,19 @@ Programmed by t.hara
 	Scope path: GET_MSX_VERSION:
 
 [GET_MSX_VERSION ::]
-	global label address: 0x00f2e0
+	global label address: 0x00f33e
 
 [	LD A , MAIN_ROM1_BANK] Z80:8cyc, R800:2cyc
-00f2e0: 3e 90
+00f33e: 3e 90
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
-00f2e2: 32 00 70
+00f340: 32 00 70
 
 [	LD A , [ 0X8000 + 0X002D ]] Z80:14cyc, R800:6cyc
-00f2e5: 3a 2d 80
+00f343: 3a 2d 80
 
 [	RET] Z80:11cyc, R800:5cyc
-00f2e8: c9
+00f346: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1455,37 +1638,37 @@ Programmed by t.hara
 	Scope path: FILL_BANK:
 
 [FILL_BANK ::]
-	global label address: 0x00f2e9
+	global label address: 0x00f347
 
 [	CALL SET_BANK] Z80:18cyc, R800:5cyc
-00f2e9: cd fc f2
+00f347: cd 5a f3
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f2ec: 79
+00f34a: 79
 
 [	EXX] Z80:5cyc, R800:1cyc
-00f2ed: d9
+00f34b: d9
 
 [	LD HL , 0X8000] Z80:11cyc, R800:3cyc
-00f2ee: 21 00 80
+00f34c: 21 00 80
 
 [	LD DE , 0X8001] Z80:11cyc, R800:3cyc
-00f2f1: 11 01 80
+00f34f: 11 01 80
 
 [	LD BC , 0X4000 - 1] Z80:11cyc, R800:3cyc
-00f2f4: 01 ff 3f
+00f352: 01 ff 3f
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f2f7: 77
+00f355: 77
 
 [	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
-00f2f8: ed b0
+00f356: ed b0
 
 [	EXX] Z80:5cyc, R800:1cyc
-00f2fa: d9
+00f358: d9
 
 [	RET] Z80:11cyc, R800:5cyc
-00f2fb: c9
+00f359: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1494,61 +1677,91 @@ Programmed by t.hara
 	Scope path: SET_BANK:
 
 [SET_BANK ::]
-	global label address: 0x00f2fc
+	global label address: 0x00f35a
 
 [	LD A , [ ANIMATION_ID + 1 ]] Z80:14cyc, R800:6cyc
-00f2fc: 3a 02 f6
+00f35a: 3a 6b f6
 
 [	PUSH AF] Z80:12cyc, R800:6cyc
-00f2ff: f5
+00f35d: f5
 
 [	LD A , [ ANIMATION_ID + 2 ]] Z80:14cyc, R800:6cyc
-00f300: 3a 03 f6
+00f35e: 3a 6c f6
 
 [	LD [ ANIMATION_ID + 1 ] , A] Z80:14cyc, R800:6cyc
-00f303: 32 02 f6
+00f361: 32 6b f6
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f306: c5
+00f364: c5
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f307: e5
+00f365: e5
 
 [	CALL VDP_PUT_ANIMATION] Z80:18cyc, R800:5cyc
-00f308: cd e7 f5
+00f366: cd 50 f6
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f30b: e1
+00f369: e1
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f30c: c1
+00f36a: c1
 
 [	POP AF] Z80:11cyc, R800:5cyc
-00f30d: f1
+00f36b: f1
 
 [	LD [ ANIMATION_ID + 2 ] , A] Z80:14cyc, R800:6cyc
-00f30e: 32 03 f6
+00f36c: 32 6c f6
 
 [	LD A , [ BANK_ID ]] Z80:14cyc, R800:6cyc
-00f311: 3a ff f5
+00f36f: 3a 68 f6
 
 [	LD [ ESERAM8K_BANK2 ] , A] Z80:14cyc, R800:6cyc
-00f314: 32 00 70
+00f372: 32 00 70
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f317: 3c
+00f375: 3c
 
 [	LD [ ESERAM8K_BANK3 ] , A] Z80:14cyc, R800:6cyc
-00f318: 32 00 78
+00f376: 32 00 78
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f31b: 3c
+00f379: 3c
 
 [	LD [ BANK_ID ] , A] Z80:14cyc, R800:6cyc
-00f31c: 32 ff f5
+00f37a: 32 68 f6
 
 [	RET] Z80:11cyc, R800:5cyc
-00f31f: c9
+00f37d: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE GET_ROW_FLAGS]
+	Scope path: GET_ROW_FLAGS:
+
+[GET_ROW_FLAGS ::]
+	global label address: 0x00f37e
+
+[	IN A , [ 0XAA ]] Z80:12cyc, R800:10 or 9cyc
+00f37e: db aa
+
+[	AND A , 0XF0] Z80:8cyc, R800:2cyc
+00f380: e6 f0
+
+[	ADD A , B] Z80:5cyc, R800:1cyc
+00f382: 80
+
+[	OUT [ 0XAA ] , A] Z80:12cyc, R800:10 or 9cyc
+00f383: d3 aa
+
+[	IN A , [ 0XA9 ]] Z80:12cyc, R800:10 or 9cyc
+00f385: db a9
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00f387: 47
+
+[	RET] Z80:11cyc, R800:5cyc
+00f388: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1560,109 +1773,109 @@ Programmed by t.hara
 	Scope path: SET_SD_COMMAND:
 
 [SET_SD_COMMAND ::]
-	global label address: 0x00f320
+	global label address: 0x00f389
 
 [	LD A , [ CARD_TYPE ]] Z80:14cyc, R800:6cyc
-00f320: 3a cf ff
+00f389: 3a cf ff
 
 [	CP A , TYPE_SDHC] Z80:8cyc, R800:2cyc
-00f323: fe 03
+00f38c: fe 03
 
 [	JR C , SET_SD_MMC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f325: 38 09
+00f38e: 38 09
 
 [SET_SDHC :]
-	label address: 0x00f327
+	label address: 0x00f390
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f327: 7e
+00f390: 7e
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f328: 70
+00f391: 70
 
 [	LD [ HL ] , 0] Z80:11cyc, R800:5cyc
-00f329: 36 00
+00f392: 36 00
 
 [	LD [ HL ] , C] Z80:8cyc, R800:4cyc
-00f32b: 71
+00f394: 71
 
 [	LD [ HL ] , D] Z80:8cyc, R800:4cyc
-00f32c: 72
+00f395: 72
 
 [	LD [ HL ] , E] Z80:8cyc, R800:4cyc
-00f32d: 73
+00f396: 73
 
 [	JR SET_SRC95] Z80:13cyc, R800:3cyc
-00f32e: 18 0d
+00f397: 18 0d
 
 [SET_SD_MMC :]
-	label address: 0x00f330
+	label address: 0x00f399
 
 [	SLA E] Z80:10cyc, R800:2cyc
-00f330: cb 23
+00f399: cb 23
 
 [	RL D] Z80:10cyc, R800:2cyc
-00f332: cb 12
+00f39b: cb 12
 
 [	RL C] Z80:10cyc, R800:2cyc
-00f334: cb 11
+00f39d: cb 11
 
 [SEND_COMMAND ::]
-	global label address: 0x00f336
+	global label address: 0x00f39f
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f336: 7e
+00f39f: 7e
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f337: 70
+00f3a0: 70
 
 [	LD [ HL ] , C] Z80:8cyc, R800:4cyc
-00f338: 71
+00f3a1: 71
 
 [	LD [ HL ] , D] Z80:8cyc, R800:4cyc
-00f339: 72
+00f3a2: 72
 
 [	LD [ HL ] , E] Z80:8cyc, R800:4cyc
-00f33a: 73
+00f3a3: 73
 
 [	LD [ HL ] , 0] Z80:11cyc, R800:5cyc
-00f33b: 36 00
+00f3a4: 36 00
 
 [SET_SRC95 :]
-	label address: 0x00f33d
+	label address: 0x00f3a6
 
 [	LD [ HL ] , 0X95] Z80:11cyc, R800:5cyc
-00f33d: 36 95
+00f3a6: 36 95
 
 [	LD B , 16] Z80:8cyc, R800:2cyc
-00f33f: 06 10
+00f3a8: 06 10
 
 [RECEIVE_RESPONSE ::]
-	global label address: 0x00f341
+	global label address: 0x00f3aa
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f341: 7e
+00f3aa: 7e
 
 [WAIT_COMMAND_ACCEPT :]
-	label address: 0x00f342
+	label address: 0x00f3ab
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f342: 7e
+00f3ab: 7e
 
 [	CP A , 0XFF] Z80:8cyc, R800:2cyc
-00f343: fe ff
+00f3ac: fe ff
 
 [	CCF] Z80:5cyc, R800:1cyc
-00f345: 3f
+00f3ae: 3f
 
 [	RET NC] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f346: d0
+00f3af: d0
 
 [	DJNZ WAIT_COMMAND_ACCEPT] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f347: 10 f9
+00f3b0: 10 f9
 
 [	RET] Z80:11cyc, R800:5cyc
-00f349: c9
+00f3b2: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -1671,466 +1884,466 @@ Programmed by t.hara
 	Scope path: SD_INITIALIZE:
 
 [WAIT_BUSY ::]
-	global label address: 0x00f34a
+	global label address: 0x00f3b3
 
 [	LD A , [ MEGASD_STATUS_REGISTER ]] Z80:14cyc, R800:6cyc
-00f34a: 3a 00 58
+00f3b3: 3a 00 58
 
 [	RLCA] Z80:5cyc, R800:1cyc
-00f34d: 07
+00f3b6: 07
 
 [	JR C , WAIT_BUSY] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f34e: 38 fa
+00f3b7: 38 fa
 
 [	RET] Z80:11cyc, R800:5cyc
-00f350: c9
+00f3b9: c9
 
 [SEND_CMD0 :]
-	label address: 0x00f351
+	label address: 0x00f3ba
 
 [	LD B , 10] Z80:8cyc, R800:2cyc
-00f351: 06 0a
+00f3ba: 06 0a
 
 [WAIT_CS :]
-	label address: 0x00f353
+	label address: 0x00f3bc
 
 [	LD A , [ MEGASD_SD_REGISTER | ( 1 << 12 ) ]] Z80:14cyc, R800:6cyc
-00f353: 3a 00 50
+00f3bc: 3a 00 50
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f356: cd 4a f3
+00f3bf: cd b3 f3
 
 [	DJNZ WAIT_CS] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f359: 10 f8
+00f3c2: 10 f8
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f35b: 7e
+00f3c4: 7e
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f35c: cd 4a f3
+00f3c5: cd b3 f3
 
 [	LD [ HL ] , 0X40 | SDCMD_GO_IDLE_STATE] Z80:11cyc, R800:5cyc
-00f35f: 36 40
+00f3c8: 36 40
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f361: cd 4a f3
+00f3ca: cd b3 f3
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f364: 70
+00f3cd: 70
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f365: cd 4a f3
+00f3ce: cd b3 f3
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f368: 70
+00f3d1: 70
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f369: cd 4a f3
+00f3d2: cd b3 f3
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f36c: 70
+00f3d5: 70
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f36d: cd 4a f3
+00f3d6: cd b3 f3
 
 [	LD [ HL ] , B] Z80:8cyc, R800:4cyc
-00f370: 70
+00f3d9: 70
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f371: cd 4a f3
+00f3da: cd b3 f3
 
 [	LD [ HL ] , 0X95] Z80:11cyc, R800:5cyc
-00f374: 36 95
+00f3dd: 36 95
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f376: cd 4a f3
+00f3df: cd b3 f3
 
 [	RET] Z80:11cyc, R800:5cyc
-00f379: c9
+00f3e2: c9
 
 [ERROR_EXIT :]
-	label address: 0x00f37a
+	label address: 0x00f3e3
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f37a: af
+00f3e3: af
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f37b: 32 00 58
+00f3e4: 32 00 58
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f37e: 37
+00f3e7: 37
 
 [	RET] Z80:11cyc, R800:5cyc
-00f37f: c9
+00f3e8: c9
 
 [SD_INITIALIZE ::]
-	global label address: 0x00f380
+	global label address: 0x00f3e9
 
 [	LD A , 0X40] Z80:8cyc, R800:2cyc
-00f380: 3e 40
+00f3e9: 3e 40
 
 [	LD [ ESERAM8K_BANK0 ] , A] Z80:14cyc, R800:6cyc
-00f382: 32 00 60
+00f3eb: 32 00 60
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f385: af
+00f3ee: af
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f386: 32 00 58
+00f3ef: 32 00 58
 
 [	LD B , A] Z80:5cyc, R800:2cyc
-00f389: 47
+00f3f2: 47
 
 [	LD HL , MEGASD_SD_REGISTER] Z80:11cyc, R800:3cyc
-00f38a: 21 00 40
+00f3f3: 21 00 40
 
 [DUMMY_READ1 :]
-	label address: 0x00f38d
+	label address: 0x00f3f6
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f38d: be
+00f3f6: be
 
 [	DJNZ DUMMY_READ1] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f38e: 10 fd
+00f3f7: 10 fd
 
 [DUMMY_READ2 :]
-	label address: 0x00f390
+	label address: 0x00f3f9
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f390: be
+00f3f9: be
 
 [	DJNZ DUMMY_READ2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f391: 10 fd
+00f3fa: 10 fd
 
 [	LD A , 0X80] Z80:8cyc, R800:2cyc
-00f393: 3e 80
+00f3fc: 3e 80
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f395: 32 00 58
+00f3fe: 32 00 58
 
 [	CALL SEND_CMD0] Z80:18cyc, R800:5cyc
-00f398: cd 51 f3
+00f401: cd ba f3
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f39b: 7e
+00f404: 7e
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f39c: cd 4a f3
+00f405: cd b3 f3
 
 [	CALL SEND_CMD0] Z80:18cyc, R800:5cyc
-00f39f: cd 51 f3
+00f408: cd ba f3
 
 [	LD B , 16] Z80:8cyc, R800:2cyc
-00f3a2: 06 10
+00f40b: 06 10
 
 [GET_R1_WAIT :]
-	label address: 0x00f3a4
+	label address: 0x00f40d
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3a4: 7e
+00f40d: 7e
 
 [	CALL WAIT_BUSY] Z80:18cyc, R800:5cyc
-00f3a5: cd 4a f3
+00f40e: cd b3 f3
 
 [	LD A , [ MEGASD_LAST_DATA_REGISTER ]] Z80:14cyc, R800:6cyc
-00f3a8: 3a 00 5c
+00f411: 3a 00 5c
 
 [	CP A , 0XFF] Z80:8cyc, R800:2cyc
-00f3ab: fe ff
+00f414: fe ff
 
 [	JR C , SKIP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3ad: 38 04
+00f416: 38 04
 
 [	DJNZ GET_R1_WAIT] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3af: 10 f3
+00f418: 10 f3
 
 [	JR ERROR_EXIT] Z80:13cyc, R800:3cyc
-00f3b1: 18 c7
+00f41a: 18 c7
 
 [SKIP :]
-	label address: 0x00f3b3
+	label address: 0x00f41c
 
 [	AND A , 0XF3] Z80:8cyc, R800:2cyc
-00f3b3: e6 f3
+00f41c: e6 f3
 
 [	SUB A , 0X01] Z80:8cyc, R800:2cyc
-00f3b5: d6 01
+00f41e: d6 01
 
 [	JR NZ , ERROR_EXIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3b7: 20 c1
+00f420: 20 c1
 
 [	LD [ CARD_TYPE ] , A] Z80:14cyc, R800:6cyc
-00f3b9: 32 cf ff
+00f422: 32 cf ff
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f3bc: af
+00f425: af
 
 [	LD [ MEGASD_MODE_REGISTER ] , A] Z80:14cyc, R800:6cyc
-00f3bd: 32 00 58
+00f426: 32 00 58
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3c0: be
+00f429: be
 
 [	LD [ HL ] , 0X40 | SDCMD_SEND_IF_COND] Z80:11cyc, R800:5cyc
-00f3c1: 36 48
+00f42a: 36 48
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f3c3: 77
+00f42c: 77
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f3c4: 77
+00f42d: 77
 
 [	LD [ HL ] , 0X01] Z80:11cyc, R800:5cyc
-00f3c5: 36 01
+00f42e: 36 01
 
 [	LD [ HL ] , 0XAA] Z80:11cyc, R800:5cyc
-00f3c7: 36 aa
+00f430: 36 aa
 
 [	LD [ HL ] , 0X87] Z80:11cyc, R800:5cyc
-00f3c9: 36 87
+00f432: 36 87
 
 [	LD B , 16] Z80:8cyc, R800:2cyc
-00f3cb: 06 10
+00f434: 06 10
 
 [	CALL RECEIVE_RESPONSE] Z80:18cyc, R800:5cyc
-00f3cd: cd 41 f3
+00f436: cd aa f3
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3d0: d8
+00f439: d8
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f3d1: 3d
+00f43a: 3d
 
 [	JR NZ , CHECK_SD1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3d2: 20 4b
+00f43b: 20 4b
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3d4: 7e
+00f43d: 7e
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3d5: 7e
+00f43e: 7e
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3d6: 7e
+00f43f: 7e
 
 [	AND A , 0X0F] Z80:8cyc, R800:2cyc
-00f3d7: e6 0f
+00f440: e6 0f
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f3d9: 3d
+00f442: 3d
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f3da: 7e
+00f443: 7e
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3db: c0
+00f444: c0
 
 [	CP A , 0XAA] Z80:8cyc, R800:2cyc
-00f3dc: fe aa
+00f445: fe aa
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3de: c0
+00f447: c0
 
 [RETRY_ACMD41_V2 :]
-	label address: 0x00f3df
+	label address: 0x00f448
 
 [	LD BC , 0X2000] Z80:11cyc, R800:3cyc
-00f3df: 01 00 20
+00f448: 01 00 20
 
 [LOOP_ACMD41_V2 :]
-	label address: 0x00f3e2
+	label address: 0x00f44b
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f3e2: c5
+00f44b: c5
 
 [	LD BC , ( ( 0X40 | SDCMD_APP_CMD ) << 8 ) | 0X00] Z80:11cyc, R800:3cyc
-00f3e3: 01 00 77
+00f44c: 01 00 77
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f3e6: cd 36 f3
+00f44f: cd 9f f3
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f3e9: c1
+00f452: c1
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3ea: d8
+00f453: d8
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f3eb: 3d
+00f454: 3d
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3ec: c0
+00f455: c0
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f3ed: c5
+00f456: c5
 
 [	LD BC , ( ( 0X40 | SDACMD_APP_SEND_OP_COND ) << 8 ) | 0X40] Z80:11cyc, R800:3cyc
-00f3ee: 01 40 69
+00f457: 01 40 69
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f3f1: cd 36 f3
+00f45a: cd 9f f3
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f3f4: c1
+00f45d: c1
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f3f5: d8
+00f45e: d8
 
 [	AND A , 1] Z80:8cyc, R800:2cyc
-00f3f6: e6 01
+00f45f: e6 01
 
 [	JR Z , READ_OCR] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3f8: 28 0d
+00f461: 28 0d
 
 [	DJNZ LOOP_ACMD41_V2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f3fa: 10 e6
+00f463: 10 e6
 
 [	DEC C] Z80:5cyc, R800:1cyc
-00f3fc: 0d
+00f465: 0d
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f3fd: 79
+00f466: 79
 
 [	CP A , 0] Z80:8cyc, R800:2cyc
-00f3fe: fe 00
+00f467: fe 00
 
 [	JR NZ , LOOP_ACMD41_V2] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f400: 20 e0
+00f469: 20 e0
 
 [	LD A , ICON_LOOP] Z80:8cyc, R800:2cyc
-00f402: 3e 11
+00f46b: 3e 11
 
 [	JP STOP_WITH_ERROR] Z80:11cyc, R800:5cyc
-00f404: c3 70 f0
+00f46d: c3 9c f0
 
 [READ_OCR :]
-	label address: 0x00f407
+	label address: 0x00f470
 
 [	LD BC , ( ( 0X40 | SDCMD_READ_OCR ) << 8 ) | 0X00] Z80:11cyc, R800:3cyc
-00f407: 01 00 7a
+00f470: 01 00 7a
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f40a: cd 36 f3
+00f473: cd 9f f3
 
 [	JR C , CHECK_MMC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f40d: 38 2d
+00f476: 38 2d
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f40f: 7e
+00f478: 7e
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f410: be
+00f479: be
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f411: be
+00f47a: be
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f412: be
+00f47b: be
 
 [	BIT 6 , A] Z80:10cyc, R800:2cyc
-00f413: cb 77
+00f47c: cb 77
 
 [	LD A , TYPE_SDSC] Z80:8cyc, R800:2cyc
-00f415: 3e 02
+00f47e: 3e 02
 
 [	JR Z , IS_BYTE_ACCESS] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f417: 28 01
+00f480: 28 01
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f419: 3c
+00f482: 3c
 
 [IS_BYTE_ACCESS :]
-	label address: 0x00f41a
+	label address: 0x00f483
 
 [	LD [ CARD_TYPE ] , A] Z80:14cyc, R800:6cyc
-00f41a: 32 cf ff
+00f483: 32 cf ff
 
 [	XOR A , A] Z80:5cyc, R800:1cyc
-00f41d: af
+00f486: af
 
 [	RET] Z80:11cyc, R800:5cyc
-00f41e: c9
+00f487: c9
 
 [CHECK_SD1 :]
-	label address: 0x00f41f
+	label address: 0x00f488
 
 [RETRY_ACMD41_V1 :]
-	label address: 0x00f41f
+	label address: 0x00f488
 
 [	LD BC , ( ( 0X40 | SDCMD_APP_CMD ) << 8 ) | 0X00] Z80:11cyc, R800:3cyc
-00f41f: 01 00 77
+00f488: 01 00 77
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f422: cd 36 f3
+00f48b: cd 9f f3
 
 [	JR C , CHECK_MMC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f425: 38 15
+00f48e: 38 15
 
 [	DEC A] Z80:5cyc, R800:1cyc
-00f427: 3d
+00f490: 3d
 
 [	JR NZ , CHECK_MMC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f428: 20 12
+00f491: 20 12
 
 [	LD BC , ( ( 0X40 | SDACMD_APP_SEND_OP_COND ) << 8 ) | 0X00] Z80:11cyc, R800:3cyc
-00f42a: 01 00 69
+00f493: 01 00 69
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f42d: cd 36 f3
+00f496: cd 9f f3
 
 [	JR C , CHECK_MMC] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f430: 38 0a
+00f499: 38 0a
 
 [	AND A , 1] Z80:8cyc, R800:2cyc
-00f432: e6 01
+00f49b: e6 01
 
 [	JR NZ , RETRY_ACMD41_V1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f434: 20 e9
+00f49d: 20 e9
 
 [	LD A , TYPE_SDSC] Z80:8cyc, R800:2cyc
-00f436: 3e 02
+00f49f: 3e 02
 
 [	LD [ CARD_TYPE ] , A] Z80:14cyc, R800:6cyc
-00f438: 32 cf ff
+00f4a1: 32 cf ff
 
 [	RET] Z80:11cyc, R800:5cyc
-00f43b: c9
+00f4a4: c9
 
 [CHECK_MMC :]
-	label address: 0x00f43c
+	label address: 0x00f4a5
 
 [RETRY_CMD1 :]
-	label address: 0x00f43c
+	label address: 0x00f4a5
 
 [	LD BC , ( ( 0X40 | SDCMD_SEND_IO_COND ) << 8 ) | 0X00] Z80:11cyc, R800:3cyc
-00f43c: 01 00 41
+00f4a5: 01 00 41
 
 [	CALL SEND_COMMAND] Z80:18cyc, R800:5cyc
-00f43f: cd 36 f3
+00f4a8: cd 9f f3
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f442: d8
+00f4ab: d8
 
 [	BIT 2 , A] Z80:10cyc, R800:2cyc
-00f443: cb 57
+00f4ac: cb 57
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f445: c0
+00f4ae: c0
 
 [	AND A , 1] Z80:8cyc, R800:2cyc
-00f446: e6 01
+00f4af: e6 01
 
 [	JR NZ , RETRY_CMD1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f448: 20 f2
+00f4b1: 20 f2
 
 [	LD A , TYPE_MMC] Z80:8cyc, R800:2cyc
-00f44a: 3e 01
+00f4b3: 3e 01
 
 [	LD [ CARD_TYPE ] , A] Z80:14cyc, R800:6cyc
-00f44c: 32 cf ff
+00f4b5: 32 cf ff
 
 [	RET] Z80:11cyc, R800:5cyc
-00f44f: c9
+00f4b8: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -2139,172 +2352,172 @@ Programmed by t.hara
 	Scope path: SD_READ_SECTOR:
 
 [TIMEOUT :]
-	label address: 0x00f450
+	label address: 0x00f4b9
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f450: c1
+00f4b9: c1
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f451: d1
+00f4ba: d1
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f452: 37
+00f4bb: 37
 
 [	RET] Z80:11cyc, R800:5cyc
-00f453: c9
+00f4bc: c9
 
 [RETRY_INIT :]
-	label address: 0x00f454
+	label address: 0x00f4bd
 
 [	CALL SD_INITIALIZE] Z80:18cyc, R800:5cyc
-00f454: cd 80 f3
+00f4bd: cd e9 f3
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f457: c1
+00f4c0: c1
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f458: d1
+00f4c1: d1
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f459: e1
+00f4c2: e1
 
 [	RET C] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f45a: d8
+00f4c3: d8
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f45b: 37
+00f4c4: 37
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f45c: c0
+00f4c5: c0
 
 [SD_READ_SECTOR ::]
-	global label address: 0x00f45d
+	global label address: 0x00f4c6
 
 [	PUSH HL] Z80:12cyc, R800:6cyc
-00f45d: e5
+00f4c6: e5
 
 [	PUSH DE] Z80:12cyc, R800:6cyc
-00f45e: d5
+00f4c7: d5
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f45f: c5
+00f4c8: c5
 
 [	LD B , 0X40 + SDCMD_READ_SINGLE_BLK] Z80:8cyc, R800:2cyc
-00f460: 06 51
+00f4c9: 06 51
 
 [	LD HL , MEGASD_SD_REGISTER] Z80:11cyc, R800:3cyc
-00f462: 21 00 40
+00f4cb: 21 00 40
 
 [	CALL SET_SD_COMMAND] Z80:18cyc, R800:5cyc
-00f465: cd 20 f3
+00f4ce: cd 89 f3
 
 [	JR C , RETRY_INIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f468: 38 ea
+00f4d1: 38 ea
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f46a: c1
+00f4d3: c1
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f46b: d1
+00f4d4: d1
 
 [	POP HL] Z80:11cyc, R800:5cyc
-00f46c: e1
+00f4d5: e1
 
 [	OR A , A] Z80:5cyc, R800:1cyc
-00f46d: b7
+00f4d6: b7
 
 [	SCF] Z80:5cyc, R800:1cyc
-00f46e: 37
+00f4d7: 37
 
 [	RET NZ] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
-00f46f: c0
+00f4d8: c0
 
 [	PUSH DE] Z80:12cyc, R800:6cyc
-00f470: d5
+00f4d9: d5
 
 [	PUSH BC] Z80:12cyc, R800:6cyc
-00f471: c5
+00f4da: c5
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f472: eb
+00f4db: eb
 
 [	LD HL , MEGASD_SD_REGISTER] Z80:11cyc, R800:3cyc
-00f473: 21 00 40
+00f4dc: 21 00 40
 
 [	LD B , H] Z80:5cyc, R800:2cyc
-00f476: 44
+00f4df: 44
 
 [	LD C , L] Z80:5cyc, R800:2cyc
-00f477: 4d
+00f4e0: 4d
 
 [READ_WAIT :]
-	label address: 0x00f478
+	label address: 0x00f4e1
 
 [	DEC BC] Z80:7cyc, R800:1cyc
-00f478: 0b
+00f4e1: 0b
 
 [	LD A , C] Z80:5cyc, R800:2cyc
-00f479: 79
+00f4e2: 79
 
 [	OR A , B] Z80:5cyc, R800:1cyc
-00f47a: b0
+00f4e3: b0
 
 [	JR Z , TIMEOUT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f47b: 28 d3
+00f4e4: 28 d3
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f47d: 7e
+00f4e6: 7e
 
 [	CP A , 0XFE] Z80:8cyc, R800:2cyc
-00f47e: fe fe
+00f4e7: fe fe
 
 [	JR NZ , READ_WAIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f480: 20 f6
+00f4e9: 20 f6
 
 [	LD BC , 0X0200] Z80:11cyc, R800:3cyc
-00f482: 01 00 02
+00f4eb: 01 00 02
 
 [	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
-00f485: ed b0
+00f4ee: ed b0
 
 [	EX DE , HL] Z80:5cyc, R800:1cyc
-00f487: eb
+00f4f0: eb
 
 [	LD A , [ DE ]] Z80:8cyc, R800:4cyc
-00f488: 1a
+00f4f1: 1a
 
 [	POP BC] Z80:11cyc, R800:5cyc
-00f489: c1
+00f4f2: c1
 
 [	LD A , [ DE ]] Z80:8cyc, R800:4cyc
-00f48a: 1a
+00f4f3: 1a
 
 [	POP DE] Z80:11cyc, R800:5cyc
-00f48b: d1
+00f4f4: d1
 
 [	INC DE] Z80:7cyc, R800:1cyc
-00f48c: 13
+00f4f5: 13
 
 [	LD A , D] Z80:5cyc, R800:2cyc
-00f48d: 7a
+00f4f6: 7a
 
 [	OR A , E] Z80:5cyc, R800:1cyc
-00f48e: b3
+00f4f7: b3
 
 [	JR NZ , SKIP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f48f: 20 01
+00f4f8: 20 01
 
 [	INC C] Z80:5cyc, R800:1cyc
-00f491: 0c
+00f4fa: 0c
 
 [SKIP :]
-	label address: 0x00f492
+	label address: 0x00f4fb
 
 [	DJNZ SD_READ_SECTOR] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f492: 10 c9
+00f4fb: 10 c9
 
 [	RET] Z80:11cyc, R800:5cyc
-00f494: c9
+00f4fd: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -2313,283 +2526,283 @@ Programmed by t.hara
 
 [	INCLUDE ".//../subroutine/ocm_iplrom_vdp_standard_icon_dual_epbios.asm"] begin
 [VDP_CONTROL_REGS ::]
-	global label address: 0x00f495
+	global label address: 0x00f4fe
 
 [	DB 0X1800 >> 10 , 0X82]
-00f495: 06 82
+00f4fe: 06 82
 
 [	DB 0X2000 >> 6 , 0X83]
-00f497: 80 83
+00f500: 80 83
 
 [	DB 0X0000 >> 11 , 0X84]
-00f499: 00 84
+00f502: 00 84
 
 [	DB 0X1B00 >> 7 , 0X85]
-00f49b: 36 85
+00f504: 36 85
 
 [	DB 0X00 , 0X86]
-00f49d: 00 86
+00f506: 00 86
 
 [	DB 0XF1 , 0X87]
-00f49f: f1 87
+00f508: f1 87
 
 [	DB 0X00 , 0X8A]
-00f4a1: 00 8a
+00f50a: 00 8a
 
 [	DB 0X00 , 0X8B]
-00f4a3: 00 8b
+00f50c: 00 8b
 
 [	DB 0X00 , 0X40]
-00f4a5: 00 40
+00f50e: 00 40
 
 [VDP_CONTROL_REGS_END ::]
-	global label address: 0x00f4a7
+	global label address: 0x00f510
 
 [VDP_MSX1_PALETTE_REGS ::]
-	global label address: 0x00f4a7
+	global label address: 0x00f510
 
 [	DB 0X00 , 0X00]
-00f4a7: 00 00
+00f510: 00 00
 
 [	DB 0X00 , 0X00]
-00f4a9: 00 00
+00f512: 00 00
 
 [	DB 0X22 , 0X06]
-00f4ab: 22 06
+00f514: 22 06
 
 [	DB 0X34 , 0X07]
-00f4ad: 34 07
+00f516: 34 07
 
 [	DB 0X37 , 0X03]
-00f4af: 37 03
+00f518: 37 03
 
 [	DB 0X47 , 0X04]
-00f4b1: 47 04
+00f51a: 47 04
 
 [	DB 0X53 , 0X03]
-00f4b3: 53 03
+00f51c: 53 03
 
 [	DB 0X47 , 0X06]
-00f4b5: 47 06
+00f51e: 47 06
 
 [	DB 0X63 , 0X03]
-00f4b7: 63 03
+00f520: 63 03
 
 [	DB 0X64 , 0X04]
-00f4b9: 64 04
+00f522: 64 04
 
 [	DB 0X63 , 0X06]
-00f4bb: 63 06
+00f524: 63 06
 
 [	DB 0X65 , 0X06]
-00f4bd: 65 06
+00f526: 65 06
 
 [	DB 0X11 , 0X05]
-00f4bf: 11 05
+00f528: 11 05
 
 [	DB 0X56 , 0X03]
-00f4c1: 56 03
+00f52a: 56 03
 
 [	DB 0X66 , 0X06]
-00f4c3: 66 06
+00f52c: 66 06
 
 [	DB 0X77 , 0X07]
-00f4c5: 77 07
+00f52e: 77 07
 
 [VDP_MSX1_PALETTE_REGS_END ::]
-	global label address: 0x00f4c7
+	global label address: 0x00f530
 
 [ICON_PATTERN ::]
-	global label address: 0x00f4c7
+	global label address: 0x00f530
 
 [	DB 0X00 , 0XFF , 0XE1 , 0XDF , 0XE3 , 0XF3 , 0XC2 , 0XC4]
-00f4c7: 00 ff e1 df e3 f3 c2 c4
+00f530: 00 ff e1 df e3 f3 c2 c4
 
 [	DB 0X00 , 0XF0 , 0X30 , 0XD0 , 0XD0 , 0X90 , 0X30 , 0X70]
-00f4cf: 00 f0 30 d0 d0 90 30 70
+00f538: 00 f0 30 d0 d0 90 30 70
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X02 , 0X07 , 0X0F , 0X1F]
-00f4d7: ff f3 00 00 02 07 0f 1f
+00f540: ff f3 00 00 02 07 0f 1f
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X80 , 0XC0]
-00f4df: 80 00 00 00 00 00 80 c0
+00f548: 80 00 00 00 00 00 80 c0
 
 [	DB 0X49 , 0X49 , 0XFF , 0XF1 , 0XF9 , 0XF9 , 0XF9 , 0XB0]
-00f4e7: 49 49 ff f1 f9 f9 f9 b0
+00f550: 49 49 ff f1 f9 f9 f9 b0
 
 [	DB 0X20 , 0X20 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0 , 0XF0]
-00f4ef: 20 20 f0 f0 f0 f0 f0 f0
+00f558: 20 20 f0 f0 f0 f0 f0 f0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4f7: ff 49 49 00 00 00 00 00
+00f560: ff 49 49 00 00 00 00 00
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f4ff: f0 20 20 00 00 00 00 00
+00f568: f0 20 20 00 00 00 00 00
 
 [	DB 0X49 , 0X49 , 0XFF , 0XF0 , 0XFE , 0XF8 , 0XF3 , 0XB0]
-00f507: 49 49 ff f0 fe f8 f3 b0
+00f570: 49 49 ff f0 fe f8 f3 b0
 
 [	DB 0X20 , 0X20 , 0XF0 , 0XF0 , 0X70 , 0XF0 , 0XF0 , 0X70]
-00f50f: 20 20 f0 f0 70 f0 f0 70
+00f578: 20 20 f0 f0 70 f0 f0 70
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f517: ff 49 49 00 00 00 00 00
+00f580: ff 49 49 00 00 00 00 00
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f51f: f0 20 20 00 00 00 00 00
+00f588: f0 20 20 00 00 00 00 00
 
 [	DB 0X00 , 0XFF , 0XE1 , 0XDF , 0XE3 , 0XF3 , 0XC2 , 0XC4]
-00f527: 00 ff e1 df e3 f3 c2 c4
+00f590: 00 ff e1 df e3 f3 c2 c4
 
 [	DB 0X00 , 0XF0 , 0X30 , 0XD0 , 0XD0 , 0X90 , 0X30 , 0X70]
-00f52f: 00 f0 30 d0 d0 90 30 70
+00f598: 00 f0 30 d0 d0 90 30 70
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f537: ff f3 00 00 00 00 00 00
+00f5a0: ff f3 00 00 00 00 00 00
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f53f: 80 00 00 00 00 00 00 00
+00f5a8: 80 00 00 00 00 00 00 00
 
 [	DB 0X0F , 0X1D , 0X35 , 0X65 , 0X6D , 0X6F , 0X67 , 0X30]
-00f547: 0f 1d 35 65 6d 6f 67 30
+00f5b0: 0f 1d 35 65 6d 6f 67 30
 
 [	DB 0X80 , 0XC0 , 0X60 , 0X30 , 0XB0 , 0XB0 , 0X30 , 0X60]
-00f54f: 80 c0 60 30 b0 b0 30 60
+00f5b8: 80 c0 60 30 b0 b0 30 60
 
 [	DB 0X1F , 0X0F , 0X00 , 0X00 , 0X02 , 0X07 , 0X0F , 0X1F]
-00f557: 1f 0f 00 00 02 07 0f 1f
+00f5c0: 1f 0f 00 00 02 07 0f 1f
 
 [	DB 0XC0 , 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X80 , 0XC0]
-00f55f: c0 80 00 00 00 00 80 c0
+00f5c8: c0 80 00 00 00 00 80 c0
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X0A , 0X05 , 0X0A]
-00f567: ff 49 49 00 00 0a 05 0a
+00f5d0: ff 49 49 00 00 0a 05 0a
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f56f: f0 20 20 00 00 00 00 00
+00f5d8: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X05 , 0X0A , 0X05]
-00f577: ff 49 49 00 00 05 0a 05
+00f5e0: ff 49 49 00 00 05 0a 05
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f57f: f0 20 20 00 00 00 00 00
+00f5e8: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X0A , 0X05 , 0X0A]
-00f587: ff 49 49 00 00 0a 05 0a
+00f5f0: ff 49 49 00 00 0a 05 0a
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f58f: f0 20 20 00 00 00 00 00
+00f5f8: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0X49 , 0X49 , 0X00 , 0X00 , 0X05 , 0X0A , 0X05]
-00f597: ff 49 49 00 00 05 0a 05
+00f600: ff 49 49 00 00 05 0a 05
 
 [	DB 0XF0 , 0X20 , 0X20 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f59f: f0 20 20 00 00 00 00 00
+00f608: f0 20 20 00 00 00 00 00
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X02 , 0X08 , 0X01 , 0X04]
-00f5a7: ff f3 00 00 02 08 01 04
+00f610: ff f3 00 00 02 08 01 04
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f5af: 80 00 00 00 00 00 00 00
+00f618: 80 00 00 00 00 00 00 00
 
 [	DB 0XFF , 0XF3 , 0X00 , 0X00 , 0X04 , 0X01 , 0X08 , 0X02]
-00f5b7: ff f3 00 00 04 01 08 02
+00f620: ff f3 00 00 04 01 08 02
 
 [	DB 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
-00f5bf: 80 00 00 00 00 00 00 00
+00f628: 80 00 00 00 00 00 00 00
 
 [ICON_PATTERN_END ::]
-	global label address: 0x00f5c7
+	global label address: 0x00f630
 
 [VDP_MSX2_PALETTE_REGS ::]
-	global label address: 0x00f5c7
+	global label address: 0x00f630
 
 [	DB 0X11 , 0X06]
-00f5c7: 11 06
+00f630: 11 06
 
 [	DB 0X33 , 0X07]
-00f5c9: 33 07
+00f632: 33 07
 
 [	DB 0X17 , 0X01]
-00f5cb: 17 01
+00f634: 17 01
 
 [	DB 0X27 , 0X03]
-00f5cd: 27 03
+00f636: 27 03
 
 [	DB 0X51 , 0X01]
-00f5cf: 51 01
+00f638: 51 01
 
 [	DB 0X27 , 0X06]
-00f5d1: 27 06
+00f63a: 27 06
 
 [	DB 0X71 , 0X01]
-00f5d3: 71 01
+00f63c: 71 01
 
 [	DB 0X73 , 0X03]
-00f5d5: 73 03
+00f63e: 73 03
 
 [	DB 0X61 , 0X06]
-00f5d7: 61 06
+00f640: 61 06
 
 [	DB 0X64 , 0X06]
-00f5d9: 64 06
+00f642: 64 06
 
 [	DB 0X11 , 0X04]
-00f5db: 11 04
+00f644: 11 04
 
 [	DB 0X65 , 0X02]
-00f5dd: 65 02
+00f646: 65 02
 
 [	DB 0X55 , 0X05]
-00f5df: 55 05
+00f648: 55 05
 
 [VDP_MSX2_PALETTE_REGS_END ::]
-	global label address: 0x00f5e1
+	global label address: 0x00f64a
 
 [	SCOPE VDP_PUT_ICON]
 	Scope path: VDP_PUT_ICON:
 
 [VDP_PUT_ICON ::]
-	global label address: 0x00f5e1
+	global label address: 0x00f64a
 
 [	LD HL , 0X1801 | 0X4000] Z80:11cyc, R800:3cyc
-00f5e1: 21 01 58
+00f64a: 21 01 58
 
 [	CALL SUB_CODE] Z80:18cyc, R800:5cyc
-00f5e4: cd ea f5
+00f64d: cd 53 f6
 
 [VDP_PUT_ANIMATION ::]
-	global label address: 0x00f5e7
+	global label address: 0x00f650
 
 [	LD HL , 0X1821 | 0X4000] Z80:11cyc, R800:3cyc
-00f5e7: 21 21 58
+00f650: 21 21 58
 
 [SUB_CODE :]
-	label address: 0x00f5ea
+	label address: 0x00f653
 
 [	LD C , VDP_PORT1] Z80:8cyc, R800:2cyc
-00f5ea: 0e 99
+00f653: 0e 99
 
 [	OUT [ C ] , L] Z80:14cyc, R800:10 or 9cyc
-00f5ec: ed 69
+00f655: ed 69
 
 [	OUT [ C ] , H] Z80:14cyc, R800:10 or 9cyc
-00f5ee: ed 61
+00f657: ed 61
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f5f0: d3 98
+00f659: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f5f2: 3c
+00f65b: 3c
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
-00f5f3: d3 98
+00f65c: d3 98
 
 [	INC A] Z80:5cyc, R800:1cyc
-00f5f5: 3c
+00f65e: 3c
 
 [	RET] Z80:11cyc, R800:5cyc
-00f5f6: c9
+00f65f: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -2597,20 +2810,20 @@ Programmed by t.hara
 [	INCLUDE ".//../subroutine/ocm_iplrom_vdp_standard_icon_dual_epbios.asm"] end
 
 [END_OF_CODE :]
-	label address: 0x00f5f7
+	label address: 0x00f660
 
-[IF ( END_OF_CODE - BEGIN_OF_CODE ) > 3072]
+[IF ( END_OF_CODE - BEGIN_OF_CODE ) > SMART_PROFILE_LOCATION]
 
 [ELSE]
 
-MESSAGE: Size is not a problem. (1527byte): ../hex_iplrom_512k_rev300_dual_epbios.asm(174)
+MESSAGE: Size is not a problem. (1632byte): ../hex_iplrom_512k_rev300_dual_epbios.asm(215)
 [ENDIF]
 	Selected {ELSE} block.
 
 
 << label >>
-AB_CHECK 62117 ( 0xf2a5 )
-ANIMATION_ID 62977 ( 0xf601 )
+AB_CHECK 62207 ( 0xf2ff )
+ANIMATION_ID 63082 ( 0xf66a )
 ATTR_ARCHIVE 32 ( 0x20 )
 ATTR_DIRECTORY 16 ( 0x10 )
 ATTR_HIDDEN 2 ( 0x2 )
@@ -2618,16 +2831,17 @@ ATTR_LONG_FILE_NAME 15 ( 0xf )
 ATTR_READ_ONLY 1 ( 0x1 )
 ATTR_SYSTEM 4 ( 0x4 )
 ATTR_VOLUME_ID 8 ( 0x8 )
-BANK_ID 62975 ( 0xf5ff )
+BANK_ID 63080 ( 0xf668 )
 BEGIN_OF_CODE 61440 ( 0xf000 )
-BIOS_UPDATING 62976 ( 0xf600 )
-BOOT_UP_BIOS 62029 ( 0xf24d )
+BIOS_UPDATING 63081 ( 0xf669 )
+BOOT_UP_BIOS 62119 ( 0xf2a7 )
 BUFFER 49152 ( 0xc000 )
 CARD_TYPE 65487 ( 0xffcf )
-CBIOS_CHECK 62130 ( 0xf2b2 )
-CBIOS_CHECK:WAIT_A_MOMENT 62151 ( 0xf2c7 )
-CHECK_ALREADY_LOADED 61516 ( 0xf04c )
-DATA_AREA 62972 ( 0xf5fc )
+CBIOS_CHECK 62220 ( 0xf30c )
+CBIOS_CHECK:WAIT_A_MOMENT 62245 ( 0xf325 )
+CHECK_ALREADY_LOADED 61560 ( 0xf078 )
+DATA_AREA 63077 ( 0xf665 )
+DESTINATION_ADDRESS 46080 ( 0xb400 )
 DIR_ATTRIBUTE 11 ( 0xb )
 DIR_CRT_DATE 16 ( 0x10 )
 DIR_CRT_TIME 14 ( 0xe )
@@ -2651,9 +2865,8 @@ DOS_ROM6_BANK 138 ( 0x8a )
 DOS_ROM7_BANK 140 ( 0x8c )
 DOS_ROM8_BANK 142 ( 0x8e )
 DRAM_CODE_ADDRESS 61440 ( 0xf000 )
-END_OF_CODE 62967 ( 0xf5f7 )
-ENFORCE_SLOT0_PRIMARY_MODE 62002 ( 0xf232 )
-EPBIOS_IMAGE_TABLE 61571 ( 0xf083 )
+END_OF_CODE 63072 ( 0xf660 )
+EPBIOS_IMAGE_TABLE 61615 ( 0xf0af )
 EPCS_ANI_ENABLER 1 ( 0x1 )
 EPCS_BIOS1_START_ADDRESS 2048 ( 0x800 )
 EPCS_BIOS2_START_ADDRESS 3072 ( 0xc00 )
@@ -2675,22 +2888,23 @@ ESERAM8K_BANK3 30720 ( 0x7800 )
 EXP_IO_1CHIPMSX_ID 212 ( 0xd4 )
 EXP_IO_VENDOR_ID_PORT 64 ( 0x40 )
 FAT_BUFFER 49664 ( 0xc200 )
-FILL_BANK 62185 ( 0xf2e9 )
-FILL_FF_OR_C9 62159 ( 0xf2cf )
-FILL_FF_OR_C9:FILL_FF 62170 ( 0xf2da )
-FORCE_BIOS_LOAD_FROM_EPBIOS 61547 ( 0xf06b )
-FORCE_BIOS_LOAD_FROM_SDCARD 61544 ( 0xf068 )
-FOUND_BIOS_NAME 61821 ( 0xf17d )
-FOUND_BIOS_NAME:LOOP 61846 ( 0xf196 )
-GET_MSX_VERSION 62176 ( 0xf2e0 )
+FILL_BANK 62279 ( 0xf347 )
+FILL_FF_OR_C9 62253 ( 0xf32d )
+FILL_FF_OR_C9:FILL_FF 62264 ( 0xf338 )
+FORCE_BIOS_LOAD_FROM_EPBIOS 61591 ( 0xf097 )
+FORCE_BIOS_LOAD_FROM_SDCARD 61588 ( 0xf094 )
+FOUND_BIOS_NAME 61865 ( 0xf1a9 )
+FOUND_BIOS_NAME:LOOP 61890 ( 0xf1c2 )
+GET_MSX_VERSION 62270 ( 0xf33e )
+GET_ROW_FLAGS 62334 ( 0xf37e )
 ICON_EPCS1 5 ( 0x5 )
 ICON_EPCS1_ANI 21 ( 0x15 )
 ICON_EPCS2 9 ( 0x9 )
 ICON_EPCS2_ANI 25 ( 0x19 )
 ICON_ERROR 1 ( 0x1 )
 ICON_LOOP 17 ( 0x11 )
-ICON_PATTERN 62663 ( 0xf4c7 )
-ICON_PATTERN_END 62919 ( 0xf5c7 )
+ICON_PATTERN 62768 ( 0xf530 )
+ICON_PATTERN_END 63024 ( 0xf630 )
 ICON_SD_ANI 29 ( 0x1d )
 ICON_SD_CARD 13 ( 0xd )
 INIT_STACK 61463 ( 0xf017 )
@@ -2714,29 +2928,36 @@ JIS2_KANJI5_BANK 184 ( 0xb8 )
 JIS2_KANJI6_BANK 186 ( 0xba )
 JIS2_KANJI7_BANK 188 ( 0xbc )
 JIS2_KANJI8_BANK 190 ( 0xbe )
-LOAD_BIOS 61941 ( 0xf1f5 )
-LOAD_BIOS:BANK_INIT 62051 ( 0xf263 )
-LOAD_BIOS:ENFORCE_EXTRA_MAPPER 62021 ( 0xf245 )
-LOAD_BIOS:EXIT_LOAD_BIOS 61978 ( 0xf21a )
-LOAD_BIOS:FILL_ZERO 61964 ( 0xf20c )
-LOAD_BIOS:FILL_ZERO_LOOP 61970 ( 0xf212 )
-LOAD_BIOS:S1 61998 ( 0xf22e )
-LOAD_BIOS:SET_MSX2_PALETTE 62035 ( 0xf253 )
-LOAD_BIOS_IMAGES 62075 ( 0xf27b )
-LOAD_BIOS_IMAGES:LOOP 62075 ( 0xf27b )
-LOAD_BIOS_IMAGES:MAKE_CBIOS_CHECK 62112 ( 0xf2a0 )
-LOAD_BIOS_IMAGES:SKIP_AB_CHECK 62105 ( 0xf299 )
-LOAD_BLOCK_LOOP 61951 ( 0xf1ff )
-LOAD_EPBIOS_START 61932 ( 0xf1ec )
-LOAD_FROM_EPCS 61867 ( 0xf1ab )
-LOAD_FROM_EPCS:DUMMY_READ 61884 ( 0xf1bc )
-LOAD_FROM_SDCARD 61611 ( 0xf0ab )
-LOAD_FROM_SDCARD:ADD_FAT_SIZE 61687 ( 0xf0f7 )
-LOAD_FROM_SDCARD:FOUND_PARTITION 61663 ( 0xf0df )
-LOAD_FROM_SDCARD:SD_CARD_IS_FAT 61671 ( 0xf0e7 )
-LOAD_FROM_SDCARD:SD_FIRST_PROCESS 61629 ( 0xf0bd )
-LOAD_FROM_SDCARD:TEST_PARTITION_LOOP 61646 ( 0xf0ce )
-LOAD_SDBIOS 61862 ( 0xf1a6 )
+LOAD_BIOS 61985 ( 0xf221 )
+LOAD_BIOS:BANK_INIT 62141 ( 0xf2bd )
+LOAD_BIOS:DISABLE_EXTRA_MAPPER 62107 ( 0xf29b )
+LOAD_BIOS:EXIT_LOAD_BIOS 62023 ( 0xf247 )
+LOAD_BIOS:EXIT_OUT_0X41 62113 ( 0xf2a1 )
+LOAD_BIOS:EXIT_SAFE_MODE 62060 ( 0xf26c )
+LOAD_BIOS:EXIT_TOGGLES 62115 ( 0xf2a3 )
+LOAD_BIOS:FILL_ZERO 62009 ( 0xf239 )
+LOAD_BIOS:FILL_ZERO_LOOP 62015 ( 0xf23f )
+LOAD_BIOS:S1 62043 ( 0xf25b )
+LOAD_BIOS:SET_MSX2_PALETTE 62125 ( 0xf2ad )
+LOAD_BIOS:SET_SLOT0_PRIMARY_MODE 62111 ( 0xf29f )
+LOAD_BIOS:TOGGLE_EXTRA_MAPPER 62093 ( 0xf28d )
+LOAD_BIOS_IMAGES 62165 ( 0xf2d5 )
+LOAD_BIOS_IMAGES:LOOP 62165 ( 0xf2d5 )
+LOAD_BIOS_IMAGES:MAKE_CBIOS_CHECK 62202 ( 0xf2fa )
+LOAD_BIOS_IMAGES:SKIP_AB_CHECK 62195 ( 0xf2f3 )
+LOAD_BLOCK_LOOP 61995 ( 0xf22b )
+LOAD_EPBIOS_START 61976 ( 0xf218 )
+LOAD_FROM_EPCS 61911 ( 0xf1d7 )
+LOAD_FROM_EPCS:DUMMY_READ 61928 ( 0xf1e8 )
+LOAD_FROM_SDCARD 61655 ( 0xf0d7 )
+LOAD_FROM_SDCARD:ADD_FAT_SIZE 61731 ( 0xf123 )
+LOAD_FROM_SDCARD:FOUND_PARTITION 61707 ( 0xf10b )
+LOAD_FROM_SDCARD:SD_CARD_IS_FAT 61715 ( 0xf113 )
+LOAD_FROM_SDCARD:SD_FIRST_PROCESS 61673 ( 0xf0e9 )
+LOAD_FROM_SDCARD:TEST_PARTITION_LOOP 61690 ( 0xf0fa )
+LOAD_SDBIOS 61906 ( 0xf1d2 )
+LOAD_SMART_PROFILE 61513 ( 0xf049 )
+LOOP_SMART_PROFILE 61548 ( 0xf06c )
 MAIN_ROM1_BANK 144 ( 0x90 )
 MAIN_ROM2_BANK 146 ( 0x92 )
 MBR_1ST_PARTITION 446 ( 0x1be )
@@ -2760,7 +2981,7 @@ MSX_KANJI2_BANK 156 ( 0x9c )
 MSX_MUSIC_BANK 150 ( 0x96 )
 NOT_POWER_ON_RESET 61447 ( 0xf007 )
 NO_EPCS_ICON 0 ( 0x0 )
-NO_MATCH_EXIT 61828 ( 0xf184 )
+NO_MATCH_EXIT 61872 ( 0xf1b0 )
 NO_SD_ICON 0 ( 0x0 )
 OPT_ROM_BANK 158 ( 0x9e )
 PBR_BIOS_PARAMETER_BLOCK 11 ( 0xb )
@@ -2780,15 +3001,16 @@ PBR_SECTORS_PER_TRACK 24 ( 0x18 )
 PBR_SIGNATURE 510 ( 0x1fe )
 PBR_SMALL_SECTOR 19 ( 0x13 )
 PRIMARY_SLOT_REGISTER 168 ( 0xa8 )
-READ_SECTOR_CBR 62086 ( 0xf286 )
-READ_SECTOR_FROM_EPCS 61573 ( 0xf085 )
-READ_SECTOR_FROM_EPCS:READ_ALL 61594 ( 0xf09a )
-RECEIVE_RESPONSE 62273 ( 0xf341 )
-REMAIN_FAT_SECTORS 62967 ( 0xf5f7 )
-ROOT_ENTRIES 62969 ( 0xf5f9 )
+READ_SECTOR_CBR 62176 ( 0xf2e0 )
+READ_SECTOR_FROM_EPCS 61617 ( 0xf0b1 )
+READ_SECTOR_FROM_EPCS:READ_ALL 61638 ( 0xf0c6 )
+RECEIVE_RESPONSE 62378 ( 0xf3aa )
+REMAIN_FAT_SECTORS 63072 ( 0xf660 )
+ROOT_ENTRIES 63074 ( 0xf662 )
+SAFE_MODE 62047 ( 0xf25f )
 SDACMD_APP_SEND_OP_COND 41 ( 0x29 )
 SDACMD_SET_WR_BLOCK_ERASE_COUNT 23 ( 0x17 )
-SDBIOS_IMAGE_TABLE 61571 ( 0xf083 )
+SDBIOS_IMAGE_TABLE 61615 ( 0xf0af )
 SDCMD_APP_CMD 55 ( 0x37 )
 SDCMD_CLR_WRITE_PROT 29 ( 0x1d )
 SDCMD_CRC_ON_OFF 39 ( 0x27 )
@@ -2814,65 +3036,68 @@ SDCMD_UNTAG_ERASE_GRP 37 ( 0x25 )
 SDCMD_UNTAG_SECTOR 34 ( 0x22 )
 SDCMD_WRITE_BLOCK 24 ( 0x18 )
 SD_ANI_ENABLER 1 ( 0x1 )
-SD_INITIALIZE 62336 ( 0xf380 )
-SD_INITIALIZE:CHECK_MMC 62524 ( 0xf43c )
-SD_INITIALIZE:CHECK_SD1 62495 ( 0xf41f )
-SD_INITIALIZE:DUMMY_READ1 62349 ( 0xf38d )
-SD_INITIALIZE:DUMMY_READ2 62352 ( 0xf390 )
-SD_INITIALIZE:ERROR_EXIT 62330 ( 0xf37a )
-SD_INITIALIZE:GET_R1_WAIT 62372 ( 0xf3a4 )
-SD_INITIALIZE:IS_BYTE_ACCESS 62490 ( 0xf41a )
-SD_INITIALIZE:LOOP_ACMD41_V2 62434 ( 0xf3e2 )
-SD_INITIALIZE:READ_OCR 62471 ( 0xf407 )
-SD_INITIALIZE:RETRY_ACMD41_V1 62495 ( 0xf41f )
-SD_INITIALIZE:RETRY_ACMD41_V2 62431 ( 0xf3df )
-SD_INITIALIZE:RETRY_CMD1 62524 ( 0xf43c )
-SD_INITIALIZE:SEND_CMD0 62289 ( 0xf351 )
-SD_INITIALIZE:SKIP 62387 ( 0xf3b3 )
-SD_INITIALIZE:WAIT_CS 62291 ( 0xf353 )
-SD_READ_SECTOR 62557 ( 0xf45d )
-SD_READ_SECTOR:READ_WAIT 62584 ( 0xf478 )
-SD_READ_SECTOR:RETRY_INIT 62548 ( 0xf454 )
-SD_READ_SECTOR:SKIP 62610 ( 0xf492 )
-SD_READ_SECTOR:TIMEOUT 62544 ( 0xf450 )
-SEARCH_ACTIVE_PARTITION_ON_MBR 61641 ( 0xf0c9 )
-SEARCH_BIOS_NAME 61694 ( 0xf0fe )
-SEARCH_BIOS_NAME:BIOS_NAME 61810 ( 0xf172 )
-SEARCH_BIOS_NAME:CHAR_FOUND 61765 ( 0xf145 )
-SEARCH_BIOS_NAME:ENTRIES_TO_SECTORS 61706 ( 0xf10a )
-SEARCH_BIOS_NAME:GET_NEXT_SECTOR 61726 ( 0xf11e )
-SEARCH_BIOS_NAME:NO_MATCH 61777 ( 0xf151 )
-SEARCH_BIOS_NAME:NUMCMP 61755 ( 0xf13b )
-SEARCH_BIOS_NAME:SEARCH_LOOP 61746 ( 0xf132 )
-SEARCH_BIOS_NAME:SKIP_INC 61717 ( 0xf115 )
-SEARCH_BIOS_NAME:STRCMP 61769 ( 0xf149 )
+SD_INITIALIZE 62441 ( 0xf3e9 )
+SD_INITIALIZE:CHECK_MMC 62629 ( 0xf4a5 )
+SD_INITIALIZE:CHECK_SD1 62600 ( 0xf488 )
+SD_INITIALIZE:DUMMY_READ1 62454 ( 0xf3f6 )
+SD_INITIALIZE:DUMMY_READ2 62457 ( 0xf3f9 )
+SD_INITIALIZE:ERROR_EXIT 62435 ( 0xf3e3 )
+SD_INITIALIZE:GET_R1_WAIT 62477 ( 0xf40d )
+SD_INITIALIZE:IS_BYTE_ACCESS 62595 ( 0xf483 )
+SD_INITIALIZE:LOOP_ACMD41_V2 62539 ( 0xf44b )
+SD_INITIALIZE:READ_OCR 62576 ( 0xf470 )
+SD_INITIALIZE:RETRY_ACMD41_V1 62600 ( 0xf488 )
+SD_INITIALIZE:RETRY_ACMD41_V2 62536 ( 0xf448 )
+SD_INITIALIZE:RETRY_CMD1 62629 ( 0xf4a5 )
+SD_INITIALIZE:SEND_CMD0 62394 ( 0xf3ba )
+SD_INITIALIZE:SKIP 62492 ( 0xf41c )
+SD_INITIALIZE:WAIT_CS 62396 ( 0xf3bc )
+SD_READ_SECTOR 62662 ( 0xf4c6 )
+SD_READ_SECTOR:READ_WAIT 62689 ( 0xf4e1 )
+SD_READ_SECTOR:RETRY_INIT 62653 ( 0xf4bd )
+SD_READ_SECTOR:SKIP 62715 ( 0xf4fb )
+SD_READ_SECTOR:TIMEOUT 62649 ( 0xf4b9 )
+SEARCH_ACTIVE_PARTITION_ON_MBR 61685 ( 0xf0f5 )
+SEARCH_BIOS_NAME 61738 ( 0xf12a )
+SEARCH_BIOS_NAME:BIOS_NAME 61854 ( 0xf19e )
+SEARCH_BIOS_NAME:CHAR_FOUND 61809 ( 0xf171 )
+SEARCH_BIOS_NAME:ENTRIES_TO_SECTORS 61750 ( 0xf136 )
+SEARCH_BIOS_NAME:GET_NEXT_SECTOR 61770 ( 0xf14a )
+SEARCH_BIOS_NAME:NO_MATCH 61821 ( 0xf17d )
+SEARCH_BIOS_NAME:NUMCMP 61799 ( 0xf167 )
+SEARCH_BIOS_NAME:SEARCH_LOOP 61790 ( 0xf15e )
+SEARCH_BIOS_NAME:SKIP_INC 61761 ( 0xf141 )
+SEARCH_BIOS_NAME:STRCMP 61813 ( 0xf175 )
 SELF_COPY 61447 ( 0xf007 )
-SEND_COMMAND 62262 ( 0xf336 )
-SET_BANK 62204 ( 0xf2fc )
-SET_F4_DEVICE 61988 ( 0xf224 )
-SET_SD_COMMAND 62240 ( 0xf320 )
-SET_SD_COMMAND:SET_SDHC 62247 ( 0xf327 )
-SET_SD_COMMAND:SET_SD_MMC 62256 ( 0xf330 )
-SET_SD_COMMAND:SET_SRC95 62269 ( 0xf33d )
-SET_SD_COMMAND:WAIT_COMMAND_ACCEPT 62274 ( 0xf342 )
-STOP_WITH_ERROR 61552 ( 0xf070 )
+SEND_COMMAND 62367 ( 0xf39f )
+SET_BANK 62298 ( 0xf35a )
+SET_F4_DEVICE 62033 ( 0xf251 )
+SET_SD_COMMAND 62345 ( 0xf389 )
+SET_SD_COMMAND:SET_SDHC 62352 ( 0xf390 )
+SET_SD_COMMAND:SET_SD_MMC 62361 ( 0xf399 )
+SET_SD_COMMAND:SET_SRC95 62374 ( 0xf3a6 )
+SET_SD_COMMAND:WAIT_COMMAND_ACCEPT 62379 ( 0xf3ab )
+SKIP_SMART_PROFILE 61557 ( 0xf075 )
+SMART_PROFILE_LOCATION 2944 ( 0xb80 )
+STOP_WITH_ERROR 61596 ( 0xf09c )
 SUB_ROM_BANK 152 ( 0x98 )
+TOGGLE_SLOT0 62060 ( 0xf26c )
 TYPE_MMC 1 ( 0x1 )
 TYPE_SDHC 3 ( 0x3 )
 TYPE_SDSC 2 ( 0x2 )
 TYPE_UNKNOWN 0 ( 0x0 )
-VDP_CONTROL_REGS 62613 ( 0xf495 )
-VDP_CONTROL_REGS_END 62631 ( 0xf4a7 )
-VDP_MSX1_PALETTE_REGS 62631 ( 0xf4a7 )
-VDP_MSX1_PALETTE_REGS_END 62663 ( 0xf4c7 )
-VDP_MSX2_PALETTE_REGS 62919 ( 0xf5c7 )
-VDP_MSX2_PALETTE_REGS_END 62945 ( 0xf5e1 )
+VDP_CONTROL_REGS 62718 ( 0xf4fe )
+VDP_CONTROL_REGS_END 62736 ( 0xf510 )
+VDP_MSX1_PALETTE_REGS 62736 ( 0xf510 )
+VDP_MSX1_PALETTE_REGS_END 62768 ( 0xf530 )
+VDP_MSX2_PALETTE_REGS 63024 ( 0xf630 )
+VDP_MSX2_PALETTE_REGS_END 63050 ( 0xf64a )
 VDP_PORT0 152 ( 0x98 )
 VDP_PORT1 153 ( 0x99 )
 VDP_PORT2 154 ( 0x9a )
 VDP_PORT3 155 ( 0x9b )
-VDP_PUT_ANIMATION 62951 ( 0xf5e7 )
-VDP_PUT_ICON 62945 ( 0xf5e1 )
-VDP_PUT_ICON:SUB_CODE 62954 ( 0xf5ea )
-WAIT_BUSY 62282 ( 0xf34a )
+VDP_PUT_ANIMATION 63056 ( 0xf650 )
+VDP_PUT_ICON 63050 ( 0xf64a )
+VDP_PUT_ICON:SUB_CODE 63059 ( 0xf653 )
+WAIT_BUSY 62387 ( 0xf3b3 )
 XBASIC2_BANK 148 ( 0x94 )

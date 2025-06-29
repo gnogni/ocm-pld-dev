@@ -1,5 +1,5 @@
 @echo off
-rem --- '1_swap.cmd' v3.1 by KdL (2023.12.13)
+rem --- '1_swap.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -28,7 +28,8 @@ cd ..
 ren emsx_top.vhd emsx_top.vhd.1chipmsx >nul 2>nul
 ren emsx_top.vhd.zemmixneo emsx_top.vhd >nul 2>nul
 
-if "%1"=="" cls&echo.&echo Zemmix Neo is ready to compile!
+if "%1"=="" cls
+if not "%1"=="--no-wait" echo.&echo Zemmix Neo is ready to compile!
 goto timer
 
 :msxplusplus
@@ -49,7 +50,8 @@ cd ..
 ren emsx_top.vhd emsx_top.vhd.zemmixneo >nul 2>nul
 ren emsx_top.vhd.1chipmsx emsx_top.vhd >nul 2>nul
 
-if "%1"=="" cls&echo.&echo 1chipMSX is ready to compile!  ^(default^)
+if "%1"=="" cls&echo.&echo 1chipMSX is ready to compile!  ^(default^)&goto timer
+if not "%1"=="--no-wait" echo.&echo 1chipMSX is ready to compile!
 goto timer
 
 :err_msg
@@ -60,3 +62,4 @@ echo.&echo '%PROJECT%_304k.hex.backslash.???' not found!
 if "%1"=="" waitfor /T %TIMEOUT% pause >nul 2>nul
 
 :quit
+cd ..

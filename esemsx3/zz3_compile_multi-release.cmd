@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz3_compile_multi-release.cmd' v3.1 by KdL (2023.12.13)
+rem --- 'zz3_compile_multi-release.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=emsx_top

@@ -4,7 +4,7 @@
 //   Initial Program Loader for Cyclone & EPCS (Altera)
 //   Revision 3.00
 //
-// Copyright (c) 2021-2024 Takayuki Hara
+// Copyright (c) 2021-2025 Takayuki Hara
 // All rights reserved.
 //
 // Redistribution and use of this source code or any derivative works, are
@@ -31,7 +31,7 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-// IPL-ROM PRELOADER v1.02 for EPCS16 or higher
+// IPL-ROM PRELOADER v1.02 for EPCS16 or higher, by KdL
 
 module iplrom (
     input           clk,

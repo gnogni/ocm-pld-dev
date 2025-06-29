@@ -66,7 +66,7 @@ begin
 
   U1: esefir5 generic map ( MSBI ) port map (clk, reset, DACin, FIRout);
 
-  process (clk, reset)
+  process (reset, clk)
 
     variable Acu : std_logic_vector(FIRout'high+1 downto 0);
 
@@ -74,7 +74,7 @@ begin
 
     if reset = '1' then
 
-      Acu := (others=>'0');
+      Acu := (others => '0');
       DACout <= '0';
 
     elsif clk'event and clk = '1' then

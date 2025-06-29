@@ -1,5 +1,0 @@
-https://github.com/mist-devel/T80
-https://github.com/mist-devel/T80/commits/master
-
-Version currently in use:
-https://github.com/mist-devel/T80/tree/f7f776b54d67dcd6b19d3b97027dfbc6db6f14f4

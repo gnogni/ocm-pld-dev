@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core, asynchronous top level
 --
--- Version : 0250 (+k05)
+-- Version : 0250 (+k06)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -60,6 +60,7 @@
 --  +k03 : RstKeyLock and swioRESET_n were put back outside of T80 by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
 --  +k05 : Version alignment by KdL 2023.05.15
+--  +k06 : Minor fixes by KdL 2025.05.14
 --
 
 library IEEE;
@@ -70,7 +71,6 @@ use work.T80_Pack.all;
 entity T80a is
     generic(
         Mode        : integer := 0;     -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
-        R800_MULU   : integer := 1;     -- 0 => no MULU, 1=> R800 MULU
         IOWait      : integer := 1      -- 0 => Single I/O cycle, 1 => Std I/O cycle
     );
     port(
@@ -150,7 +150,6 @@ begin
     u0 : T80
         generic map(
             Mode => Mode,
-            R800_MULU => R800_MULU,
             IOWait => IOWait)
         port map(
             CEN => CEN,

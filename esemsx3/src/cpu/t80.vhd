@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250 (+k05)
+-- Version : 0250 (+k06)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -64,6 +64,7 @@
 --  +k03 : Version alignment by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
 --  +k05 : Fixed a bug in which the flag register was not changing in "LD A,I" and "LD A,R" by t.hara 2022.11.05
+--  +k06 : Minor fixes by KdL 2025.05.14
 --
 
 library IEEE;
@@ -74,7 +75,6 @@ use work.T80_Pack.all;
 entity T80 is
     generic(
         Mode        : integer := 0;  -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
-        R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU
         IOWait      : integer := 0;  -- 0 => Single I/O cycle, 1 => Std I/O cycle
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
@@ -253,7 +253,6 @@ begin
     mcode : T80_MCode
         generic map(
             Mode => Mode,
-            R800_MULU => R800_MULU,
             Flag_C => Flag_C,
             Flag_N => Flag_N,
             Flag_P => Flag_P,
@@ -579,7 +578,7 @@ begin
                         PC <= PC - 2;
                     end if;
                     if RstP = '1' then
-                        TmpAddr <= (others =>'0');
+                        TmpAddr <= (others => '0');
                         TmpAddr(5 downto 3) <= IR(5 downto 3);
                     end if;
                 end if;
@@ -741,7 +740,7 @@ begin
 -- Multiply
 --
 ---------------------------------------------------------------------------
-    process (CLK_n, ACC, RegBusB, MULU_tmp, MULU_Fakt1, MULU_Prod32)
+    process (CLK_n, MULU_tmp, MULU_Fakt1, MULU_Prod32)
     begin
 
         MULU_tmp(31 downto 12) <= std_logic_vector((unsigned(MULU_Fakt1)*unsigned(MULU_Prod32(3 downto 0)))+unsigned("0000"&MULU_Prod32(31 downto 16)));
@@ -995,7 +994,7 @@ begin
 -- Generate external control signals
 --
 ---------------------------------------------------------------------------
-    process (RESET_n,CLK_n)
+    process (RESET_n, CLK_n)
     begin
         if RESET_n = '0' then
             RFSH_n <= '1';

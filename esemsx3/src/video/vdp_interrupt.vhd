@@ -115,9 +115,9 @@ BEGIN
     --------------------------------------------------------------------------
     PROCESS( RESET, CLK21M )
     BEGIN
-        IF (RESET = '1') THEN
+        IF( RESET = '1' )THEN
             FF_HSYNC_INT_N <= '1';
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( CLR_HSYNC_INT = '1' OR (W_VSYNC_INTR_TIMING = '1' AND V_BLANKING_START = '1') )THEN
                 -- H-BLANKING INTERRUPT CLEAR
                 FF_HSYNC_INT_N <= '1';

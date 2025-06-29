@@ -219,7 +219,7 @@ begin
     ----------------------------------------------------------------
     -- scc register access
     ----------------------------------------------------------------
-    process(clk21m, reset)
+    process (reset, clk21m)
     begin
         if( reset = '1' )then
             ff_req_dl       <= '0';
@@ -307,7 +307,7 @@ begin
     ----------------------------------------------------------------
     -- tone generator
     ----------------------------------------------------------------
-    process(clk21m, reset)
+    process (reset, clk21m)
     begin
         if (reset = '1') then
             ff_cnt_ch_a <= (others => '0');

@@ -190,20 +190,20 @@ architecture rtl of opll is
 
     component temporalmixer
     port (
-        clk     : in std_logic;
-        reset   : in std_logic;
-        clkena  : in std_logic;
+        clk     : in    std_logic;
+        reset   : in    std_logic;
+        clkena  : in    std_logic;
 
-        slot    : in slot_type;
-        stage   : in stage_type;
+        slot    : in    slot_type;
+        stage   : in    stage_type;
 
-        rhythm  : in std_logic;
+        rhythm  : in    std_logic;
 
-        maddr   : out slot_type;
-        mdata   : in signed_li_type;
+        maddr   : out   slot_type;
+        mdata   : in    signed_li_type;
 
-        mo      : out std_logic_vector(9 downto 0);
-        ro      : out std_logic_vector(9 downto 0)
+        mo      : out   std_logic_vector(9 downto 0);
+        ro      : out   std_logic_vector(9 downto 0)
     );
     end component;
 
@@ -267,7 +267,7 @@ begin
     begin
         if( reset ='1' )then
             opllwr  <= '0';
-            opllptr <= (others =>'0');
+            opllptr <= (others => '0');
         elsif( xin'event and xin = '1' )then
             if( xena = '1' )then
                 if(    cs_n = '0' and we_n = '0' and a = '0' )then

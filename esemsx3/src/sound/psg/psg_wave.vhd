@@ -83,7 +83,7 @@ begin
   ----------------------------------------------------------------
   -- Miscellaneous control / clock enable (divider)
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
   begin
 
@@ -125,14 +125,14 @@ begin
   ----------------------------------------------------------------
   -- PSG register write
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
   begin
 
     if (reset = '1') then
 
+      -- Fixed by KdL, 02nd/Jan/2025, PSG registers initialization
       PsgRegPtr    <= (others => '0');
-
       PsgFreqChA   <= (others => '0');  -- 12bits R#1 .. R#0
       PsgFreqChB   <= (others => '0');  -- 12bits R#3 .. R#2
       PsgFreqChC   <= (others => '0');  -- 12bits R#5 .. R#4
@@ -147,27 +147,32 @@ begin
 
     elsif (clk21m'event and clk21m = '1') then
 
-      if (req = '1' and wrt = '1' and adr(1 downto 0) = "00") then
-        -- register pointer
-        PsgRegPtr <= dbo(3 downto 0);
-      elsif (req = '1' and wrt = '1' and adr(1 downto 0) = "01") then
-        -- PSG registers
-        case PsgRegPtr is
-          when "0000" => PsgFreqChA( 7 downto 0) <= dbo;
-          when "0001" => PsgFreqChA(11 downto 8) <= dbo(3 downto 0);
-          when "0010" => PsgFreqChB( 7 downto 0) <= dbo;
-          when "0011" => PsgFreqChB(11 downto 8) <= dbo(3 downto 0);
-          when "0100" => PsgFreqChC( 7 downto 0) <= dbo;
-          when "0101" => PsgFreqChC(11 downto 8) <= dbo(3 downto 0);
-          when "0110" => PsgFreqNoise            <= dbo(4 downto 0);
-          when "0111" => PsgChanSel              <= dbo(5 downto 0);
-          when "1000" => PsgVolChA               <= dbo(4 downto 0);
-          when "1001" => PsgVolChB               <= dbo(4 downto 0);
-          when "1010" => PsgVolChC               <= dbo(4 downto 0);
-          when "1011" => PsgFreqEnv( 7 downto 0) <= dbo;
-          when "1100" => PsgFreqEnv(15 downto 8) <= dbo;
-          when "1101" => PsgShapeEnv             <= dbo(3 downto 0); PsgEnvReq <= not PsgEnvAck;
-          when others => null;
+      if (req = '1' and wrt = '1') then
+        case adr(1 downto 0) is
+          -- register pointer
+          when "00" =>
+            PsgRegPtr <= dbo(3 downto 0);
+          -- PSG registers
+          when "01" =>
+            case PsgRegPtr is
+              when "0000" => PsgFreqChA( 7 downto 0) <= dbo;
+              when "0001" => PsgFreqChA(11 downto 8) <= dbo(3 downto 0);
+              when "0010" => PsgFreqChB( 7 downto 0) <= dbo;
+              when "0011" => PsgFreqChB(11 downto 8) <= dbo(3 downto 0);
+              when "0100" => PsgFreqChC( 7 downto 0) <= dbo;
+              when "0101" => PsgFreqChC(11 downto 8) <= dbo(3 downto 0);
+              when "0110" => PsgFreqNoise            <= dbo(4 downto 0);
+              when "0111" => PsgChanSel              <= dbo(5 downto 0);
+              when "1000" => PsgVolChA               <= dbo(4 downto 0);
+              when "1001" => PsgVolChB               <= dbo(4 downto 0);
+              when "1010" => PsgVolChC               <= dbo(4 downto 0);
+              when "1011" => PsgFreqEnv( 7 downto 0) <= dbo;
+              when "1100" => PsgFreqEnv(15 downto 8) <= dbo;
+              when "1101" => PsgShapeEnv             <= dbo(3 downto 0); PsgEnvReq <= not PsgEnvAck;
+              when others => null;
+            end case;
+          when others =>
+            null;
         end case;
       end if;
 
@@ -178,7 +183,7 @@ begin
   ----------------------------------------------------------------
   -- Tone generator
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
     variable PsgCntChA : std_logic_vector(11 downto 0);
     variable PsgCntChB : std_logic_vector(11 downto 0);
@@ -236,7 +241,7 @@ begin
   ----------------------------------------------------------------
   -- Noise generator
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
     variable PsgCntNoise : std_logic_vector( 4 downto 0);
     variable PsgGenNoise : std_logic_vector(17 downto 0);
@@ -268,7 +273,7 @@ begin
             PsgGenNoise(I) := PsgGenNoise(I - 1);
           end loop;
 
-          if (PsgGenNoise = "00000000000000000") then
+          if (PsgGenNoise = "000000000000000000") then
             PsgGenNoise(0) := '1';                                          -- Error trap
           else
             PsgGenNoise(0) := PsgGenNoise(17) xor PsgGenNoise(14);          -- Normal work
@@ -287,7 +292,7 @@ begin
   ----------------------------------------------------------------
   -- Envelope generator
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
     variable PsgCntEnv : std_logic_vector(15 downto 0);
     variable PsgPtrEnv : std_logic_vector( 4 downto 0);
@@ -342,7 +347,7 @@ begin
   ----------------------------------------------------------------
   -- Mixer control
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process (reset, clk21m)
 
     variable PsgEnaNoise : std_logic;
     variable PsgEnaTone  : std_logic;

@@ -528,7 +528,7 @@ architecture RTL of emsx_top is
             io41_id212_n    : inout std_logic_vector(  7 downto 0 );            -- $41 ID212 states         :   Smart Commands
             io42_id212      : inout std_logic_vector(  7 downto 0 );            -- $42 ID212 states         :   Virtual DIP-SW states
             io43_id212      : inout std_logic_vector(  7 downto 0 );            -- $43 ID212 states         :   Lock Mask for port $42 functions, cmt and reset key
-            io44_id212      : inout std_logic_vector(  7 downto 0 );            -- $44 ID212 states         :   Lights Mask have the green leds control when Lights Mode is On
+            io44_id212      : inout std_logic_vector(  7 downto 0 );            -- $44 ID212 states         :   Lights Mask has the green leds control when Lights Mode is On
             OpllVol         : inout std_logic_vector(  2 downto 0 );            -- OPLL Volume
             SccVol          : inout std_logic_vector(  2 downto 0 );            -- SCC-I Volume
             PsgVol          : inout std_logic_vector(  2 downto 0 );            -- PSG Volume
@@ -1354,7 +1354,7 @@ begin
         end if;
     end process;
 
-    -- LEDs luminance
+    -- LEDs brightness
     process( clk21m )
     begin
         if( clk21m'event and clk21m = '1' )then
@@ -1941,50 +1941,49 @@ begin
     begin
         if( clk21m'event and clk21m = '1' )then
             case DisplayMode is
-            when "00" =>                                            -- TV 15kHz
-                pDac_VR     <= videoC;                              -- Chrominance of S-Video Out
-                pDac_VG     <= videoY;                              -- Luminance of S-Video Out
-                pDac_VB     <= videoV;                              -- Composite Video Out
-                Reso_v      <= '0';                                 -- Hsync:15kHz
-                pVideoHS_n  <= 'Z';                                 -- CSync Disabled
-                pVideoVS_n  <= DACout;                              -- Audio Out (Mono)
-                legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 MSX2 VDP)
+                when "00" =>                                        -- TV 15kHz
+                    pDac_VR     <= videoC;                          -- Chrominance for S-Video Out
+                    pDac_VG     <= videoY;                          -- Luminance for S-Video Out
+                    pDac_VB     <= videoV;                          -- Composite Video Out
+                    Reso_v      <= '0';                             -- Hsync:15kHz
+                    pVideoHS_n  <= 'Z';                             -- CSync Disabled
+                    pVideoVS_n  <= DACout;                          -- Audio Out (Mono)
+                    legacy_vga  <= '0';                             -- behaves like vAllow_n        (for V9938 MSX2 VDP)
 
-            when "01" =>                                            -- RGB 15kHz
-                if( ZemmixNeo = '1')then                            -- Luminance 100%
-                    pDac_VR     <= VideoR;
-                    pDac_VG     <= VideoG;
-                    pDac_VB     <= VideoB;
-                else                                                -- Luminance 50%
-                    pDac_VR     <= "0" & VideoR( 5 downto 1 );
-                    pDac_VG     <= "0" & VideoG( 5 downto 1 );
-                    pDac_VB     <= "0" & VideoB( 5 downto 1 );
-                end if;
-                Reso_v      <= '0';                                 -- Hsync:15kHz
-                pVideoHS_n  <= VideoCS_n;                           -- CSync Enabled
-                pVideoVS_n  <= DACout;                              -- Audio Out (Mono)
-                legacy_vga  <= '0';                                 -- behaves like vAllow_n        (for V9938 MSX2 VDP)
+                when "01" =>                                        -- RGB 15kHz
+                    if( ZemmixNeo = '1')then                        -- 100% Brightness
+                        pDac_VR     <= VideoR;
+                        pDac_VG     <= VideoG;
+                        pDac_VB     <= VideoB;
+                    else                                            -- 50% Brightness
+                        pDac_VR     <= "0" & VideoR( 5 downto 1 );
+                        pDac_VG     <= "0" & VideoG( 5 downto 1 );
+                        pDac_VB     <= "0" & VideoB( 5 downto 1 );
+                    end if;
+                    Reso_v      <= '0';                             -- Hsync:15kHz
+                    pVideoHS_n  <= VideoCS_n;                       -- CSync Enabled
+                    pVideoVS_n  <= DACout;                          -- Audio Out (Mono)
+                    legacy_vga  <= '0';                             -- behaves like vAllow_n        (for V9938 MSX2 VDP)
 
-            when others =>                                          -- VGA / VGA+ 31kHz
-                if( ZemmixNeo = '1')then                            -- Luminance 100%
-                    pDac_VR     <= VideoR;
-                    pDac_VG     <= VideoG;
-                    pDac_VB     <= VideoB;
-                else                                                -- Luminance 50%
-                    pDac_VR     <= "0" & VideoR( 5 downto 1 );
-                    pDac_VG     <= "0" & VideoG( 5 downto 1 );
-                    pDac_VB     <= "0" & VideoB( 5 downto 1 );
-                end if;
-                Reso_v      <= '1';                                 -- Hsync:31kHz
-                pVideoHS_n  <= VideoHS_n;
-                pVideoVS_n  <= VideoVS_n;
-                legacy_vga  <= not DisplayMode(0);                  -- behaves like vAllow_n        (for V9938 MSX2 VDP)
---              if( legacy_sel = '0' )then                          -- Assignment of Legacy Output  (for V9958 MSX2+/tR VDP)
---                  legacy_vga  <= not DisplayMode(0);              -- to VGA
---              else
---                  legacy_vga  <= DisplayMode(0);                  -- to VGA+
---              end if;
-
+                when others =>                                      -- VGA / VGA+ 31kHz
+                    if( ZemmixNeo = '1')then                        -- 100% Brightness
+                        pDac_VR     <= VideoR;
+                        pDac_VG     <= VideoG;
+                        pDac_VB     <= VideoB;
+                    else                                            -- 50% Brightness
+                        pDac_VR     <= "0" & VideoR( 5 downto 1 );
+                        pDac_VG     <= "0" & VideoG( 5 downto 1 );
+                        pDac_VB     <= "0" & VideoB( 5 downto 1 );
+                    end if;
+                    Reso_v      <= '1';                             -- Hsync:31kHz
+                    pVideoHS_n  <= VideoHS_n;
+                    pVideoVS_n  <= VideoVS_n;
+                    legacy_vga  <= not DisplayMode(0);              -- behaves like vAllow_n        (for V9938 MSX2 VDP)
+--                  if( legacy_sel = '0' )then                      -- Assignment of Legacy Output  (for V9958 MSX2+/tR VDP)
+--                      legacy_vga  <= not DisplayMode(0);          -- to VGA
+--                  else
+--                      legacy_vga  <= DisplayMode(0);              -- to VGA+
+--                  end if;
             end case;
         end if;
     end process;
@@ -2644,7 +2643,7 @@ begin
         );
 
     --  low pass filter
---  w_lpf2ena <= '1' when( ff_lpf_div(         0) = '1'    and clkena = '1' ) else '0';     -- sccic
+--  w_lpf2ena <= '1' when( ff_lpf_div(         0) = '1'    and clkena = '1' )else '0';     -- sccic
 
     u_lpf2 : lpf2
         generic map(

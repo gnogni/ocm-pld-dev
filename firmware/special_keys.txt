@@ -1,5 +1,6 @@
 List of DIP-SW and Special Keys (v3.9.2)
 ========================================
+
 GAMING-SPACEBAR     <=  [WIN]
 GRAPH               <=  [F6] or [LALT]
 KANA/CODE           <=  [F7] or [MENU]
@@ -14,27 +15,31 @@ Internal Mapper     <=  [DIP-SW7] only
 Internal MegaSD     <=  [DIP-SW8] only
 Blackout Mode       <=  [PAUSE]
 CMT                 <=  [SCRLK] on Cyclone I series     { 1chipMSX, Zemmix Neo (KR), Zemmix Neo BR, SX-1 (regular) and [SX-1 Mini/Mini+] }
-Internal OPL3       <=  [SCRLK] on Cyclone IV-E series  { SM-X (regular) and SX-2 }
+Internal OPL3       <=  [SCRLK] on Cyclone IV-E series  { SM-X (regular), SX-2 and SX-E }
 
-CANCEL              <=  [RALT]              If held down during BIOS loading, it will enable Slot0 in Primary mode.
-EXECUTE             <=  [RCTRL]             If held down during BIOS loading, it will enable Extra-Mapper 4096KB.
+CANCEL              <=  [RALT]              If held down during BIOS loading, it will toggle Slot0 between Expanded and Primary mode.
+EXECUTE             <=  [RCTRL]             If held down during BIOS loading, it will toggle Extra-Mapper 4096KB between off and on.
                                             Since Extra-Mapper is located in Slot0-1, [RCTRL] cannot be used together with [RALT].
 
-Cold Reset          <=  [LCTRL+SHIFT+F12]   It acts like the "GETRESET /C" command.
-Warm Reset          <=  [LCTRL+F12]         It acts like the "GETRESET" command.
+Safe Mode           <=  [DEL]               If held down during BIOS loading, it temporarily restores all defaults.
+                                            Use if the smart profile is not configured correctly or prevents access to the SD card.
+
+Cold Reset          <=  [LCTRL+F12]         It acts like the GETRESET /C command.
+Full Reset          <=  [LCTRL+SHIFT+F12]   It acts like the GETRESET /F command.
                                             Due to hardware limitations, these functions are unable to reset cartridges on 1st Gen machines.
 
 System Reset        <=  [HARD RESET KEY]    Three actions are possible:
-                                            1. with a short click you can perform a quick reset;
-                                            2. with a long click you can reload SDBIOS or EPBIOS;
+                                            1. with a short click you can perform a cold reset;
+                                            2. with a long click you can perform a full reset and reload SDBIOS (or EPBIOS if it doesn’t exist);
                                             3. with one more click you can cancel the loading of SDBIOS to start EPBIOS instead.
 
-Extra Keys on Cyclone IV-E series
+Extra Keys on Cyclone IV-E Series
 =================================
+
 Autofire ON/OFF     <=  [LCTRL+SHIFT+PGDOWN]
 Autofire Speed      <=  [LCTRL+PGUP/PGDOWN]
-Autofire Status LED <=  [LCTRL+SHIFT+PGUP]   Autofire activates a blinking LED that can be turned off with this key combination.
+Autofire Status LED <=  [LCTRL+SHIFT+PGUP]  Autofire activates a blinking LED that can be turned off with this key combination.
 
 
 ______________
-KdL 2024.02.03
+KdL 2025.06.29

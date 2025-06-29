@@ -62,10 +62,10 @@ module rtc (
         input   [ 7:0]  dbo
     );
 
-//  for XTAL 21.47727MHz => clk21m / 6 = 3,579,545.454 MHz
+//  for XTAL 21.47727MHz => clk21m / 6 = 3,579,545.454MHz
 //  localparam c_1sec_cnt0  = 22'h2D94A3;   // LFSR count = 3579547 clock ticks (approx +1.546)
 
-//  for XTAL 50.00000MHz => clk21m / 6 = 3,580,729.167 MHz
+//  for XTAL 50.00000MHz => clk21m / 6 = 3,580,729.167MHz
     localparam c_1sec_cnt0  = 22'h1F53BB;   // LFSR count = 3580730 clock ticks (approx +0.833)
 
     // ff

@@ -56,7 +56,7 @@ architecture RTL of FeedbackMemory is
 
 begin
 
-  process(clk, reset)
+  process (reset, clk)
 
     variable init_ch : integer range 0 to 9;
 

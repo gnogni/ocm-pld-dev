@@ -29,11 +29,11 @@
 ; OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;
-; IPL-ROM Revision 2.00 for 512 kB unpacked with Dual-EPBIOS support
+; IPL-ROM Revision 2.00 for 512 KB unpacked with Dual-EPBIOS support
 ; EPCS16 (or higher) start adr 100000h - Optimized by KdL 2020.01.09
 ;
 ; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
-; TASM is at http://www.ticalc.org
+; TASM is at https://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ;
@@ -41,7 +41,7 @@
             .org        $FC00
 ;----------------------------------------
 
-SDBIOS_LEN: .equ        32                 ; SDBIOS length: 24=384 kB, 32=512 kB, 64=1024 kB
+SDBIOS_LEN: .equ        32                 ; SDBIOS length: 24=384 KB, 32=512 KB, 64=1024 KB
 ;----------------------------------------
 
 begin:                                     ; ### from low memory ($0000) ###
@@ -165,25 +165,25 @@ load_epcs:
             ld          ($6000), a
 ;----------------------------------------
             ld          de, $0800          ; EPCS start adr = 100000h / 512 <512k or 1024k
-            in          a,($42)            ; check for Internal Mapper = 4096 kB
+            in          a,($42)            ; check for Internal Mapper = 4096 KB
             and         %01000000
             sra         a
             sra         a
             sra         a
             sra         a
             or          d
-            ld          d, a               ; EPCS start adr = 180000h if 4096 kB is set
+            ld          d, a               ; EPCS start adr = 180000h if 4096 KB is set
 ;----------------------------------------
             ld          a, $80             ; ESE-RAM init adr
             ld          b, 9-1             ; DISK+MAIN(1) length -1
-            call        load_blocks        ;   9 * 16 kB [DATA]
+            call        load_blocks        ;   9 * 16 KB [DATA]
             call        set_f4_device      ; set F4 normal or inverted
             ld          b, SDBIOS_LEN-9-1  ; MAIN(2)+OTHERS length -1
-;----------------------------------------  ; +15 * 16 kB [DATA] <= HEX-FILE 384k
-            call        load_blocks        ; +23 * 16 kB [DATA] <= HEX-FILE 512k
-;----------------------------------------  ; +55 * 16 kB [DATA] <= HEX-FILE 1024k
-            ld          a, $00             ; a = $ff (384 kB) JIS2 enabler = Off
-            jr          set_jis2_ena       ; a = $00 (512 kB) JIS2 enabler = On
+;----------------------------------------  ; +15 * 16 KB [DATA] <= HEX-FILE 384k
+            call        load_blocks        ; +23 * 16 KB [DATA] <= HEX-FILE 512k
+;----------------------------------------  ; +55 * 16 KB [DATA] <= HEX-FILE 1024k
+            ld          a, $00             ; a = $ff (384 KB) JIS2 enabler = Off
+            jr          set_jis2_ena       ; a = $00 (512 KB) JIS2 enabler = On
 ;----------------------------------------
 
 ; test BIOS on SD CARD
@@ -252,14 +252,14 @@ exit_ab:
 
 ; load BIOS from SD CARD
             ld          a, $80
-            ld          b, 9               ;   9 * 16 kB <= DISK+MAIN(1)
+            ld          b, 9               ;   9 * 16 KB <= DISK+MAIN(1)
             call        load_erm
             call        set_f4_device      ; set F4 normal or inverted
 test_sdbios_len:
             ld          b, SDBIOS_LEN-9    ; (len-9) * 16k <= MAIN(2)+OTHERS
             call        load_erm
-            cpl                            ; a = $b0 (384 kB) JIS2 enabler = Off
-            rlca                           ; a = $c0 (512 kB) JIS2 enabler = On
+            cpl                            ; a = $b0 (384 KB) JIS2 enabler = Off
+            rlca                           ; a = $c0 (512 KB) JIS2 enabler = On
 set_jis2_ena:
             out         ($4E), a           ; set JIS2 enabler
 ;----------------------------------------
@@ -329,15 +329,15 @@ load_skip_fill:
 
 load_blocks:
             ld          c, e
-            inc         b                  ; +1 block (16 kB)
+            inc         b                  ; +1 block (16 KB)
 load_erm:
-            ld          ($7000), a         ; ermbank2 (8 kB)
+            ld          ($7000), a         ; ermbank2 (8 KB)
             inc         a
-            ld          ($7800), a         ; ermbank3 (8 kB)
+            ld          ($7800), a         ; ermbank3 (8 KB)
             inc         a
             push        af
             push        bc
-; load page 16 kB
+; load page 16 KB
             ld          b, $20             ; 32 sectors
             ld          hl, $8000          ; buffer
 get_data:

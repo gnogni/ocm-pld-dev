@@ -324,7 +324,6 @@ set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM On -fam
 set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM On -family "Arria II GX"
 set_global_assignment -name MAX_LABS "-1 (Unlimited)"
 set_global_assignment -name RBCGEN_CRITICAL_WARNING_TO_ERROR On
-set_global_assignment -name SYNTHESIS_SEED 2
 set_global_assignment -name MAX_NUMBER_OF_REGISTERS_FROM_UNINFERRED_RAMS "-1 (Unlimited)"
 set_global_assignment -name AUTO_PARALLEL_SYNTHESIS Off
 set_global_assignment -name FLEX10K_ENABLE_LOCK_OUTPUT Off
@@ -466,7 +465,6 @@ set_global_assignment -name OPTIMIZE_IOC_REGISTER_PLACEMENT_FOR_TIMING Normal
 set_global_assignment -name FIT_ONLY_ONE_ATTEMPT Off
 set_global_assignment -name FINAL_PLACEMENT_OPTIMIZATION Automatically
 set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION Automatically
-set_global_assignment -name SEED 1
 set_global_assignment -name SLOW_SLEW_RATE Off
 set_global_assignment -name PCI_IO Off
 set_global_assignment -name TURBO_BIT On

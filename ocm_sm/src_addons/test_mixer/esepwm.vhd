@@ -74,7 +74,7 @@ begin
 
     if reset = '1' then
 
-      Acu := (others=>'0');
+      Acu := (others => '0');
       DACout <= '0';
 
     elsif clk'event and clk = '1' then

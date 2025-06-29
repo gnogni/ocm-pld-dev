@@ -1,0 +1,236 @@
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  1 of 10
+-------------------------------------------------------------------------------
+
+  00 -> Null Command $00 (reserved) (default/break code for IGX Smart Profile)
+  01 -> Set Turbo Pana Redirection OFF (default)
+  02 -> Set Turbo Pana Redirection ON
+  03 -> Set Standard Speed 3.58MHz
+  04 -> Set Custom Speed 4.10MHz        ---------------------------------------
+  05 -> Set Custom Speed 4.48MHz        | All the Custom Speeds are simulated |
+  06 -> Set Custom Speed 4.90MHz        | by a slowdown of CPU Clock 10.74MHz |
+  07 -> Set Custom Speed 5.39MHz        ---------------------------------------
+  08 -> Set Custom Speed 6.10MHz
+  09 -> Set Custom Speed 6.96MHz
+  0A -> Set Custom Speed 8.06MHz (aka "Turbo 10MHz") (default)
+  0B -> Set Turbo MegaSD OFF
+  0C -> Set Turbo MegaSD ON (default)
+  0D -> Set External Slot-1       + External Slot-2
+  0E -> Set Internal SCC-I Slot-1 + External Slot-2
+  0F -> Set External Slot-1       + Internal SCC-I Slot-2
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  2 of 10
+-------------------------------------------------------------------------------
+
+  10 -> Set Internal SCC-I Slot-1 + Internal SCC-I Slot-2
+  11 -> Set External Slot-1       + Internal ASCII-8K Slot-2
+  12 -> Set Internal SCC-I Slot-1 + Internal ASCII-8K Slot-2
+  13 -> Set External Slot-1       + Internal ASCII-16K Slot-2
+  14 -> Set Internal SCC-I Slot-1 + Internal ASCII-16K Slot-2
+  15 -> Set Japanese Keyboard Layout
+  16 -> Set Non-Japanese Keyboard Layout
+  17 -> Set Display Mode 15KHz Composite/S-Video
+  18 -> Set Display Mode 15KHz RGB with Audio Out (needs a VGA to SCART cable)
+  19 -> Set Display Mode 31KHz VGA for LED TV or LED Display (50Hz+60Hz)
+  1A -> Set Display Mode 31KHz VGA+ for CRT Monitor (legacy output) (50Hz+60Hz)
+  1B -> Set VDP Normal Mode (default)
+  1C -> Set VDP Fast Mode (V9958 only)
+  1D -> Reserve MegaSD OFF (warm reset to go)
+  1E -> Reserve MegaSD ON (warm reset to go)
+  1F -> Set MegaSD Blink OFF
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  3 of 10
+-------------------------------------------------------------------------------
+
+  20 -> Set MegaSD Blink ON (default)
+  21 -> Set Lights Mode OFF with Auto LEDs Control (default)
+  22 -> Set Lights Mode ON + Red Led OFF
+  23 -> Set Lights Mode ON + Red Led ON
+  24 -> Internal Audio Preset #1 "Mute Sound"
+  25 -> Internal Audio Preset #2 "Middle Sound"
+  26 -> Internal Audio Preset #3 "High Sound" (default)
+* 27 -> Set CMT OFF (default) (not available with MSXtR BIOS)
+* 28 -> Set CMT ON (needs a cassette recorder) (not available with MSXtR BIOS)
+  29 -> Lock   CPU Clock Toggles
+  2A -> Unlock CPU Clock Toggles
+  2B -> Lock   Video Output Toggles                  --------------------------
+  2C -> Unlock Video Output Toggles                  | SCRLK key could handle |
+  2D -> Lock   Audio Mixer & SCRLK Toggles           | CMT or OPL3 depending  |
+  2E -> Unlock Audio Mixer & SCRLK Toggles           | on the type of machine |
+  2F -> Lock   Slot-1 Toggles                        --------------------------
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  4 of 10
+-------------------------------------------------------------------------------
+
+  30 -> Unlock Slot-1 Toggles
+  31 -> Lock   Slot-2 Toggles
+  32 -> Unlock Slot-2 Toggles
+  33 -> Lock   Slot-1 & Slot-2 Toggles
+  34 -> Unlock Slot-1 & Slot-2 Toggles
+  35 -> Lock   System Reset (reset combos & hard reset key)
+  36 -> Unlock System Reset (reset combos & hard reset key)
+  37 -> Lock   Internal Mapper Toggle
+  38 -> Unlock Internal Mapper Toggle
+  39 -> Lock   Internal MegaSD Toggle
+  3A -> Unlock Internal MegaSD Toggle
+  3B -> Lock   All Toggles
+  3C -> Unlock All Toggles (default)
+  3D -> Set Pseudo-Stereo OFF (default)
+  3E -> Set Pseudo-Stereo ON (needs an external sound cartridge)
+  3F -> Sync External Bus Clock to CPU Speed (default)
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  5 of 10
+-------------------------------------------------------------------------------
+
+  40 -> Set External Bus Clock 3.58MHz
+  41 -> Set Turbo Pana 5.37MHz
+  42 -> Set Right Inverse Audio OFF (default)
+  43 -> Set Right Inverse Audio ON
+  44 -> Internal Audio Preset #4 "Emphasis PSG Sound"
+  45 -> Internal Audio Preset #5 "Emphasis SCC-I Sound"
+  46 -> Internal Audio Preset #6 "Emphasis OPLL Sound"
+  47 -> Vertical Offset 16 (useful for Ark-A-Noah)
+  48 -> Vertical Offset 17
+  49 -> Vertical Offset 18
+  4A -> Vertical Offset 19 (default)
+  4B -> Vertical Offset 20
+  4C -> Vertical Offset 21
+  4D -> Vertical Offset 22
+  4E -> Vertical Offset 23
+  4F -> Vertical Offset 24 (useful for Space Manbow)
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  6 of 10
+-------------------------------------------------------------------------------
+
+  50 -> Set VGA Scanlines None (default)     ----------------------------------
+  51 -> Set VGA Scanlines Light              | Scanlines effect not restored  |
+  52 -> Set VGA Scanlines Medium             | on reset unless flashed with # |
+  53 -> Set VGA Scanlines Heavy              ----------------------------------
+* 54 -> Set Internal PSG2 OFF (default)
+* 55 -> Set Internal PSG2 ON (this second PSG acts as an external PSG)
+* 56 -> Reserve Extra-Mapper 4096KB OFF (default)
+* 57 -> Reserve Extra-Mapper 4096KB ON (only available if SDRAM > 8MB)
+  58 -> Set Extended MegaROM Reading OFF (default for compatibility)
+  59 -> Set Extended MegaROM Reading ON (ASCII-8K/16K max size playable)
+  5A -> Set Sprite Limit 4/8 (standard mode) (default)
+  5B -> Set Sprite Limit 8/8 (force MSX1 screens to use 8 sprites per line)
+  5C -> Set VGA Interlace Single Field (not affected by scanlines) (default)
+  5D -> Set VGA Interlace Duplicate Field                     // $5E ... $7D //
+  7E -> Reserve System Logo ON (the logo will be displayed after a warm reset)
+  7F -> Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  7 of 10
+-------------------------------------------------------------------------------
+
+  80 -> Null Command $80 (reserved) (useful for programming)
+  81 -> Assign Legacy Output to VGA
+  82 -> Assign Legacy Output to VGA+ (default)
+  83 -> Set Internal Slot-1 Linear OFF (default)
+  84 -> Set Internal Slot-1 Linear ON (requires SCC-I preset)
+  85 -> Set Internal Slot-2 Linear OFF (default)
+  86 -> Set Internal Slot-2 Linear ON (requires SCC-I or ASCII-8K/16K preset)
+* 87 -> Set Internal OPL3 OFF (default)
+* 88 -> Set Internal OPL3 ON
+  89 -> Set F2 Device OFF (allows I/O access to PlaySoniq and other cartridges)
+  8A -> Set F2 Device ON (essential to execute ESP8266 BIOS) (default)
+* 8B -> Reserved (Ducasp)
+* 8C -> Reserved (Ducasp)
+* 8D -> Reserved (Ducasp)
+* 8E -> Reserved (Ducasp)
+* 8F -> Reserved (Ducasp)                                     // $90 ... $AF //
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  8 of 10
+-------------------------------------------------------------------------------
+
+  B0 -> Set Master Volume 0 (mute)
+  B1 -> Set Master Volume 1 (min)
+  B2 -> Set Master Volume 2
+  B3 -> Set Master Volume 3
+  B4 -> Set Master Volume 4 (middle)
+  B5 -> Set Master Volume 5
+  B6 -> Set Master Volume 6
+  B7 -> Set Master Volume 7 (max) (default)
+  B8 -> Set PSG Volume 0 (mute)
+  B9 -> Set PSG Volume 1 (min)
+  BA -> Set PSG Volume 2
+  BB -> Set PSG Volume 3
+  BC -> Set PSG Volume 4 (middle) (default)
+  BD -> Set PSG Volume 5
+  BE -> Set PSG Volume 6
+  BF -> Set PSG Volume 7 (max)
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page  9 of 10
+-------------------------------------------------------------------------------
+
+  C0 -> Set SCC-I Volume 0 (mute)
+  C1 -> Set SCC-I Volume 1 (min)
+  C2 -> Set SCC-I Volume 2
+  C3 -> Set SCC-I Volume 3
+  C4 -> Set SCC-I Volume 4 (middle) (default)
+  C5 -> Set SCC-I Volume 5
+  C6 -> Set SCC-I Volume 6
+  C7 -> Set SCC-I Volume 7 (max)
+  C8 -> Set OPLL Volume 0 (mute)
+  C9 -> Set OPLL Volume 1 (min)
+  CA -> Set OPLL Volume 2                       -------------------------------
+  CB -> Set OPLL Volume 3                       | OPLL volumes 6 and 7 could  |
+  CC -> Set OPLL Volume 4 (middle) (default)    | be subject to clipping at   |
+  CD -> Set OPLL Volume 5                       | max master volume or due to |
+  CE -> Set OPLL Volume 6                       | overlapping sound sources   |
+  CF -> Set OPLL Volume 7 (max)                 -------------------------------
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+  MSX++ Smart Commands Table Revision 12    by KdL 2011-2025    Page 10 of 10
+-------------------------------------------------------------------------------
+
+  D0 -> Force NTSC Mode
+  D1 -> Standard NTSC/PAL Mode (bound by Control Register 9) (default)
+  D2 -> Force PAL Mode
+  D3 -> Restore Default Keyboard Layout
+  D4 -> Null Command $D4 (reserved) (used by IPL-ROM for C-BIOS detection)
+  D5 -> Restore Default Turbo Modes
+  D6 -> Set Centering YJK Modes/R25 Mask OFF (default)
+  D7 -> Set Centering YJK Modes/R25 Mask ON                   // $D8 ... $F7 //
+  F8 -> Reserve OCM-BIOS Reloading (cold reset or warm reset to go)
+  F9 -> Reserve Slot-0 Primary Mode (warm reset to go) (internal OPLL disabled)
+  FA -> Reserve Slot-0 Expanded Mode (warm reset to go) (default)
+  FB -> Cold Reset
+  FC -> Warm Reset with Mapper 2048KB (RAM size 6144KB if Extra-Mapper is ON)
+  FD -> Warm Reset
+  FE -> Warm Reset with Mapper 4096KB (RAM size 8192KB if Extra-Mapper is ON)
+  FF -> Restore All Defaults + Reserve Default Mapper & MegaSD
+
+-------------------------------------------------------------------------------
+
+
+(*) Commands marked with an asterisk may not be available on all machines.
+
+WARNING!! Flashing EPCS via # prefix may brick less stable systems. Ensure you
+have a proper download cable and know the recovery procedure before proceeding.
+

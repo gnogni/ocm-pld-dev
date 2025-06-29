@@ -54,31 +54,33 @@
 --  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 --  POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------
---  23rd,March,2008
---      JP: VDP.VHD から分離 by t.hara
+--  23rd,March,2008 by t.hara
+--      JP: VDP.VHD から分離
 --
---  28th,March,2008
---      added "S#0 bit6 5th sprite (9th sprite) flag support" by t.hara
+--  28th,March,2008 by t.hara
+--      Added S#0 bit6 5th sprite (9th sprite) flag support.
 --
---  29th,March,2008
---      added V9958 registers (R25,R26,R27) by t.hara
+--  29th,March,2008 by t.hara
+--      Added V9958 registers R25, R26 and R27.
 --
---  26th,January,2017
---      patch yuukun status R0 S#5 timing
+--  26th,January,2017 by yuukun
+--      Patch status R0 S#5 timing.
 --
 --  5th,September,2019 modified by Oduvaldo Pavan Junior
---      Fixed the lack of page flipping (R13) capability
---
---      Added the undocumented feature where R1 bit #2 change the blink counter
---      clock source from VSYNC to HSYNC
+--      Fixed the lack of page flipping (R13) capability.
+--      Added the undocumented feature where R1 bit2 change the blink counter
+--      clock source from VSYNC to HSYNC.
 --
 --  30th,May,2021 by t.hara
---      In the register writing by address auto-increment mode,
---      the bug that the address is incremented even if it exceeds R#47 is corrected.
+--      In the register writing by address auto-increment mode, the bug that
+--      the address is incremented even if it exceeds R47 is corrected.
 --
 --  2nd,June,2021 by t.hara
 --      Fixed behavior of address auto-increment.
 --      Fixed the write operation to the invalid register.
+--
+--  5th,June,2021 by t.hara
+--      Fixed to clear H-blanking interrupt when '0' is written to bit4 of R0.
 --
 
 LIBRARY IEEE;
@@ -196,8 +198,9 @@ ENTITY VDP_REGISTER IS
         SPMODE2                     : OUT   STD_LOGIC;
         VDPMODEISVRAMINTERLEAVE     : OUT   STD_LOGIC;
 
-        -- SWITCHED I/O SIGNALS
+        -- MISC
         FORCED_V_MODE               : IN    STD_LOGIC;
+        SPMAXSPR                    : IN    STD_LOGIC;
         VDP_ID                      : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 )
     );
 END VDP_REGISTER;
@@ -222,9 +225,6 @@ ARCHITECTURE RTL OF VDP_REGISTER IS
     SIGNAL VDPREGPTR                : STD_LOGIC_VECTOR(  5 DOWNTO 0 );
     SIGNAL VDPREGWRPULSE            : STD_LOGIC;
     SIGNAL VDPR15STATUSREGNUM       : STD_LOGIC_VECTOR(  3 DOWNTO 0 );
-
-    SIGNAL VSYNCINTACK              : STD_LOGIC;
-    SIGNAL HSYNCINTACK              : STD_LOGIC;
 
     SIGNAL VDPR16PALNUM             : STD_LOGIC_VECTOR(  3 DOWNTO 0 );
     SIGNAL VDPR17REGNUM             : STD_LOGIC_VECTOR(  5 DOWNTO 0 );
@@ -253,7 +253,10 @@ ARCHITECTURE RTL OF VDP_REGISTER IS
 
     SIGNAL W_EVEN_DOTSTATE          : STD_LOGIC;
     SIGNAL W_IS_BITMAP_MODE         : STD_LOGIC;
+    SIGNAL W_VDPS0SPOVERMAPPED      : STD_LOGIC;
+    SIGNAL W_SPMODE2                : STD_LOGIC;
 BEGIN
+
     ACK                     <= FF_ACK;
     SPVDPS0RESETREQ         <= FF_SPVDPS0RESETREQ;
 
@@ -271,9 +274,10 @@ BEGIN
     VDPMODEGRAPHIC7         <=  '1' WHEN( ( REG_R0_DISP_MODE & REG_R1_DISP_MODE(0) & REG_R1_DISP_MODE(1) ) = "11100" )ELSE '0';
 
     VDPMODEISHIGHRES        <=  '1' WHEN( REG_R0_DISP_MODE(3 DOWNTO 2) = "10" AND REG_R1_DISP_MODE = "00" )ELSE
-                            '0';
-    SPMODE2                 <=  '1' WHEN( REG_R1_DISP_MODE = "00" AND (REG_R0_DISP_MODE(3) OR REG_R0_DISP_MODE(2)) = '1' )ELSE
-                            '0';
+                                '0';
+    W_SPMODE2               <=  '1' WHEN( REG_R1_DISP_MODE = "00" AND (REG_R0_DISP_MODE(3) OR REG_R0_DISP_MODE(2)) = '1' )ELSE
+                                '0';
+    SPMODE2 <= W_SPMODE2;
 
     VDPMODEISVRAMINTERLEAVE <=  '1' WHEN( (REG_R0_DISP_MODE(3) AND REG_R0_DISP_MODE(1)) = '1' )ELSE
                                 '0';
@@ -384,6 +388,14 @@ BEGIN
     --------------------------------------------------------------------------
     -- PROCESS OF CPU READ REQUEST
     --------------------------------------------------------------------------
+    -- Added by KdL, 2025/Feb/04th, temporary workaround for VDP S#0 bit6
+    W_VDPS0SPOVERMAPPED <=  -- Sprite limit 8/8 => bit6 flickering on 9th sprite but not 5th
+                            -- Better for Zanac EX (MSX2) but not for Dragon Quest II (MSX2)
+                            VDPS0SPOVERMAPPED WHEN( SPMAXSPR = '1' )ELSE
+                            -- Sprite limit 4/8 => bit6 flickering on 5th sprite but not 9th
+                            -- Balancing between Zanac A.I.(MSX1) and Dragon Quest II (MSX2)
+                            VDPS0SPOVERMAPPED AND (NOT W_SPMODE2 OR REQ_VSYNC_INT_N);
+
     PROCESS( RESET, CLK21M )
     BEGIN
         IF( RESET = '1' )THEN
@@ -397,7 +409,7 @@ BEGIN
                 WHEN "01"       => -- PORT#1 (0x99): READ STATUS REGISTER
                     CASE( VDPR15STATUSREGNUM )IS
                     WHEN "0000" => -- READ S#0
-                        DBI <= (NOT REQ_VSYNC_INT_N) & VDPS0SPOVERMAPPED & VDPS0SPCOLLISIONINCIDENCE & VDPS0SPOVERMAPPEDNUM;
+                        DBI <= (NOT REQ_VSYNC_INT_N) & W_VDPS0SPOVERMAPPED & VDPS0SPCOLLISIONINCIDENCE & VDPS0SPOVERMAPPEDNUM;
                     WHEN "0001" => -- READ S#1
                         DBI <= "00" & VDP_ID & (NOT REQ_HSYNC_INT_N);
                     WHEN "0010" => -- READ S#2
@@ -443,7 +455,8 @@ BEGIN
                     CLR_HSYNC_INT <= '0';
                 END IF;
             ELSIF( VDPREGWRPULSE = '1' )THEN
-                IF( VDPREGPTR = "010011" OR (VDPREGPTR = "000000" AND VDPP1DATA(4) = '1') )THEN
+                -- IF( VDPREGPTR = "010011" OR (VDPREGPTR = "000000" AND VDPP1DATA(4) = '1') )THEN
+                IF( VDPREGPTR = "010011" OR VDPREGPTR = "000000" )THEN      -- Modified by t.hara, 2021/Jun/05th
                     -- CLEAR HSYNC INTERRUPT BY WRITE R19, R0
                     CLR_HSYNC_INT <= '1';
                 ELSE

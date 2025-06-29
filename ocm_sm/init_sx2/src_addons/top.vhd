@@ -1,6 +1,7 @@
 --
 -- top.vhd
--- SX-2 TOP by KdL - Based on SM-X TOP by Victor Trucco
+--   SX-2 TOP by KdL - Based on Victor Trucco SM-X
+--   Revision 2.00
 --
 -- All rights reserved
 --
@@ -97,6 +98,7 @@ entity top is
         dac_r_o             : out   std_logic := 'Z';
         ear_i               : in    std_logic;
         mic_o               : out   std_logic := '0';
+        motor_o             : out   std_logic := '1';
 
         -- VGA
         vga_r_o             : out   std_logic_vector(  4 downto 0 ) := (others => '0');
@@ -110,6 +112,7 @@ entity top is
         slot_D_io           : inout std_logic_vector(  7 downto 0 ) := (others => 'Z');
         slot_CS1_o          : inout std_logic := 'Z';
         slot_CS2_o          : inout std_logic := 'Z';
+--      slot_CS12_o         : inout std_logic := 'Z';
         slot_CLOCK_o        : inout std_logic := 'Z';
         slot_M1_o           : inout std_logic := 'Z';
         slot_MERQ_o         : inout std_logic := 'Z';
@@ -148,7 +151,7 @@ entity top is
         esp_tx_i            : in    std_logic := 'Z';
 
         -- LED
-        led_o               : out   std_logic := '0'
+        led_o               : out   std_logic := '1'                    -- '0' = on, '1' = off
     );
 end entity;
 
@@ -208,7 +211,6 @@ architecture Behavior of top is
     end component;
 
     -- clocks
-    signal clk_hdmi         : std_logic;
     signal clk_sdram        : std_logic;
     signal clk21m           : std_logic;
 
@@ -240,55 +242,40 @@ architecture Behavior of top is
 
     -- MIDI
     signal midi_o_s         : std_logic := 'Z';
-    signal midi_active_s    : std_logic := 'Z';
+    signal midi_active_s    : std_logic := '0';
     signal joy1_up_s        : std_logic := 'Z';
 
-    -- vga scanlines
-    signal vga_status       : std_logic;
-    signal vga_scanlines    : std_logic_vector(  1 downto 0 ) := "00";
+    -- scanlines button
     signal btn_scan_s       : std_logic := '1';
-    signal odd_line_s       : std_logic := '0';
-    signal vga_r_out_s      : std_logic_vector(  4 downto 0 );
-    signal vga_g_out_s      : std_logic_vector(  4 downto 0 );
-    signal vga_b_out_s      : std_logic_vector(  4 downto 0 );
 
---    2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE ----------------------------------
---    -- mouse
---    signal clock_div_q      : unsigned(  5 downto 0 ) := (others => '0');
---    signal mouse_x_s        : std_logic_vector(  7 downto 0 );
---    signal mouse_y_s        : std_logic_vector(  7 downto 0 );
---    signal mouse_bts_s      : std_logic_vector(  2 downto 0 );
---    signal mouse_wheel_s    : std_logic_vector(  7 downto 0 );
---    signal mouse_dat_s      : std_logic_vector(  3 downto 0 );
---    signal strA_s           : std_logic;
---    signal joymouse_s       : std_logic_vector(  5 downto 0 );
---    signal mouse_data_out   : std_logic;
---    signal mouse_idle       : std_logic := '1';
---    signal mouse_present    : std_logic := '0';
---    signal joya_en          : std_logic := '1';
---    signal mouse_present_old: std_logic := '0';
---    signal clock_div_5      : std_logic := '0';
---    signal mouse_state      : std_logic_vector(  1 downto 0 ) := (others =>'0');
---    signal mouse_x_latch    : std_logic_vector(  7 downto 0 ) := (others =>'0');
---    signal mouse_y_latch    : std_logic_vector(  7 downto 0 ) := (others =>'0');
---    signal mouse_timeout    : std_logic_vector( 17 downto 0 ) := (others =>'0');
---    signal mouse_data_old   : std_logic := '0';
---    signal mouse_stra_old   : std_logic := '0';
---    2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE ----------------------------------
+--  2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE ----------------------------
+--  -- mouse
+--  signal clock_div_q      : unsigned(  5 downto 0 ) := (others => '0');
+--  signal mouse_x_s        : std_logic_vector(  7 downto 0 );
+--  signal mouse_y_s        : std_logic_vector(  7 downto 0 );
+--  signal mouse_bts_s      : std_logic_vector(  2 downto 0 );
+--  signal mouse_wheel_s    : std_logic_vector(  7 downto 0 );
+--  signal mouse_dat_s      : std_logic_vector(  3 downto 0 );
+--  signal strA_s           : std_logic;
+--  signal joymouse_s       : std_logic_vector(  5 downto 0 );
+--  signal mouse_data_out   : std_logic;
+--  signal mouse_idle       : std_logic := '1';
+--  signal mouse_present    : std_logic := '0';
+--  signal joya_en          : std_logic := '1';
+--  signal mouse_present_old: std_logic := '0';
+--  signal clock_div_5      : std_logic := '0';
+--  signal mouse_state      : std_logic_vector(  1 downto 0 ) := (others => '0');
+--  signal mouse_x_latch    : std_logic_vector(  7 downto 0 ) := (others => '0');
+--  signal mouse_y_latch    : std_logic_vector(  7 downto 0 ) := (others => '0');
+--  signal mouse_timeout    : std_logic_vector( 17 downto 0 ) := (others => '0');
+--  signal mouse_data_old   : std_logic := '0';
+--  signal mouse_stra_old   : std_logic := '0';
+--  2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE ----------------------------
 
     -- misc
     signal blink_s          : std_logic;
 
     begin
-
---  U00 : work.pll
---  port map(
---      inclk0   => clock_50_i,
---      c0       => clk21m,                                     -- 21.48MHz internal
---      c1       => memclk,                                     -- 85.92MHz = 21.48MHz x 4
---      c2       => pMemClk,                                    -- 85.92MHz external
---      c3       => clk_hdmi                                    -- 107.40MHz = 21.48MHz x 5
---  );
 
     ocm: work.emsx_top
     generic map
@@ -296,7 +283,9 @@ architecture Behavior of top is
         use_wifi_g              => true,
         use_midi_g              => true,
         use_opl3_g              => true,
-        use_dualpsg_g           => true
+        use_dualpsg_g           => true,
+        use_system_timer_g      => true,
+        set_low_scanlines_g     => true
     )
     port map(
         -- Clock, Reset ports
@@ -323,21 +312,21 @@ architecture Behavior of top is
         pPs2Clk                 => ps2_clk_io,
         pPs2Dat                 => ps2_data_io,
 
-        -- 2022/Dec/14th Added by t.hara for ESEPS2MOUSE ---------
+        -- 2022/Dec/14th Added by t.hara for ESEPS2MOUSE -------
         -- PS/2 mouse ports
         pPs2Clk_m               => ps2_mouse_clk_io,
         pPs2Dat_m               => ps2_mouse_data_io,
-        -- 2022/Dec/14th Added by t.hara for ESEPS2MOUSE ---------
+        -- 2022/Dec/14th Added by t.hara for ESEPS2MOUSE -------
 
         -- Joystick ports (Port_A, Port_B)
-        pJoyA_in(5)             => joy2_p7_io,                    -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
-        pJoyA_in(4)             => joy2_p6_io,                    -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
-        pJoyA_in(3)             => joy2_right_io,                 -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
-        pJoyA_in(2)             => joy2_left_io,                  -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
-        pJoyA_in(1)             => joy2_down_io,                  -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
-        pJoyA_in(0)             => joy2_up_io,                    -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(5)             => joy2_p7_io,                  -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(4)             => joy2_p6_io,                  -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(3)             => joy2_right_io,               -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(2)             => joy2_left_io,                -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(1)             => joy2_down_io,                -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
+        pJoyA_in(0)             => joy2_up_io,                  -- 2022/Dec/14th Comment in by t.hara for ESEPS2MOUSE
 
---        pJoyA_in                => joymouse_s,                  -- 2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE
+--      pJoyA_in                => joymouse_s,                  -- 2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE
         pJoyA_out(1)            => joy2_p7_io,
         pJoyA_out(0)            => joy2_p6_io,
 
@@ -347,7 +336,9 @@ architecture Behavior of top is
         pJoyB_in(2)             => joy1_left_io,
         pJoyB_in(1)             => joy1_down_io,
         pJoyB_in(0)             => joy1_up_s,
-        pJoyB_out               => open,
+
+        pJoyB_out(1)            => joy1_p7_io,
+        pJoyB_out(0)            => joy1_p6_io,
 
 --      pStrA                   => strA_s,                      -- joy2_p8_io,
         pStrA                   => joy2_p8_io,                  -- 2022/Dec/14th Modified by t.hara for ESEPS2MOUSE
@@ -398,37 +389,36 @@ architecture Behavior of top is
         pSltSlts2_n             => slot_SLOT2_s,
         pSltCs1_n               => slot_CS1_o,
         pSltCs2_n               => slot_CS2_o,
+--      pSltCs12_n              => slot_CS12_o,                 -- CS12 is externally generated by combining CS1 and CS2 through diodes
 
         BusDir_o                => BusDir_s,
 
         -- Reserved ports
-        pSltClk                 => '0',
-        pIopRsv14               => '0',
-        pIopRsv15               => '0',
-        pIopRsv16               => '0',
-        pIopRsv17               => '0',
-        pIopRsv18               => '0',
-        pIopRsv19               => '0',
-        pIopRsv20               => '0',
-        pIopRsv21               => '0',
+        pSltClk                 => '1',
+        pIopRsv14               => '1',
+        pIopRsv15               => '1',
+        pIopRsv16               => '1',
+        pIopRsv17               => '1',
+        pIopRsv18               => '1',
+        pIopRsv19               => '1',
+        pIopRsv20               => '1',
+        pIopRsv21               => '1',
 
-        -- SM-X, Multicore 2 and SX-2 ports
+        -- Other ports
         clk21m_out              => clk21m,
-        clk_hdmi                => clk_hdmi,
         esp_rx_o                => esp_rx_o,
         esp_tx_i                => esp_tx_i,
         pcm_o                   => hdmi_snd_s,
         blank_o                 => blank_s,
         ear_i                   => ear_i,
         mic_o                   => mic_o,
+        motor_o                 => motor_o,
         midi_o                  => midi_o_s,
         midi_active_o           => midi_active_s,
-        vga_status              => vga_status,
-        vga_scanlines           => vga_scanlines,
         btn_scan                => btn_scan_s
     );
 
---    joy2_p8_io      <= strA_s;                -- 2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE
+--  joy2_p8_io      <= strA_s;                                  -- 2022/Dec/14th Comment out by t.hara for ESEPS2MOUSE
 
     joy1_up_s       <= joy1_up_io;
     joy1_up_io      <= midi_o_s when( midi_active_s = '1' )else
@@ -456,9 +446,9 @@ architecture Behavior of top is
 
     sdram_clk_o     <= clk_sdram;
 
-    vga_r_o         <= vga_r_out_s;
-    vga_g_o         <= vga_g_out_s;
-    vga_b_o         <= vga_b_out_s;
+    vga_r_o         <= vga_r_s(  5 downto 1 );
+    vga_g_o         <= vga_g_s(  5 downto 1 );
+    vga_b_o         <= vga_b_s(  5 downto 1 );
     vga_hsync_n_o   <= vga_hsync_n_s;
     vga_vsync_n_o   <= vga_vsync_n_s;
 
@@ -497,111 +487,109 @@ architecture Behavior of top is
     -- LED assignment
     led_o       <= not blink_s;
 
---    2022/Dec/14th  Comment out by t.hara for ESEPS2MOUSE -------------------------------------------
---    ---------------------------------
---    -- mouse
---    ---------------------------------
+--  2022/Dec/14th  Comment out by t.hara for ESEPS2MOUSE -------------------------------------------
+--  ---------------------------------
+--  -- mouse
+--  ---------------------------------
+--  process( clk21m )
+--      variable port_a_disc_time  : std_logic_vector( 20 downto 0 ) := "000000000000000000000";
+--  begin
+--      if rising_edge( clk21m )then
+--          clock_div_q <= clock_div_q + 1;
+--          if( mouse_present_old /= mouse_present )then
+--              port_a_disc_time := "011000011010100000000";    -- about 1s disconnected
+--              joya_en <= '0';
+--          end if;
 --
---    process( clk21m )
---        variable port_a_disc_time  : std_logic_vector( 20 downto 0 ) := "000000000000000000000";
---    begin
---        if rising_edge( clk21m )then
---            clock_div_q <= clock_div_q + 1;
---            if ( mouse_present_old /= mouse_present ) then
---                port_a_disc_time := "011000011010100000000";    -- about 1s disconnected
---                joya_en <= '0';
---            end if;
+--          if( clock_div_q(5) /= clock_div_5 )then
+--              if( port_a_disc_time /= 0 )then
+--                  port_a_disc_time := port_a_disc_time - 1;
+--              else
+--                  joya_en <= '1';
+--              end if;
+--          end if;
 --
---            if ( clock_div_q(5) /= clock_div_5 ) then
---                if ( port_a_disc_time /= 0 ) then
---                    port_a_disc_time := port_a_disc_time - 1;
---                else
---                    joya_en <= '1';
---                end if;
---            end if;
+--          mouse_present_old   <= mouse_present;
+--          clock_div_5         <= clock_div_q(5);
+--      end if;
+--  end process;
 --
---            mouse_present_old   <= mouse_present;
---            clock_div_5         <= clock_div_q(5);
---        end if;
---    end process;
+--  mousectrl: ps2mouse
+--  port map(
+--      clk             => clock_div_q(5),                      -- need a slower clock to avoid loosing data
+--      reset           => reset_s,                             -- reset
 --
---    mousectrl: ps2mouse
---    port map(
---        clk             => clock_div_q(5),                      -- need a slower clock to avoid loosing data
---        reset           => reset_s,                             -- reset
+--      ps2mdat         => ps2_mouse_data_io,                   -- mouse PS/2 data
+--      ps2mclk         => ps2_mouse_clk_io,                    -- mouse PS/2 clk
 --
---        ps2mdat         => ps2_mouse_data_io,                   -- mouse PS/2 data
---        ps2mclk         => ps2_mouse_clk_io,                    -- mouse PS/2 clk
+--      xcount          => mouse_x_s,                           -- mouse X counter
+--      ycount          => mouse_y_s,                           -- mouse Y counter
+--      zcount          => mouse_wheel_s,                       -- mouse Z counter
+--      mleft           => mouse_bts_s(0),                      -- left mouse button output
+--      mright          => mouse_bts_s(1),                      -- right mouse button output
+--      mthird          => mouse_bts_s(2),                      -- third(middle) mouse button output
+--      mouse_data_out  => mouse_data_out                       -- mouse has data top present
+--  );
 --
---        xcount          => mouse_x_s,                           -- mouse X counter
---        ycount          => mouse_y_s,                           -- mouse Y counter
---        zcount          => mouse_wheel_s,                       -- mouse Z counter
---        mleft           => mouse_bts_s(0),                      -- left mouse button output
---        mright          => mouse_bts_s(1),                      -- right mouse button output
---        mthird          => mouse_bts_s(2),                      -- third(middle) mouse button output
---        mouse_data_out  => mouse_data_out                       -- mouse has data top present
---    );
+--  joymouse_s  <= mouse_bts_s(  1 downto 0 ) & mouse_dat_s                                                 when( mouse_present = '1' and joya_en = '1' )else
+--                 joy2_p7_io & joy2_p6_io & joy2_right_io & joy2_left_io & joy2_down_io & joy2_up_io       when( joya_en = '1' )else
+--                 "111111";
 --
---    joymouse_s  <= mouse_bts_s(  1 downto 0 ) & mouse_dat_s                                                 when( mouse_present = '1' and joya_en = '1' )else
---                   joy2_p7_io & joy2_p6_io & joy2_right_io & joy2_left_io & joy2_down_io & joy2_up_io       when( joya_en = '1' )else
---                   "111111";
+--  process( reset_s,  clk21m )
+--  begin
+--      if( reset_s = '1' )then
+--          mouse_state <= "00";
+--          mouse_present <= '0';
+--          mouse_timeout <= "001100001101010000";
+--          mouse_dat_s <= "0000";
+--      elsif rising_edge( clk21m )then
+--          mouse_data_old <= mouse_data_out;
+--          mouse_stra_old <= strA_s;
 --
---    process( clk21m, reset_s )
---    begin
---        if ( reset_s = '1' )then
---            mouse_state <= "00";
---            mouse_present <= '0';
---            mouse_timeout <= "001100001101010000";
---            mouse_dat_s <= "0000";
---        elsif rising_edge( clk21m )then
---            mouse_data_old <= mouse_data_out;
---            mouse_stra_old <= strA_s;
+--          if( mouse_data_out = '1' )then
+--              mouse_present <= '1';
+--          elsif( joy2_p7_io = '0' or joy2_p6_io = '0' )then
+--              mouse_present <= '0';
+--          end if;
 --
---            if ( mouse_data_out = '1' )then
---                mouse_present <= '1';
---            elsif ( joy2_p7_io = '0' or joy2_p6_io = '0' )then
---                mouse_present <= '0';
---            end if;
+--          if( mouse_data_old = '0' and mouse_data_out = '1' )then
+--              mouse_x_latch <= mouse_x_s;
+--              mouse_y_latch <= mouse_y_s;
+--          end if;
 --
---            if ( mouse_data_old = '0' and mouse_data_out = '1' )then
---                mouse_x_latch <= mouse_x_s;
---                mouse_y_latch <= mouse_y_s;
---            end if;
+--          if( mouse_present = '1' )then
+--              if( mouse_timeout /= "000000000000000000" )then
+--                  if( mouse_timeout = "000000000000000001")then mouse_state <= "00"; end if;
+--                  mouse_timeout <= mouse_timeout - 1;
+--              end if;
 --
---            if ( mouse_present = '1' ) then
---                if ( mouse_timeout /= "000000000000000000" )then
---                    if ( mouse_timeout = "000000000000000001") then mouse_state <= "00"; end if;
---                    mouse_timeout <= mouse_timeout - 1;
---                end if;
+--              if( mouse_stra_old /= strA_s )then
+--                  mouse_timeout <= "001100001101010000";
+--                  mouse_state <= mouse_state + 1;
 --
---                if ( mouse_stra_old /= strA_s ) then
---                    mouse_timeout <= "001100001101010000";
---                    mouse_state <= mouse_state + 1;
+--                  case mouse_state is
+--                      when "00" =>
+--                          mouse_dat_s <= mouse_x_latch(  7 downto 4 );
+--                      when "01" =>
+--                          mouse_dat_s <= mouse_x_latch(  3 downto 0 );
+--                      when "10" =>
+--                          mouse_dat_s <= mouse_y_latch(  7 downto 4 );
+--                      when "11" =>
+--                          mouse_dat_s <= mouse_y_latch(  3 downto 0 );
+--                          mouse_x_latch <= "00000000";
+--                          mouse_y_latch <= "00000000";
+--                  end case;
+--              end if;
+--          end if;
 --
---                    case mouse_state is
---                        when "00" =>
---                            mouse_dat_s <= mouse_x_latch(  7 downto 4 );
---                        when "01" =>
---                            mouse_dat_s <= mouse_x_latch(  3 downto 0 );
---                        when "10" =>
---                            mouse_dat_s <= mouse_y_latch(  7 downto 4 );
---                        when "11" =>
---                            mouse_dat_s <= mouse_y_latch(  3 downto 0 );
---                            mouse_x_latch <= "00000000";
---                            mouse_y_latch <= "00000000";
---                    end case;
---                end if;
---            end if;
+--      end if;
 --
---        end if;
---
---    end process;
---    2022/Dec/14th  Comment out by t.hara for ESEPS2MOUSE -------------------------------------------
+--  end process;
+--  2022/Dec/14th  Comment out by t.hara for ESEPS2MOUSE -------------------------------------------
 
     ---------------------------------
-    -- scanlines
+    -- scanlines button
     ---------------------------------
-
     btnscl: entity work.debounce
     generic map(
         counter_size_g  => 16
@@ -611,54 +599,5 @@ architecture Behavior of top is
         button_i        => btn_n_i(2),
         result_o        => btn_scan_s
     );
-
-    process( clk21m )
-        variable r_v : unsigned(  4 downto 0 );
-        variable g_v : unsigned(  4 downto 0 );
-        variable b_v : unsigned(  4 downto 0 );
-    begin
-        if rising_edge( clk21m )then
-            -- 100%
-            vga_r_out_s <= vga_r_s(  5 downto 1 );
-            vga_g_out_s <= vga_g_s(  5 downto 1 );
-            vga_b_out_s <= vga_b_s(  5 downto 1 );
-
-            if odd_line_s = '0' and vga_status = '1' then
-
-                if vga_scanlines = "11" then
-                    -- 75%
-                    vga_r_out_s <=  "00" & vga_r_s(  5 downto 3 );
-                    vga_g_out_s <=  "00" & vga_g_s(  5 downto 3 );
-                    vga_b_out_s <=  "00" & vga_b_s(  5 downto 3 );
-
-                elsif vga_scanlines = "10" then
-                    -- 50%
-                    vga_r_out_s <=  '0' & vga_r_s(  5 downto 2 );
-                    vga_g_out_s <=  '0' & vga_g_s(  5 downto 2 );
-                    vga_b_out_s <=  '0' & vga_b_s(  5 downto 2 );
-
-                elsif vga_scanlines = "01" then
-                    -- 25%
-                    r_v := unsigned('0' & vga_r_s(  5 downto 2 )) + unsigned("00" & vga_r_s(  5 downto 3 ));
-                    g_v := unsigned('0' & vga_g_s(  5 downto 2 )) + unsigned("00" & vga_g_s(  5 downto 3 ));
-                    b_v := unsigned('0' & vga_b_s(  5 downto 2 )) + unsigned("00" & vga_b_s(  5 downto 3 ));
-
-                    vga_r_out_s <= std_logic_vector(r_v);
-                    vga_g_out_s <= std_logic_vector(g_v);
-                    vga_b_out_s <= std_logic_vector(b_v);
-
-                end if;
-            end if;
-        end if;
-    end process;
-
-    process( vga_hsync_n_s, vga_vsync_n_s )
-    begin
-        if vga_vsync_n_s = '0' then
-            odd_line_s <= '0';
-        elsif rising_edge( vga_hsync_n_s ) then
-            odd_line_s <= not odd_line_s;
-        end if;
-    end process;
 
 end architecture;

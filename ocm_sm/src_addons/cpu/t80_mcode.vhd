@@ -2,7 +2,7 @@
 -- ****
 -- T80(c) core. Attempt to finish all undocumented features and provide
 --              accurate timings.
--- Version 350.
+-- Version : 0350
 -- Copyright (c) 2018 Sorgelig
 --  Test passed: ZEXDOC, ZEXALL, Z80Full(*), Z80memptr
 --  (*) Currently only SCF and CCF instructions aren't passed X/Y flags check as
@@ -11,8 +11,8 @@
 -- ****
 -- T80(b) core. In an effort to merge and maintain bug fixes ....
 --
--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
--- Ver 300 started tidyup
+-- Version : 0303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+-- Version : 0300 started tidyup
 -- MikeJ March 2005
 -- Latest version from www.fpgaarcade.com (original www.opencores.org)
 --
@@ -2030,7 +2030,7 @@ begin
                     when 0|1|2 =>
                         Set_BusB_To(2 downto 1) <= IR(5 downto 4);
                     when others =>
-                            Set_BusB_To <= "1001";
+                        Set_BusB_To <= "1001";
                     end case;
                 when others =>
                 end case;

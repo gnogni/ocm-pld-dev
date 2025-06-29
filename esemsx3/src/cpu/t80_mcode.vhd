@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250 (+k05)
+-- Version : 0250 (+k06)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -63,6 +63,7 @@
 --  +k03 : Version alignment by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
 --  +k05 : Version alignment by KdL 2023.05.15
+--  +k06 : Minor fixes by KdL 2025.05.14
 --
 
 library IEEE;
@@ -72,7 +73,6 @@ use IEEE.numeric_std.all;
 entity T80_MCode is
         generic(
                 Mode        : integer := 0;
-                R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU
                 Flag_C      : integer := 0;
                 Flag_N      : integer := 1;
                 Flag_P      : integer := 2;
@@ -1765,8 +1765,8 @@ begin
                                         case to_integer(unsigned(IR(5 downto 4))) is
                                         when 0|1|2 =>
                                                 Set_BusB_To(2 downto 1) <= IR(5 downto 4);
-                                        Set_BusB_To(0) <= '1';
-                                                when others =>
+                                                Set_BusB_To(0) <= '1';
+                                        when others =>
                                                 Set_BusB_To <= "1000";
                                         end case;
                                         TStates <= "100";
@@ -1813,7 +1813,7 @@ begin
                                         when 0|1|2 =>
                                                 Set_BusB_To(2 downto 1) <= IR(5 downto 4);
                                         when others =>
-                                                        Set_BusB_To <= "1001";
+                                                Set_BusB_To <= "1001";
                                         end case;
                                 when others =>
                                 end case;
@@ -1963,7 +1963,7 @@ begin
                                 end case;
                         when "11000001"|"11001001"|"11010001"|"11011001" =>
                                 -- R800 MULUB
-                                if R800_MULU=1 and R800_mode = '1' then
+                                if R800_mode = '1' then
                                     MCycles <= "010";
                                     case to_integer(unsigned(MCycle)) is
                                     when 1 =>
@@ -1980,7 +1980,7 @@ begin
                                 end if;
                         when "11000011"|"11110011" =>
                                 -- R800 MULUW
-                                if R800_MULU=1 and R800_mode = '1' then
+                                if R800_mode = '1' then
                                     MCycles <= "010";
                                     case to_integer(unsigned(MCycle)) is
                                     when 1 =>

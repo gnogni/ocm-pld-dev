@@ -2,8 +2,8 @@
 -- T80(b) core. In an effort to merge and maintain bug fixes ....
 --
 --
--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
--- Ver 300 started tidyup
+-- Version : 0303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+-- Version : 0300 started tidyup
 -- MikeJ March 2005
 -- Latest version from www.fpgaarcade.com (original www.opencores.org)
 --

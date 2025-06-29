@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	Preloader tool
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2022-2023 KdL
+; Copyright (c) 2022-2025 KdL
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are

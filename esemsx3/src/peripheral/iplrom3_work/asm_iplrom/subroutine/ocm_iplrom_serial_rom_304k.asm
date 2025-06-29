@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	EPCS Serial ROM Driver
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are

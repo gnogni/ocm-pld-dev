@@ -4,10 +4,6 @@ derive_pll_clocks -create_base_clocks
 
 derive_clock_uncertainty
 
-# Original Clock Setting Name: clk1_50
-# ------------------------------------
-create_clock -name {clock_50_i} -period 20.000 -waveform { 0.000 10.000 } [get_ports {clock_50_i}]
-
 # ** Multicycles
 # --------------
 set_multicycle_path -from [get_clocks {ocm|U00|altpll_component|auto_generated|pll1|clk[0]}] -to [get_clocks {ocm|U00|altpll_component|auto_generated|pll1|clk[1]}] -setup 2

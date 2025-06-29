@@ -21,11 +21,16 @@
         <hex_addressing>relative</hex_addressing>
         <hex_offset>1045504</hex_offset>
     </hex_block>
+    <hex_block>
+        <hex_filename>ig2_init_profile.hex</hex_filename>
+        <hex_addressing>relative</hex_addressing>
+        <hex_offset>1048448</hex_offset>
+    </hex_block>
     <sof_data>
         <user_name>Page_0</user_name>
         <page_flags>1</page_flags>
         <bit0>
-            <sof_filename>output_files/ocm_sm.sof</sof_filename>
+            <sof_filename>output_files/ocm_sm.sof<compress_bitstream>1</compress_bitstream></sof_filename>
         </bit0>
     </sof_data>
     <version>10</version>

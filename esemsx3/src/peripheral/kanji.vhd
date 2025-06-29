@@ -45,7 +45,6 @@ entity kanji is
     port(
         clk21m      : in    std_logic;
         reset       : in    std_logic;
-        clkena      : in    std_logic;
         req         : in    std_logic;
         ack         : out   std_logic;
         wrt         : in    std_logic;

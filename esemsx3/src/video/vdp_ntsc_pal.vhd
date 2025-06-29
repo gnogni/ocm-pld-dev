@@ -161,9 +161,9 @@ BEGIN
     -- STATE
     PROCESS( RESET, CLK21M )
     BEGIN
-        IF (RESET = '1') THEN
+        IF( RESET = '1' )THEN
             FF_SSTATE <= SSTATE_A;
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF(     (VCOUNTERIN = 0) OR
                     (VCOUNTERIN = 12) OR
                     (VCOUNTERIN = W_STATE_A1_FULL) OR

@@ -1,0 +1,107 @@
+How to Perform a Firmware Update
+================================
+
+Choose a firmware by machine type, keyboard layout and EPBIOS type from the available variants, then proceed as below.
+You can also run the 'pld_collector.cmd' script to quickly collect the firmware and easily put it on the SD card.
+
+
+1st Gen Machines
+----------------
+For 1chipMSX, Zemmix Neo, SX-1 (regular) and SX-1 Mini/Mini+,
+  copy the 'emsx_top.pld' file into the same folder as 'flash.bat' and 'pldflash.com' files,
+  then run these command lines from MSX-DOS 2 or NEXTOR:
+
+A:\>FLASH EMSX_TOP.PLD
+  or
+A:\>FLASH EMSX_TOP.PLD #1A2B3C  (the optional second parameter is for "Custom Setup")
+  or
+A:\>SET EXPERT ON
+A:\>PLDFLASH EMSX_TOP.PLD
+A:\>SETSMART #1A2B3C  (optional)
+
+At the end of the procedure, it will be necessary to turn off the machine to make the changes.
+
+
+2nd Gen Machines
+----------------
+For SM-X (regular), SX-2 and SX-E (not in multicore mode),
+  copy the 'ocm_sm.pld' file into the same folder as 'xflash.bat' and 'smxflash.com' files,
+  then run these command lines from MSX-DOS 2 or NEXTOR:
+
+A:\>XFLASH OCM_SM.PLD
+  or
+A:\>XFLASH OCM_SM.PLD #1A2B3C  (the optional second parameter is for "Custom Setup")
+  or
+A:\>SET EXPERT ON
+A:\>SMXFLASH OCM_SM.PLD
+A:\>SETSMART #1A2B3C  (optional)
+
+At the end of the procedure, it will be necessary to turn off the machine to make the changes.
+
+
+Custom Setup
+------------
+Starting with OCM-PLD v3.9.2, an additional update process has been made available that allows saving a series of smart commands
+to the EPCS so they are executed upon machine startup. This process can be carried out during the firmware flash or at a later time
+using the SETSMART command.
+
+As in the previous examples, use a '#' prefix to flash the sequence of smart commands. Pay attention to the order of insertion, which
+will be executed from left to right, as any conflicting commands may overwrite previous ones. The smart commands that are normally
+activated only after a Warm Reset will instead have an immediate effect, such as SETSMART #57FC or SETSMART #57FE.
+
+The data will be saved in the IGX Smart Profile, which involves erasing and rewriting a part of the EPCS. Therefore, avoid using
+the flash command in AUTOEXEC.BAT or any repetitive batch file to prevent a rapid exhaustion of the number of rewrites.
+This precaution is not necessary for the '-' or '/' prefixes of SETSMART as they do not perform the device flash.
+
+A max of 59 hex codes are accepted. To cancel any previously entered sequence, execute SETSMART #00 (the default value) or flash the
+device again without specifying smart commands. Should the device lock due to an incorrect sequence, you can temporarily restore its
+default settings by entering Safe Mode, i.e., simply hold down the [DEL] key during startup or immediately after a Full Reset.
+
+Finally, while flashing the firmware requires a complete shutdown of the machine, changing the IGX Smart Profile with SETSMART simply
+requires a Cold Reset or a Full Reset. This simplifies the process of updating the stored smart commands.
+
+
+*********************************************************************
+WARNING!! DO NOT TURN OFF THE DEVICE UNTIL THE FLASH PROCESS IS DONE.
+*********************************************************************
+
+A corrupted PLD file might cause your system to FAIL!
+Any damages caused by improper operations of updating the firmware is at your own risk. Please be responsible.
+
+Using incorrect firmware, you may need to use the recovery procedures as described below.
+
+
+Recovery Guide for 1chipMSX, Zemmix Neo, SX-1 (regular) and SX-1 Mini/Mini+
+===========================================================================
+
+Here is how to flash the device after a failed update using a personal computer with Windows OS.
+
+1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
+
+2. Download and install Stand-Alone Altera Quartus II Programmer 11.0sp1 (free):
+https://mega.nz/file/UMIBRawT#65w_Q1o5ZRJpghSjrZAyCSrc7IpdXIhVjnxaNLG6Vn4
+
+3. For 1chipMSX and Zemmix Neo, open the case and attach the cable on the JTAG connector with the pin-1 towards the front of device.
+   For SX-1 (regular) and SX-1 Mini/Mini+, check out the provided documentation or ask to the manufacturer.
+
+4. Run the programmer and power on the device, select "Active Serial Programming" method to load a dedicated 'recovery.pof' file.
+
+
+Recovery Guide for SM-X (regular), SX-2 and SX-E
+================================================
+
+Here is how to flash the device after a failed update using a personal computer with Windows OS.
+
+1. Buy and install a compatible download cable for 'EPCS4' like USB ByteBlaster.
+
+2. Download and install Stand-Alone Intel Quartus Prime Programmer and Tools 24.1std.0.1077 (free):
+https://downloads.intel.com/akdlm/software/acdsinst/24.1std/1077/ib_installers/QuartusProgrammerSetup-24.1std.0.1077-windows.exe
+
+3. For SM-X (regular), go to the bottom and attach the cable on the JTAG connector with the pin-1 towards the front of device.
+   For SX-2 and SX-E, check out the provided documentation or ask their respective manufacturers.
+
+4. Run the programmer and power on the device, select "JTAG" method to load a dedicated 'recovery.jic' file.
+
+
+______________
+KdL 2025.06.29

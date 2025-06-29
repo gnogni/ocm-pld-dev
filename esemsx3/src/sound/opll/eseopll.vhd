@@ -71,7 +71,7 @@ begin
 
   IC_n <= not reset;
 
-  process (clk21m, reset)
+  process (reset, clk21m)
 
     variable mix : std_logic_vector(10 downto 0);
 

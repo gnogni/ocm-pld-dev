@@ -30,7 +30,9 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
+--
 --  2007/01/31  modified by t.hara
+--
 
 library ieee;
     use ieee.std_logic_1164.all;
@@ -164,7 +166,7 @@ begin
     ----------------------------------------------------------------
     -- scc register access
     ----------------------------------------------------------------
-    process(clk21m, reset)
+    process (reset, clk21m)
     begin
         if( reset = '1' )then
             ff_req_dl       <= '0';
@@ -236,7 +238,7 @@ begin
     ----------------------------------------------------------------
     -- tone generator
     ----------------------------------------------------------------
-    process(clk21m, reset)
+    process (reset, clk21m)
         variable ff_cnt_ch_a : std_logic_vector( 11 downto 0 );
         variable ff_cnt_ch_b : std_logic_vector( 11 downto 0 );
         variable ff_cnt_ch_c : std_logic_vector( 11 downto 0 );

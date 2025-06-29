@@ -1,0 +1,66 @@
+Configuration details of the smart profile for IPL-ROM3
+=======================================================
+
+The smart profile is designed to execute a series of smart commands during machine startup.
+For proper operation, it requires Switched I/O Ports revision 12 or higher.
+
+
+Common Information
+------------------
+IPL-ROM3 size               =   C00h
+Smart profile location      =   B80h
+Smart profile size          =   80h
+
+
+For 1st Gen (EPCS4)
+-------------------
+EPCS start address          =   33400h
+Smart profile start address =   33F80h
+
+--- Example of an empty smart profile for the 1st Gen ---
+
+Offset(h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+---------------------------------------------------------
+00000B80  49 47 31 80 00 00 00 00 00 00 00 00 00 00 00 00  IG1€............
+00000B90  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BA0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BB0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BC0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BD0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BE0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BF0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+
+Smart profile area : Header = 3 bytes, Enabler = 1 byte, Data = 124 bytes.
+
+IG1  : Header for the 1st Gen: needed to identify the profile area.
+0x80 : Enabler: used to activate the smart code sequence, must be positioned immediately after the header.
+0x00 : End of sequence: stops the parsing of smart codes, the subsequent bytes will be ignored.
+
+
+For 2nd Gen (EPCS16, EPCS64, EPCQ64)
+------------------------------------
+EPCS start address          =   FF400h
+Smart profile start address =   FFF80h
+
+--- Example of an empty smart profile for the 2nd Gen ---
+
+Offset(h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+---------------------------------------------------------
+00000B80  49 47 32 80 00 00 00 00 00 00 00 00 00 00 00 00  IG2€............
+00000B90  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BA0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BB0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BC0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BD0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BE0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00000BF0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+
+Smart profile area : Header = 3 bytes, Enabler = 1 byte, Data = 124 bytes.
+
+IG2  : Header for the 2nd Gen: needed to identify the profile area.
+0x80 : Enabler: used to activate the smart code sequence, must be positioned immediately after the header.
+0x00 : End of sequence: stops the parsing of smart codes, the subsequent bytes will be ignored.
+
+
+______________
+KdL 2025.01.20

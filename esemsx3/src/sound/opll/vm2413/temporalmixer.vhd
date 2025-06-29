@@ -59,13 +59,13 @@ architecture RTL of TemporalMixer is
 
 begin
 
-  process (clk, reset)
+  process (reset, clk)
   begin
 
     if reset = '1' then
 
-      mo <= (others =>'0');
-      ro <= (others =>'0');
+      mo <= (others => '0');
+      ro <= (others => '0');
       maddr <= (others => '0');
       mmute <= '1';
       rmute <= '1';

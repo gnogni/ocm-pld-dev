@@ -1,0 +1,15 @@
+# Compiler Assignments
+# ====================
+set_global_assignment -name OPTIMIZATION_MODE "HIGH POWER EFFORT"
+
+# Analysis & Synthesis Assignments
+# ================================
+set_global_assignment -name TOP_LEVEL_ENTITY top
+
+# Import Synthesis Seed
+# =====================
+source ocm_sm_synthesis_seed.qsf
+
+# Import Common Settings
+# ======================
+source ocm_sm_common.qsf

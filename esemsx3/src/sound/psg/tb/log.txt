@@ -2,7 +2,7 @@ add wave -position end vsim:/tb/u_psg/u_psgch/*
 # Break key hit
 # Simulation stop requested.
 # Control-C interrupt
-# 
+#
 # MACRO ./run.do PAUSED at line 2
 # End time: 22:02:21 on Aug 14,2022, Elapsed time: 0:09:20
 # Errors: 0, Warnings: 32

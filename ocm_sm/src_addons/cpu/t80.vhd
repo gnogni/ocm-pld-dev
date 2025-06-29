@@ -2,7 +2,7 @@
 -- ****
 -- T80(c) core. Attempt to finish all undocumented features and provide
 --              accurate timings.
--- Version 350.
+-- Version : 0350 (+k06)
 -- Copyright (c) 2018 Sorgelig
 --  Test passed: ZEXDOC, ZEXALL, Z80Full(*), Z80memptr
 --  (*) Currently only SCF and CCF instructions aren't passed X/Y flags check as
@@ -11,9 +11,9 @@
 -- ****
 -- T80(b) core. In an effort to merge and maintain bug fixes ....
 --
--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
--- Ver 301 parity flag is just parity for 8080, also overflow for Z80, by Sean Riddle
--- Ver 300 started tidyup.
+-- Version : 0303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+-- Version : 0301 parity flag is just parity for 8080, also overflow for Z80, by Sean Riddle
+-- Version : 0300 started tidyup.
 --
 -- MikeJ March 2005
 -- Latest version from www.fpgaarcade.com (original www.opencores.org)
@@ -708,7 +708,7 @@ begin
                             PC <= PC - 2;
                         end if;
                         if RstP = '1' then
-                            WZ <= (others =>'0');
+                            WZ <= (others => '0');
                             WZ(5 downto 3) <= IR(5 downto 3);
                         end if;
                     end if;
@@ -905,7 +905,7 @@ begin
 -- Multiply
 --
 ---------------------------------------------------------------------------
-    process (CLK_n, ACC, RegBusB, MULU_tmp, MULU_Fakt1, MULU_Prod32)
+    process (CLK_n, MULU_tmp, MULU_Fakt1, MULU_Prod32)
     begin
 
         MULU_tmp(31 downto 12) <= std_logic_vector((unsigned(MULU_Fakt1)*unsigned(MULU_Prod32(3 downto 0)))+unsigned("0000"&MULU_Prod32(31 downto 16)));
@@ -1187,7 +1187,7 @@ begin
 -- Generate external control signals
 --
 ---------------------------------------------------------------------------
-    process (RESET_n,CLK_n)
+    process (RESET_n, CLK_n)
     begin
         if RESET_n = '0' then
             RFSH_n <= '1';

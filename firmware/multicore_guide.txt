@@ -1,0 +1,26 @@
+Multicore Quick Guide
+=====================
+
+Some machines, such as the SX-E, can operate in two ways: the classic mode, which involves loading the PLD file, and the
+alternative mode, which currently runs RBF files. Creating RBF files requires some precautions, follow these guidelines.
+
+
+Instructions for Creating a Valid RBF File
+------------------------------------------
+1. Copy 'iplrom_512k.v' from [esemsx3\src\peripheral\iplrom3_work\] and overwrite it in [ocm_sm\src\addons\peripheral\].
+
+2. Open Quartus Prime Lite Edition, load the 'ocm_sm' project (i.e., SX-E), compile it, and upon completion, verify that
+   an RBF file has been generated in the output folder.
+
+3. Ensure the SD card is formatted in FAT16. Copy the generated RBF file and rename it with the SXE extension.
+   Currently, the RBF file cannot contain an EPBIOS, therefore also add a valid 'OCM-BIOS.DAT' file to the SD card.
+   At this point, you are ready to boot multicore and load the SXE file.
+
+
+Important Note
+--------------
+Due to the lack of general compatibility among multicore machines, this package does not include pre-assembled RBF cores.
+
+
+______________
+KdL 2025.06.29

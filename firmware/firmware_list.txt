@@ -1,4 +1,4 @@
-Firmware list divided into interchangeable groups (v3.9.2)
+Firmware List Divided Into Interchangeable Groups (v3.9.2)
 ==========================================================
                                                                                                                                     { GROUP 1 }
  1chipmsx_br_layout\single_epbios_msxplusplus_backslash  <=  this fw is for 1chipMSX                with Brazilian keyboard / MSX++ official logo
@@ -7,6 +7,8 @@ Firmware list divided into interchangeable groups (v3.9.2)
                    \single_epbios_msx2plus_backslash     <=                 1chipMSX                with Spanish   keyboard / MSX2+ logo
  1chipmsx_fr_layout\single_epbios_msxplusplus_backslash  <=  this fw is for 1chipMSX                with French    keyboard / MSX++ official logo
                    \single_epbios_msx2plus_backslash     <=                 1chipMSX                with French    keyboard / MSX2+ logo
+ 1chipmsx_it_layout\single_epbios_msxplusplus_backslash  <=  this fw is for 1chipMSX                with Italian   keyboard / MSX++ official logo
+                   \single_epbios_msx2plus_backslash     <=                 1chipMSX                with Italian   keyboard / MSX2+ logo
  1chipmsx_jp_layout\single_epbios_msxplusplus_yen        <=  this fw is for 1chipMSX                with Japanese  keyboard / MSX++ official logo
                    \single_epbios_msx2plus_yen           <=                 1chipMSX                with Japanese  keyboard / MSX2+ logo
  1chipmsx_us_layout\single_epbios_msxplusplus_backslash  <=  this fw is for 1chipMSX                with English   keyboard / MSX++ official logo   <=  default for 1chipMSX
@@ -30,6 +32,7 @@ Firmware list divided into interchangeable groups (v3.9.2)
   sx1mini_br_layout\single_epbios_sx1mini_backslash      <=  this fw is for SX-1 Mini/Mini+         with Brazilian keyboard
   sx1mini_es_layout\single_epbios_sx1mini_backslash      <=  this fw is for SX-1 Mini/Mini+         with Spanish   keyboard
   sx1mini_fr_layout\single_epbios_sx1mini_backslash      <=  this fw is for SX-1 Mini/Mini+         with French    keyboard
+  sx1mini_it_layout\single_epbios_sx1mini_backslash      <=  this fw is for SX-1 Mini/Mini+         with Italian   keyboard
   sx1mini_jp_layout\single_epbios_sx1mini_yen            <=  this fw is for SX-1 Mini/Mini+         with Japanese  keyboard
   sx1mini_us_layout\single_epbios_sx1mini_backslash      <=  this fw is for SX-1 Mini/Mini+         with English   keyboard                         <=  default for SX-1 Mini/Mini+
 
@@ -48,6 +51,20 @@ Firmware list divided into interchangeable groups (v3.9.2)
                    \single_epbios_sx2_backslash          <=                 SX-2                    with English   keyboard / Single-EPBIOS
 
                                                                                                                                     { GROUP 5 }
+      sxe_br_layout\dual_epbios_sxe_backslash            <=  this fw is for SX-E                    with Brazilian keyboard /   Dual-EPBIOS
+                   \single_epbios_sxe_backslash          <=                 SX-E                    with Brazilian keyboard / Single-EPBIOS
+      sxe_es_layout\dual_epbios_sxe_backslash            <=  this fw is for SX-E                    with Spanish   keyboard /   Dual-EPBIOS
+                   \single_epbios_sxe_backslash          <=                 SX-E                    with Spanish   keyboard / Single-EPBIOS
+      sxe_fr_layout\dual_epbios_sxe_backslash            <=  this fw is for SX-E                    with French    keyboard /   Dual-EPBIOS
+                   \single_epbios_sxe_backslash          <=                 SX-E                    with French    keyboard / Single-EPBIOS
+      sxe_it_layout\dual_epbios_sxe_backslash            <=  this fw is for SX-E                    with Italian   keyboard /   Dual-EPBIOS
+                   \single_epbios_sxe_backslash          <=                 SX-E                    with Italian   keyboard / Single-EPBIOS
+      sxe_jp_layout\dual_epbios_sxe_yen                  <=  this fw is for SX-E                    with Japanese  keyboard /   Dual-EPBIOS
+                   \single_epbios_sxe_yen                <=                 SX-E                    with Japanese  keyboard / Single-EPBIOS
+      sxe_us_layout\dual_epbios_sxe_backslash            <=  this fw is for SX-E                    with English   keyboard /   Dual-EPBIOS         <=  default for SX-E
+                   \single_epbios_sxe_backslash          <=                 SX-E                    with English   keyboard / Single-EPBIOS
+
+                                                                                                                                    { GROUP 6 }
 zemmixneo_br_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemmix Neo Korean       with Brazilian keyboard
                    \single_epbios_zemmixneobr_backslash  <=                 Zemmix Neo Brazilian    with Brazilian keyboard
                    \single_epbios_sx1_backslash          <=                 SX-1 (regular)          with Brazilian keyboard
@@ -57,6 +74,9 @@ zemmixneo_es_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemm
 zemmixneo_fr_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemmix Neo Korean       with French    keyboard
                    \single_epbios_zemmixneobr_backslash  <=                 Zemmix Neo Brazilian    with French    keyboard
                    \single_epbios_sx1_backslash          <=                 SX-1 (regular)          with French    keyboard
+zemmixneo_it_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemmix Neo Korean       with Italian   keyboard
+                   \single_epbios_zemmixneobr_backslash  <=                 Zemmix Neo Brazilian    with Italian   keyboard
+                   \single_epbios_sx1_backslash          <=                 SX-1 (regular)          with Italian   keyboard
 zemmixneo_jp_layout\single_epbios_zemmixneo_yen          <=  this fw is for Zemmix Neo Korean       with Japanese  keyboard
                    \single_epbios_zemmixneobr_yen        <=                 Zemmix Neo Brazilian    with Japanese  keyboard
                    \single_epbios_sx1_yen                <=                 SX-1 (regular)          with Japanese  keyboard
@@ -66,4 +86,4 @@ zemmixneo_us_layout\single_epbios_zemmixneo_backslash    <=  this fw is for Zemm
 
 
 ______________
-KdL 2024.02.03
+KdL 2025.06.29

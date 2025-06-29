@@ -108,7 +108,6 @@ ARCHITECTURE RTL OF VENCODE IS
         X"18", X"E7", X"18", X"EE", X"0C", X"FA", X"00", X"00",
         X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00"
     );
-
 BEGIN
 
     VIDEOY <= FF_VIDEOY;
@@ -337,7 +336,7 @@ BEGIN
     PROCESS( CLK21M )
     BEGIN
         IF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF(    VIDEOVS_N = '1' AND FF_IVIDEOVS_N = '0' )THEN
+            IF( VIDEOVS_N = '1' AND FF_IVIDEOVS_N = '0' )THEN
                 FF_PAL_DET_CNT <= (OTHERS => '0');
             ELSIF( VIDEOHS_N = '0' AND FF_IVIDEOHS_N = '1' )THEN
                 FF_PAL_DET_CNT <= FF_PAL_DET_CNT + 1;

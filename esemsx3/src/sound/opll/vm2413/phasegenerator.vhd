@@ -94,7 +94,7 @@ architecture RTL of PhaseGenerator is
 
 begin
 
-    process(clk, reset)
+    process (reset, clk)
         variable lastkey : std_logic_vector(18-1 downto 0);
         variable dphase : PHASE_TYPE;
         variable noise14 : std_logic;

@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250 (+k05)
+-- Version : 0250 (+k06)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -57,6 +57,7 @@
 --  +k03 : Version alignment by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
 --  +k05 : Version alignment by KdL 2023.05.15
+--  +k06 : Minor fixes by KdL 2025.05.14
 --
 
 library IEEE;
@@ -175,7 +176,7 @@ begin
                 F_Out(Flag_H) <= '0';
             end case;
             if ALU_Op(2 downto 0) = "111" then -- CP
-                if ALU_cpi='1' then --CPI
+                if ALU_cpi='1' then -- CPI
                     F_Out(Flag_X) <= Q_cpi(3);
                     F_Out(Flag_Y) <= Q_cpi(1);
                 else

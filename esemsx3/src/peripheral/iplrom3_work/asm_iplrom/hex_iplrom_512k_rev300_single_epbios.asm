@@ -4,7 +4,7 @@
 ;   Initial Program Loader for Cyclone & EPCS (Altera)
 ;   Revision 3.00
 ;
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -30,17 +30,18 @@
 ; OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
-; IPL-ROM Revision 2.00 for 512 kB unpacked with Dual-EPBIOS support
+; IPL-ROM Revision 2.00 for 512 KB unpacked with Dual-EPBIOS support
 ; EPCS16 [or higher] start adr 100000h - Optimized by KdL 2020.01.09
 ;
 ; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
-; TASM is at http://www.ticalc.org
+; TASM is at https://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
 ;   2022/Oct/22nd  v3.00  t.hara  Overall revision.  Coded in ZMA v1.0.15
 ;   2024/Jan/21st         KdL     Added C-BIOS support and other features.
+;   2025/Jan/20th         KdL     Added smart profile management routine.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -48,6 +49,11 @@
 ; --------------------------------------------------------------------
 epcs_bios1_start_address				:= 0x100000 >> 9
 epcs_bios2_start_address				:= 0x180000 >> 9
+
+; --------------------------------------------------------------------
+;	HEX-file location
+; --------------------------------------------------------------------
+destination_address						:= 0xB400		; B400h~BFFFh, 3072 bytes
 
 ; --------------------------------------------------------------------
 ;	MegaSD Information
@@ -73,6 +79,8 @@ primary_slot_register					:= 0xA8
 exp_io_vendor_id_port					:= 0x40			; Vendor ID register for Expanded I/O
 exp_io_1chipmsx_id						:= 0xD4			; KdL's switch device ID
 
+smart_profile_location					:= 3072 - 128	; smart profile, last 128 bytes of IPL-ROM area
+
 ; --------------------------------------------------------------------
 ;	Work area
 ; --------------------------------------------------------------------
@@ -90,14 +98,14 @@ begin_of_code:											; !!!! Address 0xB400 and ROM !!!!
 ;			ld			a, [megasd_status_register]
 			rrca										; Is the activation this time PowerOnReset?
 			jr			nc, not_power_on_reset
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 not_power_on_reset:
 
 self_copy::
 			ld			sp, 0xFFFF
 			ld			bc, end_of_code - init_stack
 			ld			de, init_stack
-			ld			hl, init_stack - begin_of_code + 0xB400		; HL = B417h
+			ld			hl, init_stack - begin_of_code + destination_address		; HL = B417h
 			push		de
 			ldir
 			ret											; jump to PAGE3
@@ -109,12 +117,45 @@ init_stack::
 init_switch_io::
 ;			ld			a, exp_io_1chipmsx_id			; commented out if handled by the preloader
 ;			out			[exp_io_vendor_id_port], a
+load_smart_profile::
+			in			a, [0x48]
+			bit			5, a
+			jr			nz, skip_smart_profile			; if warm reset, skip
+			; cold reset
+			ld			hl, smart_profile_location + destination_address
+			ld			a, [hl]
+			cp			a, 'I'							; 'I'PL-ROM tag
+			jr			nz, skip_smart_profile
+			inc			hl
+			ld			a, [hl]
+			cp			a, 'G'							; 'G'en tag
+			jr			nz, skip_smart_profile
+			inc			hl
+			ld			a, [hl]
+			cp			a, '2'							; '2'nd tag
+			jr			nz, skip_smart_profile
+			; header found ("IG2")
+			inc			hl
+			ld			a, [hl]
+			cp			a, 0x80							; enabler code $80
+			jr			nz, skip_smart_profile
+			; enabler found
+			sub			a, 4							; subtracts header and enabler size
+			ld			b, a							; b = 124
+loop_smart_profile:
+			inc			hl
+			ld			a, [hl]							; a = smart code to be set
+			or			a, a
+			jr			z, skip_smart_profile			; if a = 0, early end of smart profile
+			out			[0x41], a						; execute the smart command
+			djnz		loop_smart_profile
+skip_smart_profile:
 
 			call		sd_initialize
 
 check_already_loaded::
 			ld			a, [bios_updating]
-			cp			a, 0xD4							; If it is a quick reset, boot EPBIOS.
+			cp			a, 0xD4							; If it is a quick reset, boot EPBIOS
 
 			ld			a, DOS_ROM1_BANK
 			ld			[eseram8k_bank2], a				; init ESE-RAM Bank#2
@@ -143,7 +184,7 @@ stop_with_error::
 			out			[0x41], a
 			ld			a, 0x23							; Set Lights Mode ON + Red Led ON
 			out			[0x41], a
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 			halt										; stop
 
 ; --------------------------------------------------------------------
@@ -158,17 +199,17 @@ sdbios_image_table::
 			include		"../subroutine/ocm_iplrom_fat_driver.asm"
 			include		"../subroutine/ocm_iplrom_serial_rom_512k.asm"		; Assuming load_bios is immediately next.
 			include		"../subroutine/ocm_iplrom_load_bios.asm"
-			include 	"../subroutine/ocm_iplrom_sd_driver.asm"
+			include		"../subroutine/ocm_iplrom_sd_driver.asm"
 			include		"../subroutine/ocm_iplrom_vdp_standard_icon_single_epbios.asm"
 end_of_code:
-	remain_fat_sectors	:= $							; 2bytes
-	root_entries		:= $ + 2						; 3bytes
-	data_area			:= $ + 5						; 3bytes
-	bank_id				:= $ + 8						; 1byte
-	bios_updating		:= $ + 9						; 1byte: 0xD4: Updating now, the others: Not loaded
-	animation_id		:= $ + 10						; 3bytes
+	remain_fat_sectors	:= $							; 2 bytes
+	root_entries		:= $ + 2						; 3 bytes
+	data_area			:= $ + 5						; 3 bytes
+	bank_id				:= $ + 8						; 1 byte
+	bios_updating		:= $ + 9						; 1 byte	0xD4: Updating now, the others: Not loaded
+	animation_id		:= $ + 10						; 3 bytes
 
-			if (end_of_code - begin_of_code) > 3072
+			if (end_of_code - begin_of_code) > smart_profile_location
 				error "The size is too BIG. (" + (end_of_code - begin_of_code) + "byte)"
 			else
 				message "Size is not a problem. (" + (end_of_code - begin_of_code) + "byte)"

@@ -77,9 +77,10 @@ ENTITY VDP_HVCOUNTER IS
         V_BLANK                 : OUT   STD_LOGIC;
 
         PAL_MODE                : IN    STD_LOGIC;
-        INTERLACE_MODE          : IN    STD_LOGIC;
-        Y212_MODE               : IN    STD_LOGIC;
-        OFFSET_Y                : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
+        INTERLACEMODE           : IN    STD_LOGIC;
+        OFFSET_Y                : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 );
+        W_V_BLANKING_START      : IN    STD_LOGIC;
+        W_V_BLANKING_END        : IN    STD_LOGIC
     );
 END VDP_HVCOUNTER;
 
@@ -101,12 +102,8 @@ ARCHITECTURE RTL OF VDP_HVCOUNTER IS
     SIGNAL W_FIELD_END_CNT          : STD_LOGIC_VECTOR(  9 DOWNTO 0 );
     SIGNAL W_FIELD_END              : STD_LOGIC;
     SIGNAL W_DISPLAY_MODE           : STD_LOGIC_VECTOR(  1 DOWNTO 0 );
-    SIGNAL W_LINE_MODE              : STD_LOGIC_VECTOR(  1 DOWNTO 0 );
     SIGNAL W_H_BLANK_START          : STD_LOGIC;
     SIGNAL W_H_BLANK_END            : STD_LOGIC;
-    SIGNAL W_V_BLANKING_START       : STD_LOGIC;
-    SIGNAL W_V_BLANKING_END         : STD_LOGIC;
-    SIGNAL W_V_SYNC_INTR_START_LINE : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
 BEGIN
 
     H_CNT               <= FF_H_CNT;
@@ -127,7 +124,7 @@ BEGIN
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( ((W_H_CNT_HALF OR W_H_CNT_END) AND W_FIELD_END AND FF_FIELD) = '1' )THEN
                 FF_PAL_MODE         <= PAL_MODE;
-                FF_INTERLACE_MODE   <= INTERLACE_MODE;
+                FF_INTERLACE_MODE   <= INTERLACEMODE;
             END IF;
         END IF;
     END PROCESS;
@@ -146,7 +143,7 @@ BEGIN
             FF_H_CNT <= (OTHERS => '0');
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( W_H_CNT_END = '1' )THEN
-                FF_H_CNT <= (OTHERS => '0' );
+                FF_H_CNT <= (OTHERS => '0');
             ELSE
                 FF_H_CNT <= FF_H_CNT + 1;
             END IF;
@@ -163,7 +160,7 @@ BEGIN
         CONV_STD_LOGIC_VECTOR( 524, 10 )    WHEN "10",
         CONV_STD_LOGIC_VECTOR( 625, 10 )    WHEN "01",
         CONV_STD_LOGIC_VECTOR( 624, 10 )    WHEN "11",
-        (OTHERS=>'X')                       WHEN OTHERS;
+        (OTHERS => 'X')                     WHEN OTHERS;
 
     W_FIELD_END <=  '1' WHEN( FF_V_CNT_IN_FIELD = W_FIELD_END_CNT )ELSE
                     '0';
@@ -241,22 +238,6 @@ BEGIN
     -----------------------------------------------------------------------------
     -- V BLANKING
     -----------------------------------------------------------------------------
-    W_LINE_MODE <= Y212_MODE & FF_PAL_MODE;
-
-    WITH W_LINE_MODE SELECT W_V_SYNC_INTR_START_LINE <=
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_192_NTSC, 9 )   WHEN "00",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_212_NTSC, 9 )   WHEN "10",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_192_PAL, 9 )    WHEN "01",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_212_PAL, 9 )    WHEN "11",
-        (OTHERS => 'X')                                         WHEN OTHERS;
-
-    W_V_BLANKING_END    <=  '1' WHEN( (FF_V_CNT_IN_FIELD = ("00" & (OFFSET_Y + LED_TV_Y_NTSC) & (FF_FIELD AND FF_INTERLACE_MODE)) AND FF_PAL_MODE = '0') OR
-                                      (FF_V_CNT_IN_FIELD = ("00" & (OFFSET_Y + LED_TV_Y_PAL) & (FF_FIELD AND FF_INTERLACE_MODE)) AND FF_PAL_MODE = '1') )ELSE
-                            '0';
-    W_V_BLANKING_START  <=  '1' WHEN( (FF_V_CNT_IN_FIELD = ((W_V_SYNC_INTR_START_LINE + LED_TV_Y_NTSC) & (FF_FIELD AND FF_INTERLACE_MODE)) AND FF_PAL_MODE = '0') OR
-                                      (FF_V_CNT_IN_FIELD = ((W_V_SYNC_INTR_START_LINE + LED_TV_Y_PAL) & (FF_FIELD AND FF_INTERLACE_MODE)) AND FF_PAL_MODE = '1') )ELSE
-                            '0';
-
     PROCESS( RESET, CLK21M )
     BEGIN
         IF( RESET = '1' )THEN

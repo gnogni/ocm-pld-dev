@@ -1,12 +1,13 @@
 @echo off
-rem --- '1_sm_compile.cmd' v3.1 by KdL (2023.12.13)
+rem --- '1_sm_compile.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=ocm_sm
 set OUTPUT=output_files\
-set QPATH=C:\intelFPGA_lite\23.1std\quartus\
+set QPATH=C:\altera_lite\24.1std\quartus\
 if "%1"=="" color 87&title COMPILE for %PROJECT%
 if not exist %PROJECT%_device.env goto err_init
+set /P DEVICE=<%PROJECT%_device.env
 if not exist %PROJECT%.qpf goto err_msg
 
 :compile
@@ -24,13 +25,14 @@ explorer %PROJECT%.qpf
 :init
 del "## BUILDING FAILED ##.log" >nul 2>nul
 md %OUTPUT% >nul 2>nul
-echo /* Quartus Prime Version 23.1std.0 Build 991 11/28/2023 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
+echo /* Quartus Prime Version 24.1std.0 Build 1077 03/04/2025 SC Lite Edition */>%OUTPUT%%PROJECT%.cdf
 echo JedecChain;>>%OUTPUT%%PROJECT%.cdf
 echo     FileRevision(JESD32A);>>%OUTPUT%%PROJECT%.cdf
 echo     DefaultMfr(6E);>>%OUTPUT%%PROJECT%.cdf
 echo.>>%OUTPUT%%PROJECT%.cdf
 echo     P ActionCode(Cfg)>>%OUTPUT%%PROJECT%.cdf
-echo         Device PartName(EP4CE22) Path("../") File("ocm_sm.jic") MfrSpec(OpMask(1) SEC_Device(EPCS64) Child_OpMask(1 3));>>%OUTPUT%%PROJECT%.cdf
+if not "%DEVICE%"=="sxe" echo         Device PartName(EP4CE22) Path("../") File("ocm_sm.jic") MfrSpec(OpMask(1) SEC_Device(EPCS64) Child_OpMask(1 3));>>%OUTPUT%%PROJECT%.cdf
+if "%DEVICE%"=="sxe" echo         Device PartName(EP4CE55) Path("../") File("ocm_sm.jic") MfrSpec(OpMask(1) SEC_Device(EPCQ64) Child_OpMask(1 3));>>%OUTPUT%%PROJECT%.cdf
 echo.>>%OUTPUT%%PROJECT%.cdf
 echo ChainEnd;>>%OUTPUT%%PROJECT%.cdf
 echo.>>%OUTPUT%%PROJECT%.cdf

@@ -120,7 +120,6 @@ ENTITY VDP_GRAPHIC4567 IS
         REG_R25_YJK             : IN    STD_LOGIC;
         REG_R25_SP2             : IN    STD_LOGIC;
 
-        --
         PRAMDAT                 : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         PRAMDATPAIR             : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         PRAMADR                 : OUT   STD_LOGIC_VECTOR( 16 DOWNTO 0 );
@@ -487,7 +486,7 @@ BEGIN
             FF_BLINK_CLK_CNT <= (OTHERS => '0');
             FF_BLINK_STATE <= '0';
             FF_BLINK_PERIOD_CNT <= (OTHERS => '0');
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( W_BLINK_SYNC = '1' )THEN
 
                 IF (FF_BLINK_CLK_CNT = "1001") THEN

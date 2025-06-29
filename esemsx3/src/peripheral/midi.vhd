@@ -74,16 +74,13 @@ signal  address_e9              : STD_LOGIC := '1';
 signal  select_e8w              : STD_LOGIC := '1';
 signal  select_e9r              : STD_LOGIC := '1';
 
-
 -- Interrupt
 signal  interrupt_enabled       : STD_LOGIC := '0';
 signal  int_interrupt_enabled   : STD_LOGIC := '0';
 
 signal  TxEM                    : STD_LOGIC := '1';
 
-
 begin
-
 
     U1 : entity work.UART
     port map
@@ -99,13 +96,10 @@ begin
         clock_i             => clk_i
     );
 
-
-
     address_e8 <= '0' when adr_i (7 downto 0) = x"e8" else '1';
     address_e9 <= '0' when adr_i (7 downto 0) = x"e9" else '1';
     select_e8w <= ( address_e8 or ( wrt_i ) or ( iorq_i ) );
     select_e9r <= ( address_e9 or ( rd_i ) or ( iorq_i ) );
-
 
     process (clk_i)
     begin
@@ -124,9 +118,7 @@ begin
 
                 if (select_e8w = '0') then
 
-
                         case my_tx_state is
-
 
                             -- First step: get the data that should be sent
                             when STATE_TX_IDLE =>
@@ -184,7 +176,6 @@ begin
                         --                  For the MSX programmer, this difference is irrelevant because these two UART outputs are not used in the GT.
                         --      0 = the UART is not ready to send a new byte
                         --      1 = the UART is ready to send a new byte
-
 
                         db_o <= "00000" & TxEM & '0' & TxEM;
 

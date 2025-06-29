@@ -3,7 +3,7 @@
 --   256 bytes of block memory
 --   Revision 1.00
 --
--- Copyright (c) 2007 Takayuki Hara.
+-- Copyright (c) 2007 Takayuki Hara
 -- All rights reserved.
 --
 -- Redistribution and use of this source code or any derivative works, are
@@ -30,6 +30,7 @@
 -- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 -- modified by caro 19/03/2008
+--
 
 library ieee;
     use ieee.std_logic_1164.all;
@@ -37,10 +38,10 @@ library ieee;
 
 entity scc_ram is
     port (
-        adr : in    std_logic_vector( 7 downto 0 );
-        clk : in    std_logic;
-        we  : in    std_logic;
-        dbi : in    std_logic_vector( 7 downto 0 );
+        adr     : in    std_logic_vector( 7 downto 0 );
+        clk     : in    std_logic;
+        we      : in    std_logic;
+        dbi     : in    std_logic_vector( 7 downto 0 );
         dbo1    : out   std_logic_vector( 7 downto 0 );
         dbo2    : out   std_logic_vector( 7 downto 0 )
     );
@@ -50,8 +51,8 @@ architecture rtl of scc_ram is
     type ramdb is array( 0 to 255 ) of std_logic_vector( 7 downto 0 );
 
     signal block_ram    : ramdb;
-    signal block_ram1   : ramdb;                -- caro
-    signal iadr     : std_logic_vector( 7 downto 0 );
+    signal block_ram1   : ramdb;    -- caro
+    signal iadr         : std_logic_vector( 7 downto 0 );
     signal w_adr_p1     : std_logic_vector( 4 downto 0 );
 begin
 

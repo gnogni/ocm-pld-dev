@@ -1,26 +1,39 @@
 @echo off
-rem --- 'zz2_prepare_multi-release.cmd' v3.1 by KdL (2023.12.13)
+rem --- 'zz2_prepare_multi-release.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
 set SRC=esemsx3\
 set DEST1=C:\Altera\multi-release\
-set DEST2=C:\intelFPGA_lite\multi-release\
+set DEST2=C:\altera_lite\multi-release\
 set DEST=%DEST1%
 set SEEDENV=%PROJECT%_synthesis_seed.env
+set OUTLINE=######################################################
+set CAUTION=### CAUTION: a Multi-Release is still in progress! ###
+rem ---------------variant----------------
+set VPATH=src\video\
+set VNAME=vdp_vga.vhd
+set VTYPE=.topright25
+set VSHOW=no
+set VTEXT=&if "%VSHOW%"=="yes" set VTEXT=, [V] for '%VNAME%%VTYPE%'
+rem --------------------------------------
 if "%1"=="" color 1f&title Multi-Release preparing tool for %PROJECT%
 if not exist "%QUARTUS_ROOTDIR%\common\devinfo\cyclone" goto err_quartus
 if not exist src\ goto err_msg
 if "%1"=="" echo.&echo A copy of the "%PROJECT%" project will be prepared
-if "%1"=="" echo to compile several variants in parallel.
+if "%1"=="" echo to compile several firmware in parallel.
 if exist %SEEDENV% set /P CURSEED=<%SEEDENV%
 if "%1"=="" if defined CURSEED echo.&echo Current Synthesis Seed = %CURSEED%
 if "%1"=="" echo.&echo Destination path: %DEST%
 if exist "%DEST1%" set MULTI=1
 if exist "%DEST2%" set MULTI=1
-if "%1"=="" if "%MULTI%"=="1" echo.&echo ### CAUTION: a Multi-Release is still in progress!
-if "%1"=="" echo.&echo Press any key to continue...&pause >nul
-if "%1"=="" cls&echo.&echo Please wait...
+if "%1"=="" if "%MULTI%"=="1" echo.&echo %OUTLINE%&echo %CAUTION%&echo %OUTLINE%
+if "%1"=="" (
+    echo.&echo Press any key to continue%VTEXT%...
+    set VARIANT=&for /f "delims=" %%a in ('xcopy /l /w "%~f0" "%~f0" 2^>nul') do (if not defined VARIANT set "VARIANT=%%a")&cls
+)
+if "%1"=="" if /I "%VARIANT:~-1%"=="V" set VARIANT=yes&echo.&echo Variant '%VNAME%%VTYPE%' selected.
+if "%1"=="" echo.&echo Please wait...
 if exist __zemmixneo__ set DEVICE=__zemmixneo__&call 1_swap.cmd --no-wait&cd %~dp0
 rem ---------------cleanup----------------
 del "## BUILDING FAILED ##.log" >nul 2>nul
@@ -29,7 +42,7 @@ md %DEST% >nul 2>nul
 rem --------------------------------------
 echo %~dp0>%DEST%source_path.txt
 echo @echo off>%DEST%compile_multi-release.cmd
-echo rem --- 'compile_multi-release.cmd' v3.1 by KdL (2023.12.13)>>%DEST%compile_multi-release.cmd
+echo rem --- 'compile_multi-release.cmd' v3.2 by KdL (2025.06.29)>>%DEST%compile_multi-release.cmd
 echo.>>%DEST%compile_multi-release.cmd
 
 rem --- BR layout
@@ -50,6 +63,12 @@ set LAYOUT=fr
 set LAYOUTFN=french
 call :extra_layout
 
+rem --- IT layout
+cd ..
+set LAYOUT=it
+set LAYOUTFN=italian
+call :extra_layout
+
 rem --- JP layout
 cd ..
 set LAYOUT=jp
@@ -58,8 +77,8 @@ set YENSLASH=yen
 set OUTDIR=%DEST%esemsx3_%LAYOUT%_1chipmsx\
 set INPDIR=%SRC%
 xcopy /S /E /Y %INPDIR%*.* %OUTDIR% >nul 2>nul
-rem --------vdp_vga.vhd.topright25--------
-rem move %OUTDIR%src\video\vdp_vga.vhd.topright25 %OUTDIR%src\video\vdp_vga.vhd >nul 2>nul
+rem ---------------variant----------------
+if /I "%VARIANT%"=="yes" move %OUTDIR%%VPATH%%VNAME%%VTYPE% %OUTDIR%%VPATH%%VNAME% >nul 2>nul
 rem --------------------------------------
 move %OUTDIR%src\peripheral\swioports.vhd.%LAYOUTFN% %OUTDIR%src\peripheral\swioports.vhd >nul 2>nul
 move %OUTDIR%%PROJECT%_304k.hex.%YENSLASH%.msxplusplus %OUTDIR%%PROJECT%_304k.hex >nul 2>nul
@@ -83,8 +102,8 @@ set YENSLASH=backslash
 set OUTDIR=%DEST%esemsx3_%LAYOUT%_1chipmsx\
 set INPDIR=%SRC%
 xcopy /S /E /Y %INPDIR%*.* %OUTDIR% >nul 2>nul
-rem --------vdp_vga.vhd.topright25--------
-rem move %OUTDIR%src\video\vdp_vga.vhd.topright25 %OUTDIR%src\video\vdp_vga.vhd >nul 2>nul
+rem ---------------variant----------------
+if /I "%VARIANT%"=="yes" move %OUTDIR%%VPATH%%VNAME%%VTYPE% %OUTDIR%%VPATH%%VNAME% >nul 2>nul
 rem --------------------------------------
 echo cd "%OUTDIR%">>%DEST%compile_multi-release.cmd
 echo start "compile" /d "%OUTDIR%" /min /affinity fff7 5_auto-collect.cmd --no-wait>>%DEST%compile_multi-release.cmd
@@ -106,8 +125,8 @@ set YENSLASH=backslash
 set OUTDIR=%DEST%esemsx3_%LAYOUT%_1chipmsx\
 set INPDIR=%SRC%
 xcopy /S /E /Y %INPDIR%*.* %OUTDIR% >nul 2>nul
-rem --------vdp_vga.vhd.topright25--------
-rem move %OUTDIR%src\video\vdp_vga.vhd.topright25 %OUTDIR%src\video\vdp_vga.vhd >nul 2>nul
+rem ---------------variant----------------
+if /I "%VARIANT%"=="yes" move %OUTDIR%%VPATH%%VNAME%%VTYPE% %OUTDIR%%VPATH%%VNAME% >nul 2>nul
 rem --------------------------------------
 move %OUTDIR%src\peripheral\keymap.vhd.%LAYOUTFN% %OUTDIR%src\peripheral\keymap.vhd >nul 2>nul
 echo cd "%OUTDIR%">>%DEST%compile_multi-release.cmd

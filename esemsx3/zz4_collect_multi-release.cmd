@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz4_collect_multi-release.cmd' v3.1 by KdL (2023.12.13)
+rem --- 'zz4_collect_multi-release.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -14,23 +14,6 @@ if not exist %SRC% goto err_msg
 if "%1"=="" echo.&echo ### NOTICE: the '%DEST%' folder will be updated!
 if "%1"=="" echo.&echo Press any key to proceed...&pause >nul
 cls&if "%1"=="" echo.&echo Please wait...
-rem ---------------cleanup----------------
-rd /S /Q %DEST%1chipmsx_br_layout\ >nul 2>nul
-rd /S /Q %DEST%1chipmsx_es_layout\ >nul 2>nul
-rd /S /Q %DEST%1chipmsx_fr_layout\ >nul 2>nul
-rd /S /Q %DEST%1chipmsx_jp_layout\ >nul 2>nul
-rd /S /Q %DEST%1chipmsx_us_layout\ >nul 2>nul
-rd /S /Q %DEST%sx1mini_br_layout\ >nul 2>nul
-rd /S /Q %DEST%sx1mini_es_layout\ >nul 2>nul
-rd /S /Q %DEST%sx1mini_fr_layout\ >nul 2>nul
-rd /S /Q %DEST%sx1mini_jp_layout\ >nul 2>nul
-rd /S /Q %DEST%sx1mini_us_layout\ >nul 2>nul
-rd /S /Q %DEST%zemmixneo_br_layout\ >nul 2>nul
-rd /S /Q %DEST%zemmixneo_es_layout\ >nul 2>nul
-rd /S /Q %DEST%zemmixneo_fr_layout\ >nul 2>nul
-rd /S /Q %DEST%zemmixneo_jp_layout\ >nul 2>nul
-rd /S /Q %DEST%zemmixneo_us_layout\ >nul 2>nul
-rem --------------------------------------
 if not exist %PROJECT%.qsf.area.off set OPTMODE=1
 if not exist %PROJECT%.qsf.area.normal if "%OPTMODE%"=="" (set OPTMODE=2) else (set OPTMODE=0)
 if not exist %PROJECT%.qsf.area.extraeffort if "%OPTMODE%"=="" (set OPTMODE=3) else (set OPTMODE=0)
@@ -46,32 +29,45 @@ if "%OPTMODE%"=="5" set OPTMODE=(balanced_normal_compilation)
 if "%OPTMODE%"=="6" set OPTMODE=(balanced_extra_effort)
 set YENSLASH=backslash
 set LAYOUT=br
+call :cleanup
 call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
 set LAYOUT=es
+call :cleanup
 call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
 set LAYOUT=fr
+call :cleanup
+call :collect_1chipmsx
+call :collect_sx1mini
+call :collect_zemmixneo
+set LAYOUT=it
+call :cleanup
 call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
 set LAYOUT=us
+call :cleanup
 call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
 set YENSLASH=yen
 set LAYOUT=jp
+call :cleanup
 call :collect_1chipmsx
 call :collect_sx1mini
 call :collect_zemmixneo
-rem ---------------cleanup----------------
-if "%FAIL%"=="NO" rd /S /Q %SRC% >nul 2>nul
-rem --------------------------------------
-if "%FAIL%"=="NO" if "%1"=="" cls&echo.&echo All done!
-if "%FAIL%"=="YES" set TIMEOUT=2&cls&echo.&echo Multi-Release building failed!&if "%1"=="" color f0
+if "%FAIL%"=="NO" rd /S /Q %SRC% >nul 2>nul&if "%1"=="" cls&echo.&echo All done!
+if "%FAIL%"=="YES" set TIMEOUT=2&cls&echo.&echo Multi-Release building failed or was partially successful!&if "%1"=="" color f0
 goto timer
+
+:cleanup
+rd /S /Q %DEST%1chipmsx_%LAYOUT%_layout\ >nul 2>nul
+rd /S /Q %DEST%sx1mini_%LAYOUT%_layout\ >nul 2>nul
+rd /S /Q %DEST%zemmixneo_%LAYOUT%_layout\ >nul 2>nul
+goto:eof
 
 :collect_1chipmsx
 set INPDIR=%SRC%esemsx3_%LAYOUT%_1chipmsx\

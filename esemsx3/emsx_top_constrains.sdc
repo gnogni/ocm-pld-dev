@@ -4,8 +4,7 @@ derive_pll_clocks -use_tan_name
 
 # Original Clock Setting Name: pClk21m
 # ------------------------------------
-create_clock -period "46.554 ns" \
-             -name {pClk21m} {pClk21m}
+create_clock -period "46.554 ns" -name {pClk21m} {pClk21m}
 
 # ** Multicycles
 # --------------

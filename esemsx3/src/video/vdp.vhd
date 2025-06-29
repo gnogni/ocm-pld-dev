@@ -73,6 +73,49 @@
 -------------------------------------------------------------------------------
 -- Revision History
 --
+-- 15th,May,2025 modified by KdL
+--  - Optimization of SSG logic for reduction of LEs
+--
+-- 01st,May,2025 modified by KdL
+--  - New VDP wait controller optimized for using Block RAM
+--  - Fixed vertical blanking to prevent title screen freeze in Space Mambow
+--
+-- 21st,Apr,2025 modified by KdL
+--  - Added VGA_INT_FIELD to select single or duplicate VGA interlacing
+--
+-- 12th,Jan,2025 modified by KdL
+--  - Calibrated the delay of the split-screen cutoff for Screen2/4
+--  - Temporary workaround for VDP S#0 bit6 functionality using SPMAXSPR
+--
+-- 25th,Dec,2024 modified by KdL
+--  - Improved the sprite disabling by adjusting the timing of REG_R8_SP_OFF
+--
+-- 18th,Dec,2024 modified by KdL
+--  - Exported interlace mode state to disable VGA scanlines
+--
+-- 29th,Jul,2023 modified by lfantoniosi
+--  - Fixed overscan and optimized vertical blanking
+--
+-- 11th,Jun,2023 modified by lfantoniosi
+--  - Temporary fix for sprites crossing the split-screen boundary
+--
+-- 07th,Jun,2023 modified by lfantoniosi
+--  - Fixed sprite multiplexing issues for games like Zanac A.I. (VDP S#0 bit6)
+--  - Added SPMAXSPR to select MSX1 sprite limit between 4 and 8
+--
+-- 24th,Sep,2022 modified by t.hara
+--  - Fixed VDP R#8 initialization and rounding in YJK mode
+--
+-- 23rd,Oct,2021 modified by t.hara
+--  - Improved VDP R#23 and added support for TEXTQ and MULTIQ modes
+--  - Fixed damaged graphics in Fighter's Ragnarök (VDP R#17)
+--
+-- 09th,Jan,2020 modified by Ducasp
+--  - Fixed the lack of page flipping capability (VDP R#13)
+--
+-- 20th,May,2019 modified by KdL
+--  - Improved VDP wait controller
+--
 -- 3rd,June,2018 modified by KdL
 --  - Improved the VGA up-scan converter
 --
@@ -91,8 +134,8 @@
 --  - Added the document part below
 --
 -- 3rd,Sep,2006 modified by Kunihiko Ohnaka
---  - Fix several UNKNOWN REALITY problems
---  - Horizontal Sprite problem
+--  - Fixed several UNKNOWN REALITY problems
+--  - Horizontal sprite problem
 --  - Overscan problem
 --  - [NOP] zoom demo problem
 --  - 'Star Wars Scroll' demo problem
@@ -288,13 +331,17 @@ ENTITY VDP IS
         PVIDEODLCLK         : OUT   STD_LOGIC;
 
         BLANK_O             : OUT   STD_LOGIC;
+        INTERLACEMODE       : OUT   STD_LOGIC;
 
-        -- DISPLAY RESOLUTION (0=15kHz, 1=31kHz)
+        -- DISPLAY RESOLUTION (0=15KHZ, 1=31KHZ)
         DISPRESO            : IN    STD_LOGIC;
 
         NTSC_PAL_TYPE       : IN    STD_LOGIC;
         FORCED_V_MODE       : IN    STD_LOGIC;
         LEGACY_VGA          : IN    STD_LOGIC;
+        VGA_INT_FIELD       : IN    STD_LOGIC;
+
+        SPMAXSPR            : IN    STD_LOGIC;
 
         VDP_ID              : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 );
         OFFSET_Y            : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
@@ -384,6 +431,7 @@ ARCHITECTURE RTL OF VDP IS
             PVDPS0RESETACK              : OUT   STD_LOGIC;
             PVDPS5RESETREQ              : IN    STD_LOGIC;
             PVDPS5RESETACK              : OUT   STD_LOGIC;
+
             -- VDP REGISTERS
             REG_R1_SP_SIZE              : IN    STD_LOGIC;
             REG_R1_SP_ZOOM              : IN    STD_LOGIC;
@@ -391,9 +439,12 @@ ARCHITECTURE RTL OF VDP IS
             REG_R6_SP_GEN_ADDR          : IN    STD_LOGIC_VECTOR(  5 DOWNTO 0 );
             REG_R8_COL0_ON              : IN    STD_LOGIC;
             REG_R8_SP_OFF               : IN    STD_LOGIC;
+            REG_R9_Y_DOTS               : IN    STD_LOGIC;
             REG_R23_VSTART_LINE         : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             REG_R27_H_SCROLL            : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 );
+
             SPMODE2                     : IN    STD_LOGIC;
+            SPMAXSPR                    : IN    STD_LOGIC;
             VRAMINTERLEAVEMODE          : IN    STD_LOGIC;
 
             SPVRAMACCESSING             : OUT   STD_LOGIC;
@@ -404,9 +455,9 @@ ARCHITECTURE RTL OF VDP IS
             -- JP: スプライトを描画した時に'1'になる。カラーコード0で
             -- JP: 描画する事もできるので、このビットが必要
             SPCOLOROUT                  : OUT   STD_LOGIC;
+
             -- OUTPUT COLOR
-            SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 );
-            REG_R9_Y_DOTS               : IN    STD_LOGIC
+            SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 )
         );
     END COMPONENT;
 
@@ -458,6 +509,7 @@ ARCHITECTURE RTL OF VDP IS
             PALMODE             : IN    STD_LOGIC;
             INTERLACEMODE       : IN    STD_LOGIC;
             LEGACY_VGA          : IN    STD_LOGIC;
+            VGA_INT_FIELD       : IN    STD_LOGIC;
             -- VIDEO OUTPUT
             VIDEOROUT           : OUT   STD_LOGIC_VECTOR(  5 DOWNTO 0 );
             VIDEOGOUT           : OUT   STD_LOGIC_VECTOR(  5 DOWNTO 0 );
@@ -466,7 +518,7 @@ ARCHITECTURE RTL OF VDP IS
             VIDEOVSOUT_N        : OUT   STD_LOGIC;
             -- HDMI SUPPORT
             BLANK_O             : OUT   STD_LOGIC;
-            -- SWITCHED I/O SIGNALS
+            -- MISC
             RATIOMODE           : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 )
             );
     END COMPONENT;
@@ -594,11 +646,10 @@ ARCHITECTURE RTL OF VDP IS
             REG_R7_FRAME_COL            : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             REG_R12_BLINK_MODE          : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             REG_R13_BLINK_PERIOD        : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
-
             REG_R2_PT_NAM_ADDR          : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 );
             REG_R4_PT_GEN_ADDR          : IN    STD_LOGIC_VECTOR(  5 DOWNTO 0 );
             REG_R10R3_COL_ADDR          : IN    STD_LOGIC_VECTOR( 10 DOWNTO 0 );
-            --
+
             PRAMDAT                     : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             PRAMADR                     : OUT   STD_LOGIC_VECTOR( 16 DOWNTO 0 );
             TXVRAMREADEN                : OUT   STD_LOGIC;
@@ -630,7 +681,7 @@ ARCHITECTURE RTL OF VDP IS
             REG_R10R3_COL_ADDR          : IN    STD_LOGIC_VECTOR( 10 DOWNTO 0 );
             REG_R26_H_SCROLL            : IN    STD_LOGIC_VECTOR(  8 DOWNTO 3 );
             REG_R27_H_SCROLL            : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 );
-            --
+
             PRAMDAT                     : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             PRAMADR                     : OUT   STD_LOGIC_VECTOR( 16 DOWNTO 0 );
 
@@ -664,7 +715,6 @@ ARCHITECTURE RTL OF VDP IS
             REG_R25_YJK             : IN    STD_LOGIC;
             REG_R25_SP2             : IN    STD_LOGIC;
 
-            --
             PRAMDAT                 : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             PRAMDATPAIR             : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
             PRAMADR                 : OUT   STD_LOGIC_VECTOR( 16 DOWNTO 0 );
@@ -788,8 +838,9 @@ ARCHITECTURE RTL OF VDP IS
             SPMODE2                     : OUT   STD_LOGIC;
             VDPMODEISVRAMINTERLEAVE     : OUT   STD_LOGIC;
 
-            -- SWITCHED I/O SIGNALS
+            -- MISC
             FORCED_V_MODE               : IN    STD_LOGIC;
+            SPMAXSPR                    : IN    STD_LOGIC;
             VDP_ID                      : IN    STD_LOGIC_VECTOR(  4 DOWNTO 0 )
         );
     END COMPONENT;
@@ -1021,7 +1072,8 @@ BEGIN
     ----------------------------------------------------------------
     -- DISPLAY COMPONENTS
     ----------------------------------------------------------------
-    DISPMODEVGA     <=  DISPRESO;   -- DISPLAY RESOLUTION (0=15kHz, 1=31kHz)
+    INTERLACEMODE   <=  REG_R9_INTERLACE_MODE;
+    DISPMODEVGA     <=  DISPRESO;   -- DISPLAY RESOLUTION (0=15KHZ, 1=31KHZ)
 
 --  VDPR9PALMODE    <=  REG_R9_PAL_MODE     WHEN( NTSC_PAL_TYPE = '1' AND LEGACY_VGA = '0' )ELSE
     VDPR9PALMODE    <=  REG_R9_PAL_MODE     WHEN( NTSC_PAL_TYPE = '1' )ELSE
@@ -1066,6 +1118,7 @@ BEGIN
         PALMODE             => VDPR9PALMODE,
         INTERLACEMODE       => REG_R9_INTERLACE_MODE,
         LEGACY_VGA          => LEGACY_VGA,
+        VGA_INT_FIELD       => VGA_INT_FIELD,
         VIDEOROUT           => IVIDEOR_VGA,
         VIDEOGOUT           => IVIDEOG_VGA,
         VIDEOBOUT           => IVIDEOB_VGA,
@@ -1127,8 +1180,9 @@ BEGIN
 
     PROCESS( CLK21M )
     BEGIN
-        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( PREDOTCOUNTER_X = 255 )THEN
+        IF( CLK21M'EVENT AND CLK21M = '1' )THEN                                                         -- Modified by KdL, 2025/Jan/12th
+            IF( ((VDPMODEGRAPHIC2 = '1' OR  VDPMODEGRAPHIC3 = '1') AND PREDOTCOUNTER_X = 231) OR        -- Calibrated the delay of the split-screen cutoff for Screen2/4
+                ((VDPMODEGRAPHIC2 = '0' AND VDPMODEGRAPHIC3 = '0') AND PREDOTCOUNTER_X = 255) )THEN
                 ACTIVE_LINE <= '1';
             ELSE
                 ACTIVE_LINE <= '0';
@@ -1263,7 +1317,7 @@ BEGIN
     END PROCESS;
 
     ------------------------------------------------------------------------------
-    -- main process
+    -- MAIN PROCESS
     ------------------------------------------------------------------------------
     PROCESS( RESET, CLK21M )
     BEGIN
@@ -1303,7 +1357,7 @@ BEGIN
         VARIABLE VDPVRAMACCESSADDRV : STD_LOGIC_VECTOR( 16 DOWNTO 0 );
         VARIABLE VRAMACCESSSWITCH   : INTEGER RANGE 0 TO 7;
     BEGIN
-        IF (RESET = '1') THEN
+        IF( RESET = '1' )THEN
 
             IRAMADR <= (OTHERS => '1');
             PRAMDBO <= (OTHERS => 'Z');
@@ -1320,7 +1374,7 @@ BEGIN
             VDPCMDVRAMWRACK <= '0';
             VDPCMDVRAMREADINGR <= '0';
             VDP_COMMAND_DRIVE <= '0';
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
 
             ------------------------------------------
             -- MAIN STATE
@@ -1558,7 +1612,7 @@ BEGIN
         RESET                       => RESET,
         DOTSTATE                    => DOTSTATE,
         DOTCOUNTERX                 => PREDOTCOUNTER_X,
-        DOTCOUNTERY                 => PREDOTCOUNTER_Y,         -- 2021/July/1st Modified by t.hara
+        DOTCOUNTERY                 => PREDOTCOUNTER_Y,                         -- Modified by t.hara, 2021/Jul/1st
         DOTCOUNTERYP                => PREDOTCOUNTER_YP,
         VDPMODETEXT1                => VDPMODETEXT1,
         VDPMODETEXT1Q               => VDPMODETEXT1Q,
@@ -1656,16 +1710,17 @@ BEGIN
         REG_R6_SP_GEN_ADDR          => REG_R6_SP_GEN_ADDR,
         REG_R8_COL0_ON              => REG_R8_COL0_ON,
         REG_R8_SP_OFF               => REG_R8_SP_OFF,
+        REG_R9_Y_DOTS               => REG_R9_Y_DOTS,
         REG_R23_VSTART_LINE         => REG_R23_VSTART_LINE,
         REG_R27_H_SCROLL            => REG_R27_H_SCROLL,
         SPMODE2                     => SPMODE2,
+        SPMAXSPR                    => SPMAXSPR,
         VRAMINTERLEAVEMODE          => VDPMODEISVRAMINTERLEAVE,
         SPVRAMACCESSING             => SPVRAMACCESSING,
         PRAMDAT                     => PRAMDAT,
         PRAMADR                     => PRAMADRSPRITE,
         SPCOLOROUT                  => SPRITECOLOROUT,
-        SPCOLORCODE                 => COLORCODESPRITE,
-        REG_R9_Y_DOTS               => REG_R9_Y_DOTS
+        SPCOLORCODE                 => COLORCODESPRITE
     );
 
     -----------------------------------------------------------------------------
@@ -1779,6 +1834,7 @@ BEGIN
         VDPMODEISVRAMINTERLEAVE     => VDPMODEISVRAMINTERLEAVE      ,
 
         FORCED_V_MODE               => FORCED_V_MODE                ,
+        SPMAXSPR                    => SPMAXSPR                     ,
         VDP_ID                      => VDP_ID
     );
 

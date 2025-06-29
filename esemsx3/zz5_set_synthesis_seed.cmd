@@ -1,5 +1,5 @@
 @echo off
-rem --- 'zz5_set_synthesis_seed.cmd' v3.1 by KdL (2023.12.13)
+rem --- 'zz5_set_synthesis_seed.cmd' v3.2 by KdL (2025.06.29)
 
 set TIMEOUT=1
 set PROJECT=emsx_top
@@ -7,9 +7,9 @@ set SRC=.\
 set DEFSEED=1
 set STRSEED=set_global_assignment -name SYNTHESIS_SEED
 set INPUTNR=Press [ENTER] for the default, or input a new value
-set QDFNAME=%SRC%%PROJECT%_assignment_defaults.qdf
+set QDFNAME=%SRC%%PROJECT%_synthesis_seed.qsf
 set SEEDENV=%SRC%%PROJECT%_synthesis_seed.env
-if "%1"=="" color 1f&title Synthesis Seed setup tool for %PROJECT%
+if "%1"=="" (color 1f&title Synthesis Seed setup tool for %PROJECT%) else (set "SEED=%1"&goto store_seed)
 call :rw_seed_env
 
 :input_seed
@@ -44,7 +44,9 @@ set SEED=%DEFSEED%
 (echo %SEED%)>%SEEDENV%
 call :rw_seed_env
 if exist %QDFNAME% set /P CURSEED=<%QDFNAME%
-cls&echo.&echo %CURSEED%&echo.&echo Done!
+if "%1"=="" cls&echo.
+echo %CURSEED%
+if "%1"=="" echo.&echo Done!
 goto timer
 
 :rw_seed_env

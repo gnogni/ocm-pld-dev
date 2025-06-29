@@ -52,7 +52,7 @@ architecture RTL of EnvelopeMemory is
 
 begin
 
-  process (clk, reset)
+  process (reset, clk)
 
     variable init_slot : integer range 0 to 18;
 

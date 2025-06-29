@@ -36,53 +36,52 @@ use ieee.std_logic_unsigned.all;
 
 entity mapper is
   port(
-    clk21m  : in std_logic;
-    reset   : in std_logic;
-    clkena  : in std_logic;
-    req     : in std_logic;
-    ack     : out std_logic;
-    mem     : in std_logic;
-    wrt     : in std_logic;
-    adr     : in std_logic_vector(15 downto 0);
-    dbi     : out std_logic_vector(7 downto 0);
-    dbo     : in std_logic_vector(7 downto 0);
+    clk21m  : in    std_logic;
+    reset   : in    std_logic;
+    req     : in    std_logic;
+    ack     : out   std_logic;
+    mem     : in    std_logic;
+    wrt     : in    std_logic;
+    adr     : in    std_logic_vector( 15 downto 0 );
+    dbi     : out   std_logic_vector(  7 downto 0 );
+    dbo     : in    std_logic_vector(  7 downto 0 );
 
-    ramreq  : out std_logic;
-    ramwrt  : out std_logic;
-    ramadr  : out std_logic_vector(21 downto 0);
-    ramdbi  : in std_logic_vector(7 downto 0);
-    ramdbo  : out std_logic_vector(7 downto 0)
+    ramreq  : out   std_logic;
+    ramwrt  : out   std_logic;
+    ramadr  : out   std_logic_vector( 21 downto 0 );
+    ramdbi  : in    std_logic_vector(  7 downto 0 );
+    ramdbo  : out   std_logic_vector(  7 downto 0 )
   );
 end mapper;
 
 architecture rtl of mapper is
 
-  signal MapBank0    : std_logic_vector(7 downto 0);
-  signal MapBank1    : std_logic_vector(7 downto 0);
-  signal MapBank2    : std_logic_vector(7 downto 0);
-  signal MapBank3    : std_logic_vector(7 downto 0);
+  signal MapBank0 : std_logic_vector(  7 downto 0 );
+  signal MapBank1 : std_logic_vector(  7 downto 0 );
+  signal MapBank2 : std_logic_vector(  7 downto 0 );
+  signal MapBank3 : std_logic_vector(  7 downto 0 );
 
 begin
 
   ----------------------------------------------------------------
   -- Mapper bank register access
   ----------------------------------------------------------------
-  process(clk21m, reset)
+  process( reset, clk21m )
 
   begin
 
-    if (reset = '1') then
+    if( reset = '1' )then
 
       MapBank0   <= X"03";
       MapBank1   <= X"02";
       MapBank2   <= X"01";
       MapBank3   <= X"00";
 
-    elsif (clk21m'event and clk21m = '1') then
+    elsif( clk21m'event and clk21m = '1' )then
 
       -- I/O port access on FC-FFh ... Mapper bank register write
-      if (req = '1' and mem = '0' and wrt = '1') then
-        case adr(1 downto 0) is
+      if( req = '1' and mem = '0' and wrt = '1' )then
+        case adr(  1 downto 0 ) is
           when "00"   => MapBank0 <= dbo;
           when "01"   => MapBank1 <= dbo;
           when "10"   => MapBank2 <= dbo;
@@ -94,21 +93,21 @@ begin
 
   end process;
 
-  ack    <= req when mem = '0' else '0';
+  ack    <= req when( mem = '0' )else '0';
 
-  RamReq <= req when mem = '1' else '0';
+  RamReq <= req when( mem = '1' )else '0';
   RamWrt <= wrt;
 
-  RamAdr <= MapBank0(7 downto 0) & adr(13 downto 0) when adr(15 downto 14) = "00" else
-            MapBank1(7 downto 0) & adr(13 downto 0) when adr(15 downto 14) = "01" else
-            MapBank2(7 downto 0) & adr(13 downto 0) when adr(15 downto 14) = "10" else
-            MapBank3(7 downto 0) & adr(13 downto 0);
+  RamAdr <= MapBank0(  7 downto 0 ) & adr( 13 downto 0 ) when( adr( 15 downto 14 ) = "00" )else
+            MapBank1(  7 downto 0 ) & adr( 13 downto 0 ) when( adr( 15 downto 14 ) = "01" )else
+            MapBank2(  7 downto 0 ) & adr( 13 downto 0 ) when( adr( 15 downto 14 ) = "10" )else
+            MapBank3(  7 downto 0 ) & adr( 13 downto 0 );
 
   RamDbo <= dbo;
-  dbi    <= RamDbi   when mem = '1'              else
-            MapBank0 when adr(1 downto 0) = "00" else
-            MapBank1 when adr(1 downto 0) = "01" else
-            MapBank2 when adr(1 downto 0) = "10" else
+  dbi    <= RamDbi      when( mem = '1'                 )else
+            MapBank0    when( adr(  1 downto 0 ) = "00" )else
+            MapBank1    when( adr(  1 downto 0 ) = "01" )else
+            MapBank2    when( adr(  1 downto 0 ) = "10" )else
             MapBank3;
 
 end rtl;

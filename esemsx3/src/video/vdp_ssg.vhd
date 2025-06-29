@@ -96,7 +96,6 @@ ENTITY VDP_SSG IS
         REG_R9_INTERLACE_MODE   : IN    STD_LOGIC;
         REG_R9_Y_DOTS           : IN    STD_LOGIC;
         REG_R18_ADJ             : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
-        REG_R19_HSYNC_INT_LINE  : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         REG_R23_VSTART_LINE     : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         REG_R25_MSK             : IN    STD_LOGIC;
         REG_R27_H_SCROLL        : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 );
@@ -121,9 +120,10 @@ ARCHITECTURE RTL OF VDP_SSG IS
             V_BLANK             : OUT   STD_LOGIC;
 
             PAL_MODE            : IN    STD_LOGIC;
-            INTERLACE_MODE      : IN    STD_LOGIC;
-            Y212_MODE           : IN    STD_LOGIC;
-            OFFSET_Y            : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 )
+            INTERLACEMODE       : IN    STD_LOGIC;
+            OFFSET_Y            : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 );
+            W_V_BLANKING_START  : IN    STD_LOGIC;
+            W_V_BLANKING_END    : IN    STD_LOGIC
         );
     END COMPONENT;
 
@@ -139,6 +139,7 @@ ARCHITECTURE RTL OF VDP_SSG IS
     SIGNAL FF_PRE_X_CNT_START1  : STD_LOGIC_VECTOR(  5 DOWNTO 0 );
     SIGNAL FF_RIGHT_MASK        : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
     SIGNAL FF_WINDOW_X          : STD_LOGIC;
+    SIGNAL FF_TOP_BORDER_LINES  : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
 
     -- WIRE
     SIGNAL W_H_CNT                  : STD_LOGIC_VECTOR( 10 DOWNTO 0 );
@@ -149,6 +150,7 @@ ARCHITECTURE RTL OF VDP_SSG IS
     SIGNAL W_V_BLANK                : STD_LOGIC;
     SIGNAL W_PRE_X_CNT_START0       : STD_LOGIC_VECTOR(  4 DOWNTO 0 );
     SIGNAL W_PRE_X_CNT_START2       : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+    SIGNAL W_PRE_X_CNT_LOAD_EN      : STD_LOGIC;
     SIGNAL W_HSYNC                  : STD_LOGIC;
     SIGNAL W_LEFT_MASK              : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
     SIGNAL W_Y_ADJ                  : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
@@ -157,6 +159,7 @@ ARCHITECTURE RTL OF VDP_SSG IS
     SIGNAL W_V_BLANKING_END         : STD_LOGIC;
     SIGNAL W_V_SYNC_INTR_START_LINE : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
 BEGIN
+
     -----------------------------------------------------------------------------
     --  PORT ASSIGNMENT
     -----------------------------------------------------------------------------
@@ -181,20 +184,21 @@ BEGIN
     -----------------------------------------------------------------------------
     U_HVCOUNTER: VDP_HVCOUNTER
     PORT MAP (
-        RESET               => RESET                ,
-        CLK21M              => CLK21M               ,
+        RESET               => RESET                    ,
+        CLK21M              => CLK21M                   ,
 
-        H_CNT               => W_H_CNT              ,
-        V_CNT_IN_FIELD      => W_V_CNT_IN_FIELD     ,
-        V_CNT_IN_FRAME      => W_V_CNT_IN_FRAME     ,
-        FIELD               => W_FIELD              ,
-        H_BLANK             => W_H_BLANK            ,
-        V_BLANK             => W_V_BLANK            ,
+        H_CNT               => W_H_CNT                  ,
+        V_CNT_IN_FIELD      => W_V_CNT_IN_FIELD         ,
+        V_CNT_IN_FRAME      => W_V_CNT_IN_FRAME         ,
+        FIELD               => W_FIELD                  ,
+        H_BLANK             => W_H_BLANK                ,
+        V_BLANK             => W_V_BLANK                ,
 
-        PAL_MODE            => VDPR9PALMODE         ,
-        INTERLACE_MODE      => REG_R9_INTERLACE_MODE,
-        Y212_MODE           => REG_R9_Y_DOTS        ,
-        OFFSET_Y            => OFFSET_Y
+        PAL_MODE            => VDPR9PALMODE             ,
+        INTERLACEMODE       => REG_R9_INTERLACE_MODE    ,
+        OFFSET_Y            => OFFSET_Y                 ,
+        W_V_BLANKING_START  => W_V_BLANKING_START       ,
+        W_V_BLANKING_END    => W_V_BLANKING_END
     );
 
     -----------------------------------------------------------------------------
@@ -272,15 +276,18 @@ BEGIN
     W_PRE_X_CNT_START2( 8 DOWNTO 6 ) <= (OTHERS => FF_PRE_X_CNT_START1(5));
     W_PRE_X_CNT_START2( 5 DOWNTO 0 ) <= FF_PRE_X_CNT_START1;
 
+    W_PRE_X_CNT_LOAD_EN <=  '1' WHEN(
+        (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '0') OR
+        (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '0') OR
+        (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '1') OR
+        (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '1') )ELSE '0';
+
     PROCESS( RESET, CLK21M )
     BEGIN
         IF( RESET = '1' )THEN
-            FF_PRE_X_CNT <= (OTHERS =>'0');
+            FF_PRE_X_CNT <= (OTHERS => '0');
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '0') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '0') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '1') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '1') )THEN
+            IF( W_PRE_X_CNT_LOAD_EN = '1' )THEN
                 FF_PRE_X_CNT <= W_PRE_X_CNT_START2;
             ELSIF( W_H_CNT(1 DOWNTO 0) = "10" )THEN
                 FF_PRE_X_CNT <= FF_PRE_X_CNT + 1;
@@ -291,12 +298,9 @@ BEGIN
     PROCESS( RESET, CLK21M )
     BEGIN
         IF( RESET = '1' )THEN
-            FF_X_CNT <= (OTHERS =>'0');
+            FF_X_CNT <= (OTHERS => '0');
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '0') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_NTSC - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '0') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00") + 4) & "10") AND REG_R25_YJK = '1' AND CENTERYJK_R25_N = '1' AND VDPR9PALMODE = '1') OR
-                (W_H_CNT = ("00" & (OFFSET_X + LED_TV_X_PAL - ((REG_R25_MSK AND (NOT CENTERYJK_R25_N)) & "00")    ) & "10") AND (REG_R25_YJK = '0' OR CENTERYJK_R25_N = '0') AND VDPR9PALMODE = '1') )THEN
+            IF( W_PRE_X_CNT_LOAD_EN = '1' )THEN
                 -- HOLD
             ELSIF( W_H_CNT(1 DOWNTO 0) = "10") THEN
                 IF( FF_PRE_X_CNT = "111111111" )THEN
@@ -373,54 +377,73 @@ BEGIN
     -----------------------------------------------------------------------------
     -- Y
     -----------------------------------------------------------------------------
-    W_HSYNC <=  '1'     WHEN( W_H_CNT(1 DOWNTO 0) = "10" AND FF_PRE_X_CNT = "111111111" )ELSE
-                '0';
+    W_HSYNC     <=  '1'     WHEN( W_H_CNT(1 DOWNTO 0) = "10" AND FF_PRE_X_CNT = "111111111" )ELSE
+                    '0';
 
-    W_Y_ADJ <=  (REG_R18_ADJ(7) & REG_R18_ADJ(7) & REG_R18_ADJ(7) &
-                 REG_R18_ADJ(7) & REG_R18_ADJ(7) & REG_R18_ADJ(7 DOWNTO 4));
+    W_Y_ADJ     <=  (REG_R18_ADJ(7) & REG_R18_ADJ(7) & REG_R18_ADJ(7) &
+                     REG_R18_ADJ(7) & REG_R18_ADJ(7) & REG_R18_ADJ(7 DOWNTO 4));
+
+    W_LINE_MODE <= REG_R9_Y_DOTS & VDPR9PALMODE;
 
     PROCESS( CLK21M, RESET )
         VARIABLE PREDOTCOUNTER_YP_V     : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
         VARIABLE PREDOTCOUNTERYPSTART   : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+        VARIABLE PREWINDOW_Y_LIMIT      : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+        VARIABLE ENAHSYNC_LIMIT         : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
     BEGIN
-        IF (RESET = '1') THEN
-            FF_PRE_Y_CNT        <= (OTHERS =>'0');
-            FF_MONITOR_LINE     <= (OTHERS =>'0');
+        IF( RESET = '1' )THEN
+            FF_PRE_Y_CNT        <= (OTHERS => '0');
+            FF_MONITOR_LINE     <= (OTHERS => '0');
             PREWINDOW_Y         <= '0';
+            PREWINDOW_Y_SP      <= '0';
+            ENAHSYNC            <= '0';
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
 
             IF( W_HSYNC = '1' )THEN
                 -- JP: PREWINDOW_Xが 1になるタイミングと同じタイミングでY座標の計算
                 IF( W_V_BLANKING_END = '1' )THEN
-                    IF(    REG_R9_Y_DOTS = '0' AND VDPR9PALMODE = '0' )THEN
-                        PREDOTCOUNTERYPSTART := "111100110";                    -- TOP BORDER LINES = -26
-                    ELSIF( REG_R9_Y_DOTS = '1' AND VDPR9PALMODE = '0' )THEN
-                        PREDOTCOUNTERYPSTART := "111110000";                    -- TOP BORDER LINES = -16
-                    ELSIF( REG_R9_Y_DOTS = '0' AND VDPR9PALMODE = '1' )THEN
-                        PREDOTCOUNTERYPSTART := "111001011";                    -- TOP BORDER LINES = -53
-                    ELSIF( REG_R9_Y_DOTS = '1' AND VDPR9PALMODE = '1' )THEN
-                        PREDOTCOUNTERYPSTART := "111010101";                    -- TOP BORDER LINES = -43
-                    END IF;
-                    FF_MONITOR_LINE <= PREDOTCOUNTERYPSTART + W_Y_ADJ;
-                    PREWINDOW_Y_SP  <= '1';
+                    PREDOTCOUNTERYPSTART(  8 DOWNTO 6 ) := "111";
+                    CASE W_LINE_MODE IS
+                        WHEN "00" => PREDOTCOUNTERYPSTART(  5 DOWNTO 0 ) := "100110";   -- TOP BORDER LINES = -26
+                        WHEN "10" => PREDOTCOUNTERYPSTART(  5 DOWNTO 0 ) := "110000";   -- TOP BORDER LINES = -16
+                        WHEN "01" => PREDOTCOUNTERYPSTART(  5 DOWNTO 0 ) := "001011";   -- TOP BORDER LINES = -53
+                        WHEN "11" => PREDOTCOUNTERYPSTART(  5 DOWNTO 0 ) := "010101";   -- TOP BORDER LINES = -43
+                        WHEN OTHERS => NULL;
+                    END CASE;
+                    FF_MONITOR_LINE     <= PREDOTCOUNTERYPSTART + W_Y_ADJ;
+                    FF_TOP_BORDER_LINES <= ("00000000" & NOT REG_R9_Y_DOTS) - PREDOTCOUNTERYPSTART - W_Y_ADJ;
+                    PREWINDOW_Y_SP      <= '1';
                 ELSE
                     IF( PREDOTCOUNTER_YP_V = 255 )THEN
                         PREDOTCOUNTER_YP_V := FF_MONITOR_LINE;
                     ELSE
                         PREDOTCOUNTER_YP_V := FF_MONITOR_LINE + 1;
                     END IF;
-                    IF( PREDOTCOUNTER_YP_V = 0 ) THEN
+                    IF( PREDOTCOUNTER_YP_V = 0 )THEN
                         ENAHSYNC        <= '1';
                         PREWINDOW_Y     <= '1';
-                    ELSIF( (REG_R9_Y_DOTS = '0' AND PREDOTCOUNTER_YP_V = 192) OR
-                           (REG_R9_Y_DOTS = '1' AND PREDOTCOUNTER_YP_V = 212) )THEN
-                        PREWINDOW_Y     <= '0';
-                        PREWINDOW_Y_SP  <= '0';
-                    ELSIF( (REG_R9_Y_DOTS = '0' AND VDPR9PALMODE = '0' AND PREDOTCOUNTER_YP_V = 235) OR
-                           (REG_R9_Y_DOTS = '1' AND VDPR9PALMODE = '0' AND PREDOTCOUNTER_YP_V = 245) OR
-                           (REG_R9_Y_DOTS = '0' AND VDPR9PALMODE = '1' AND PREDOTCOUNTER_YP_V = 259) OR
-                           (REG_R9_Y_DOTS = '1' AND VDPR9PALMODE = '1' AND PREDOTCOUNTER_YP_V = 269) )THEN
-                        ENAHSYNC        <= '0';
+                    ELSE
+                        IF( REG_R9_Y_DOTS = '0' )THEN
+                            PREWINDOW_Y_LIMIT := CONV_STD_LOGIC_VECTOR(192, 9);
+                            IF( VDPR9PALMODE = '0' )THEN
+                                ENAHSYNC_LIMIT := CONV_STD_LOGIC_VECTOR(235, 9);
+                            ELSE
+                                ENAHSYNC_LIMIT := CONV_STD_LOGIC_VECTOR(259, 9);
+                            END IF;
+                        ELSE
+                            PREWINDOW_Y_LIMIT := CONV_STD_LOGIC_VECTOR(212, 9);
+                            IF( VDPR9PALMODE = '0' )THEN
+                                ENAHSYNC_LIMIT := CONV_STD_LOGIC_VECTOR(245, 9);
+                            ELSE
+                                ENAHSYNC_LIMIT := CONV_STD_LOGIC_VECTOR(269, 9);
+                            END IF;
+                        END IF;
+                        IF( PREDOTCOUNTER_YP_V = PREWINDOW_Y_LIMIT )THEN
+                            PREWINDOW_Y     <= '0';
+                            PREWINDOW_Y_SP  <= '0';
+                        ELSIF( PREDOTCOUNTER_YP_V = ENAHSYNC_LIMIT )THEN
+                            ENAHSYNC        <= '0';
+                        END IF;
                     END IF;
                     FF_MONITOR_LINE <= PREDOTCOUNTER_YP_V;
                 END IF;
@@ -433,20 +456,18 @@ BEGIN
     -----------------------------------------------------------------------------
     -- VSYNC INTERRUPT REQUEST
     -----------------------------------------------------------------------------
-    W_LINE_MODE         <=  REG_R9_Y_DOTS & VDPR9PALMODE;
-
     WITH W_LINE_MODE SELECT W_V_SYNC_INTR_START_LINE <=
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_192_NTSC, 9 )   WHEN "00",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_212_NTSC, 9 )   WHEN "10",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_192_PAL, 9 )    WHEN "01",
-        CONV_STD_LOGIC_VECTOR( V_BLANKING_START_212_PAL, 9 )    WHEN "11",
-        (OTHERS => 'X')                                         WHEN OTHERS;
+        CONV_STD_LOGIC_VECTOR( 192 + CONV_INTEGER(OFFSET_Y) + LED_TV_Y_NTSC, 9 )    WHEN "00",
+        CONV_STD_LOGIC_VECTOR( 212 + CONV_INTEGER(OFFSET_Y) + LED_TV_Y_NTSC, 9 )    WHEN "10",
+        CONV_STD_LOGIC_VECTOR( 192 + CONV_INTEGER(OFFSET_Y) + LED_TV_Y_PAL, 9 )     WHEN "01",
+        CONV_STD_LOGIC_VECTOR( 212 + CONV_INTEGER(OFFSET_Y) + LED_TV_Y_PAL, 9 )     WHEN "11",
+        (OTHERS => 'X')                                                             WHEN OTHERS;
+
+    W_V_BLANKING_START  <=  '1' WHEN( W_V_CNT_IN_FIELD = ((W_V_SYNC_INTR_START_LINE + FF_TOP_BORDER_LINES) & (W_FIELD AND REG_R9_INTERLACE_MODE)) )ELSE
+                            '0';
 
     W_V_BLANKING_END    <=  '1' WHEN( (W_V_CNT_IN_FIELD = ("00" & (OFFSET_Y + LED_TV_Y_NTSC) & (W_FIELD AND REG_R9_INTERLACE_MODE)) AND VDPR9PALMODE = '0') OR
                                       (W_V_CNT_IN_FIELD = ("00" & (OFFSET_Y + LED_TV_Y_PAL) & (W_FIELD AND REG_R9_INTERLACE_MODE)) AND VDPR9PALMODE = '1') )ELSE
-                            '0';
-    W_V_BLANKING_START  <=  '1' WHEN( (W_V_CNT_IN_FIELD = ((W_V_SYNC_INTR_START_LINE + LED_TV_Y_NTSC) & (W_FIELD AND REG_R9_INTERLACE_MODE)) AND VDPR9PALMODE = '0') OR
-                                      (W_V_CNT_IN_FIELD = ((W_V_SYNC_INTR_START_LINE + LED_TV_Y_PAL) & (W_FIELD AND REG_R9_INTERLACE_MODE)) AND VDPR9PALMODE = '1') )ELSE
                             '0';
 
 END RTL;

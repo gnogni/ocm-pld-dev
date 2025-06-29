@@ -1,15 +1,15 @@
-Collect the firmware using the scripts for SM-X and SX-2
-========================================================
+Collect the firmware using the scripts for SM-X, SX-2 and SX-E
+==============================================================
 
-Prerequisites:
---------------
-a.  Install Intel Quartus Prime Lite Edition Design Software v23.1 for Windows.
+Prerequisites
+-------------
+a.  Install Intel Quartus Prime Lite Edition Design Software v24.1 for Windows.
 
 b.  Copy the full project in a folder (both 'esemsx3\' and 'ocm_sm\' subfolders).
 
 
-How to:
--------
+How To
+------
 1.  Run one of the "!!-init-*.cmd" scripts to initialize the desired device.
 
 2.  Run '1_sm_compile.cmd' and go with 'Start Compilation' of Quartus Prime.
@@ -28,10 +28,10 @@ How to:
     The 'ocm_sm_512k_dual_epbios_backslash.cof' file is used by default.
 
 
-Note: 
------
+Note
+----
 The 'zz*.cmd' scripts are used to get the Multi-Release in a short time.
 
 
 __________________________________________
-'0_sm_readme.txt' v3.1 by KdL (2023.12.13)
+'0_sm_readme.txt' v3.2 by KdL (2025.06.29)

@@ -4,7 +4,7 @@
 ;   Initial Program Loader for Cyclone & EPCS (Altera)
 ;   Revision 3.00
 ;
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -30,17 +30,18 @@
 ; OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
-; IPL-ROM Revision 2.00 for 512 kB unpacked with Dual-EPBIOS support
+; IPL-ROM Revision 2.00 for 512 KB unpacked with Dual-EPBIOS support
 ; EPCS16 [or higher] start adr 100000h - Optimized by KdL 2020.01.09
 ;
 ; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
-; TASM is at http://www.ticalc.org
+; TASM is at https://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------
 ; History:
 ;   2022/Oct/22nd  v3.00  t.hara  Overall revision.  Coded in ZMA v1.0.15
 ;   2024/Jan/21st         KdL     Added C-BIOS support and other features.
+;   2025/Jan/19th         KdL     Assembly optimized for Multicore (e.g. SX-E).
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -90,7 +91,7 @@ begin_of_code:											; !!!! Address 0x0000 and ROM !!!!
 			ld			a, [megasd_status_register]
 			rrca										; Is the activation this time PowerOnReset?
 			jr			nc, not_power_on_reset
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 not_power_on_reset:
 
 self_copy::
@@ -114,7 +115,7 @@ init_switch_io::
 
 check_already_loaded::
 			ld			a, [bios_updating]
-			cp			a, 0xD4							; If it is a quick reset, boot EPBIOS.
+			cp			a, 0xD4							; If it is a quick reset, boot EPBIOS
 
 			ld			a, DOS_ROM1_BANK
 			ld			[eseram8k_bank2], a				; init ESE-RAM Bank#2
@@ -137,13 +138,13 @@ force_bios_load_from_epbios::
 			ld			a, ICON_ERROR
 stop_with_error::
 			call		vdp_put_icon
-			ld			a, 0x35							; Lock Hard Reset Key
-			out			[0x41], a
+;			ld			a, 0x35							; Lock Hard Reset Key (commented for Multicore or no EPBIOS)
+;			out			[0x41], a
 			ld			a, 0x1F							; Set MegaSD Blink OFF
 			out			[0x41], a
 			ld			a, 0x23							; Set Lights Mode ON + Red Led ON
 			out			[0x41], a
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 			halt										; stop
 
 ; --------------------------------------------------------------------
@@ -161,12 +162,12 @@ sdbios_image_table::
 			include 	"../subroutine/ocm_iplrom_sd_driver.asm"
 			include		"../subroutine/ocm_iplrom_vdp_standard_icon_dual_epbios.asm"
 end_of_code:
-	remain_fat_sectors	:= $							; 2bytes
-	root_entries		:= $ + 2						; 3bytes
-	data_area			:= $ + 5						; 3bytes
-	bank_id				:= $ + 8						; 1byte
-	bios_updating		:= $ + 9						; 1byte: 0xD4: Updating now, the others: Not loaded
-	animation_id		:= $ + 10						; 3bytes
+	remain_fat_sectors	:= $							; 2 bytes
+	root_entries		:= $ + 2						; 3 bytes
+	data_area			:= $ + 5						; 3 bytes
+	bank_id				:= $ + 8						; 1 byte
+	bios_updating		:= $ + 9						; 1 byte	0xD4: Updating now, the others: Not loaded
+	animation_id		:= $ + 10						; 3 bytes
 
 			if (end_of_code - begin_of_code) > 2048
 				error "The size is too BIG. (" + (end_of_code - begin_of_code) + "byte)"

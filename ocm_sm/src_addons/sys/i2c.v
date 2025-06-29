@@ -14,8 +14,8 @@ module i2c
 );
 
 // Clock Setting
-parameter CLK_Freq = 50_000_000; // 50 MHz
-parameter I2C_Freq = 400_000;    // 400 kHz
+parameter CLK_Freq = 50_000_000; // 50MHz
+parameter I2C_Freq = 400_000;    // 400kHz
 
 reg I2C_CLOCK;
 always@(negedge CLK) begin

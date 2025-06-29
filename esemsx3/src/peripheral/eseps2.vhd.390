@@ -51,7 +51,7 @@
 --               pause key.
 -- Jan 23 2004 - Added a 101 keyboard table.
 -- Jan 16 2017 - Improved compatibility for some PS/2 keyboards. (by プー)
--- Aug  6 2021 - Added control-key status in Fkeys(6). by t.hara
+-- Aug  6 2021 - Added ctrl key status in Fkeys(6). by t.hara
 --------------------------------------------------------------------------------
 --
 
@@ -138,7 +138,7 @@ begin
     variable Ps2Scro : std_logic;       -- used for CMT switching
     variable Ps2Shif : std_logic;       -- real shift status
     variable Ps2Vshi : std_logic;       -- virtual shift status
-    variable Ps2Ctrl : std_logic;       -- real control status
+    variable Ps2Ctrl : std_logic;       -- real ctrl status
     variable oFkeys  : std_logic_vector(7 downto 0);
 
     variable KeyId   : std_logic_vector(8 downto 0);
@@ -388,7 +388,7 @@ begin
               Ps2Shif:= not Ps2brk;
               oFkeys(7) := Ps2Shif;
               Ps2Chg := '1';
-            elsif( Ps2Dat = X"14" and Ps2xE1 = '0' )then -- control make, Added by t.hara, 2021/Aug/6th
+            elsif( Ps2Dat = X"14" and Ps2xE1 = '0' )then -- ctrl make       -- Added by t.hara, 2021/Aug/6th
               Ps2Ctrl:= not Ps2brk;
               oFkeys(6) := Ps2Ctrl;
               Ps2Chg := '1';

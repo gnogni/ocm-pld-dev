@@ -121,11 +121,10 @@ ENTITY VDP_TEXT12 IS
         REG_R7_FRAME_COL            : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         REG_R12_BLINK_MODE          : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         REG_R13_BLINK_PERIOD        : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
-
         REG_R2_PT_NAM_ADDR          : IN    STD_LOGIC_VECTOR(  6 DOWNTO 0 );
         REG_R4_PT_GEN_ADDR          : IN    STD_LOGIC_VECTOR(  5 DOWNTO 0 );
         REG_R10R3_COL_ADDR          : IN    STD_LOGIC_VECTOR( 10 DOWNTO 0 );
-        --
+
         PRAMDAT                     : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         PRAMADR                     : OUT   STD_LOGIC_VECTOR( 16 DOWNTO 0 );
         TXVRAMREADEN                : OUT   STD_LOGIC;
@@ -162,7 +161,6 @@ ARCHITECTURE RTL OF VDP_TEXT12 IS
     SIGNAL FF_BLINK_PERIOD_CNT      : STD_LOGIC_VECTOR(  3 DOWNTO 0 );
     SIGNAL W_BLINK_CNT_MAX          : STD_LOGIC_VECTOR(  3 DOWNTO 0 );
     SIGNAL W_BLINK_SYNC             : STD_LOGIC;
-
 BEGIN
 
     -- JP: RAMは DOTSTATEが"10","00"の時にアドレスを出して"01"でアクセスする。
@@ -173,7 +171,7 @@ BEGIN
     --
 
     ----------------------------------------------------------------
-    --
+    -- VRAM ADDRESS ASSIGNMENT
     ----------------------------------------------------------------
     TXCHARCOUNTER       <=  TXCHARCOUNTERSTARTOFLINE + TXCHARCOUNTERX;
 
@@ -251,7 +249,7 @@ BEGIN
     END PROCESS;
 
     ---------------------------------------------------------------------------
-    --
+    -- VRAM READ CONTROL
     ---------------------------------------------------------------------------
     PROCESS( RESET, CLK21M )
     BEGIN
@@ -263,7 +261,7 @@ BEGIN
             TXCHARCOUNTERX              <= (OTHERS => '0');
             PREBLINK                    <= (OTHERS => '0');
             TXCHARCOUNTERSTARTOFLINE    <= (OTHERS => '0');
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             CASE DOTSTATE IS
                 WHEN "11" =>
                     IF( TXPREWINDOWX = '1' ) THEN
@@ -347,15 +345,15 @@ BEGIN
     END PROCESS;
 
     ----------------------------------------------------------------
-    --
+    -- COLOR AND BLINK MANAGEMENT
     ----------------------------------------------------------------
     PROCESS( RESET, CLK21M )
     BEGIN
-        IF(RESET = '1' ) THEN
+        IF( RESET = '1' ) THEN
             PATTERN         <= (OTHERS => '0');
             TXCOLORCODE     <= '0';
             BLINK           <= (OTHERS => '0');
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             -- COLOR CODE DECISION
             -- JP: "01"と"10"のタイミングでかラーコードを出力してあげれば、
             -- JP: VDPエンティティの方でパレットをデコードして色を出力してくれる。
@@ -419,7 +417,7 @@ BEGIN
             FF_BLINK_CLK_CNT <= (OTHERS => '0');
             FF_BLINK_STATE <= '0';
             FF_BLINK_PERIOD_CNT <= (OTHERS => '0');
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( W_BLINK_SYNC = '1' )THEN
 
                 IF (FF_BLINK_CLK_CNT = "1001") THEN

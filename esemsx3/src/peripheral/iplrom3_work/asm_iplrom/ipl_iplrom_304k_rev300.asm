@@ -4,7 +4,7 @@
 ;   Initial Program Loader for Cyclone & EPCS (Altera)
 ;   Revision 3.00
 ;
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -30,11 +30,11 @@
 ; OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ; ------------------------------------------------------------------------------
-; IPL-ROM Revision 2.00 for 512 kB unpacked with Dual-EPBIOS support
+; IPL-ROM Revision 2.00 for 512 KB unpacked with Dual-EPBIOS support
 ; EPCS16 [or higher] start adr 100000h - Optimized by KdL 2020.01.09
 ;
 ; Coded in TASM80 v3.2ud w/ TWZ'CA3 for OCM-PLD Pack v3.4 or later
-; TASM is at http://www.ticalc.org
+; TASM is at https://www.ticalc.org
 ;
 ; SDHC support by Yuukun-OKEI, thanks to MAX
 ; ------------------------------------------------------------------------------

@@ -115,6 +115,7 @@ ENTITY VDP_VGA IS
         PALMODE         : IN    STD_LOGIC; -- Added by caro
         INTERLACEMODE   : IN    STD_LOGIC;
         LEGACY_VGA      : IN    STD_LOGIC;
+        VGA_INT_FIELD   : IN    STD_LOGIC;
         -- VIDEO OUTPUT
         VIDEOROUT       : OUT   STD_LOGIC_VECTOR( 5 DOWNTO 0);
         VIDEOGOUT       : OUT   STD_LOGIC_VECTOR( 5 DOWNTO 0);
@@ -123,7 +124,7 @@ ENTITY VDP_VGA IS
         VIDEOVSOUT_N    : OUT   STD_LOGIC;
         -- HDMI SUPPORT
         BLANK_O         : OUT   STD_LOGIC;
-        -- SWITCHED I/O SIGNALS
+        -- MISC
         RATIOMODE       : IN    STD_LOGIC_VECTOR( 2 DOWNTO 0)
     );
 END VDP_VGA;
@@ -284,8 +285,7 @@ BEGIN
         IF( RESET = '1' )THEN
             XPOSITIONR <= (OTHERS => '0');
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( (HCOUNTERIN = DISP_START_X) OR
-                    (HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) )THEN
+            IF( (HCOUNTERIN = DISP_START_X) OR (HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) )THEN
                 XPOSITIONR <= (OTHERS => '0');
             ELSE
                 XPOSITIONR <= XPOSITIONR + 1;
@@ -299,9 +299,8 @@ BEGIN
         IF( RESET = '1' )THEN
             VIDEOOUTX <= '0';
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( (HCOUNTERIN = DISP_START_X) OR
---                  (HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) )THEN                             -- Full luminance / Blurred image
-                    ((HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) AND INTERLACEMODE = '0') )THEN   -- Half luminance / Sharp image
+            IF( (HCOUNTERIN = DISP_START_X AND (INTERLACEMODE = '0' OR VGA_INT_FIELD = '1')) OR
+                    (HCOUNTERIN = DISP_START_X + (CLOCKS_PER_LINE/2)) )THEN
                 VIDEOOUTX <= '1';
             ELSIF( (HCOUNTERIN = DISP_START_X + DISP_WIDTH) OR
                     (HCOUNTERIN = DISP_START_X + DISP_WIDTH + (CLOCKS_PER_LINE/2)) )THEN

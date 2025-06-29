@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	load BIOS image
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -32,6 +32,7 @@
 ;   2022/Oct/22nd  t.hara  Overall revision.  Coded in ZMA v1.0.15
 ;   2024/Jan/21st  KdL     Added support for C-BIOS.
 ;                          Added special features to [RALT] and [RCTRL] keys.
+;   2025/Jan/20th  KdL     Added [DEL] key as a supplement to the OCM profile.
 ; ==============================================================================
 
 ; --------------------------------------------------------------------
@@ -86,7 +87,7 @@ JIS2_KANJI8_BANK				:= 0xBE
 load_bios::
 			; Load the BIOS image
 			ld			a, 0xD4
-			ld			[bios_updating], a				; Write the bios_updating flag.
+			ld			[bios_updating], a				; Write the bios_updating flag
 
 			ld			a, DOS_ROM1_BANK				; target bank ID on ESE-RAM
 			ld			[bank_id], a
@@ -95,7 +96,7 @@ load_block_loop::
 			ld			a, [hl]
 			inc			hl
 			cp			a, 0x40							; 0...63 : load bios image
-			jr			c, load_bios_images
+			jp			c, load_bios_images
 			jp			z, fill_ff_or_c9
 			cp			a, 0xFE - 1
 			jr			nc, exit_load_bios				; Return with Zf=0 and Cy=0, when finish code 0xFF/0xFE.
@@ -130,26 +131,60 @@ s1:
 			out			[0x4F], a						; 0x0? = normal, 0xF? = inverted
 			out			[0xF4], a						; force MSX logo = ON
 
-			; let's intercept [RALT] key after loading the BIOS
-enforce_slot0_primary_mode::
-			in			a, [0xAA]
-			and			a, 0xF0
-			add			a, 0x0B							; row[B] of the Japanese Key Matrix Table
-			out			[0xAA], a
-			in			a, [0xA9]
+			; let's intercept [DEL] key after loading the BIOS
+safe_mode::
+			ld			b, 0x08							; row[8] of the Japanese Key Matrix Table
+			call		get_row_flags
 			bit			3, a							; bit[3] of the Japanese Key Matrix Table
-			jr			nz, enforce_extra_mapper
-			; bit[3] = 0, [RALT] key is held down
-			ld			a, 0xF9
-			out			[0x41], a						; Slot0 Primary Mode (not expanded)
-			cpl											; a = 0b0000_0110, [RCTRL] key will be ignored
-			; let's intercept [RCTRL] key after loading the BIOS
-enforce_extra_mapper:
-			bit			1, a							; bit[1] of the Japanese Key Matrix Table
-			jr			nz, boot_up_bios
-			; bit[1] = 0, [RCTRL] key is held down
-			ld			a, 0x57							; Extra-Mapper 4096 kB = ON (available only if Slot0 is expanded)
+			jr			nz, exit_safe_mode				; bit[3] = 1
+			; bit[3] = 0, [DEL] key is held down
+			ld			a, 0xFF							; Restore All Defaults
 			out			[0x41], a
+exit_safe_mode:
+
+			; let's intercept [RALT] key after loading the BIOS
+toggle_slot0::
+			in			a, [0x44]
+			ld			c, a							; save d-ID
+			ld			b, 0x0B							; row[B] of the Japanese Key Matrix Table
+			call		get_row_flags
+			bit			3, a							; bit[3] of the Japanese Key Matrix Table
+			jr			nz, toggle_extra_mapper			; bit[3] = 1
+			; bit[3] = 0, [RALT] key is held down
+			in			a, [0xF4]
+			xor			a, 0x80
+			out			[0xF4], a						; set MSX logo = OFF for a visual confirmation
+			ld			a, 0xFF							; set d-ID $00 (= 255-0)
+			out			[0x44], a
+			in			a, [0x4B]
+			bit			7, a							; check Slot0 Mode Req
+			jr			nz, set_slot0_primary_mode		; bit[7] = 1, currently Slot0 is expanded
+			; bit[7] = 0, currently Slot0 is primary
+			ld			a, 0xFA							; set Slot0 Expanded Mode (available from I/O revision 12)
+			out			[0x41], a
+			ld			a, b							; restore the row flags from backup
+			; let's intercept [RCTRL] key after loading the BIOS
+toggle_extra_mapper:
+			bit			1, a							; bit[1] of the Japanese Key Matrix Table
+			jr			nz, exit_toggles				; bit[1] = 1
+			; bit[1] = 0, [RCTRL] key is held down
+			in			a, [0x4B]
+			bit			6, a							; check Extra-Mapper 4096 KB Req
+			jr			nz, disable_extra_mapper		; bit[6] = 1, currently Extra-Mapper 4096 KB is enabled
+			; bit[6] = 0, currently Extra-Mapper 4096 KB is disabled
+			ld			a, 0x57							; set Extra-Mapper 4096 KB = ON (requires Slot0 expanded)
+			jr			exit_out_0x41
+disable_extra_mapper:
+			ld			a, 0x56							; set Extra-Mapper 4096 KB = OFF
+			jr			exit_out_0x41
+set_slot0_primary_mode:
+			ld			a, 0xF9							; set Slot0 Primary Mode
+exit_out_0x41:
+			out			[0x41], a
+exit_toggles:
+			ld			a, c							; restore d-ID
+			cpl
+			out			[0x44], a
 
 boot_up_bios::
 			call		get_msx_version
@@ -167,7 +202,7 @@ bank_init:
 			; initialize ESE-RAM bank registers
 			xor			a, a
 			out			[exp_io_vendor_id_port], a		; ID canceled to support many more cartridges
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 			ld			[eseram8k_bank0], a				; init ESE-RAM Bank#0
 			inc			a
 			ld			[eseram8k_bank1], a				; init ESE-RAM Bank#1
@@ -197,7 +232,7 @@ loop:
 			ex			af,af'
 			call		set_bank
 			push		hl
-			ld			b, 16384 / 512					; Number of sectors equal to 16 kB
+			ld			b, 16384 / 512					; Number of sectors in 16 KB
 			ld			hl, 0x8000
 			read_sector_cbr := $ + 1
 			call		sd_read_sector
@@ -210,7 +245,7 @@ loop:
 			cp			a, DOS_ROM2_BANK
 			jr			nz, skip_ab_check
 			call		ab_check
-			ret			nz								; "AB" not found
+			ret			nz								; return if "AB" mark is not found
 skip_ab_check:
 			ex			af,af'
 			dec			a
@@ -267,9 +302,11 @@ cbios_check::
 			inc			hl
 			cp			a, [hl]
 			pop			hl
-			ret			nz								; "C-" not found
-			ld			a, 0xF9
-			out			[0x41], a						; C-BIOS Mode = ON
+			ret			nz								; return if "C-" mark is not found
+			ld			a, 0xD4							; C-BIOS Mode = ON
+			out			[0x41], a
+			ld			a, 0xF9							; Slot0 Primary Mode (not expanded)
+			out			[0x41], a
 			push		bc
 			ld			bc, 0xC000
 wait_a_moment:
@@ -296,10 +333,10 @@ wait_a_moment:
 			scope		fill_ff_or_c9
 fill_ff_or_c9::
 			call		get_msx_version
-			cp			a, 3						; Is this turboR BIOS?
-			ld			c, 0xFF						; -- No, fill 0xFF
+			cp			a, 3							; Is this turboR BIOS?
+			ld			c, 0xFF							; -- No, fill 0xFF
 			jr			c, fill_ff
-			ld			c, 0xC9						; -- Yes, fill 0xC9
+			ld			c, 0xC9							; -- Yes, fill 0xC9
 fill_ff:
 			call		fill_bank
 			jp			load_block_loop
@@ -382,6 +419,28 @@ set_bank::
 			ld			[eseram8k_bank3], a
 			inc			a
 			ld			[bank_id], a
+			ret
+			endscope
+
+; ------------------------------------------------------------------------------
+;	get_row_flags
+;	input:
+;		b ......... Row index of the Japanese Key Matrix Table (0x00 to 0x0F)
+;	output:
+;		a, b ...... a = Row flags, b = Backup of a
+;	break:
+;		a, b
+;	comment:
+;		Reads the flags of the specified row from the Japanese Key Matrix Table.
+; ------------------------------------------------------------------------------
+			scope		get_row_flags
+get_row_flags::
+			in			a, [0xAA]
+			and			a, 0xF0
+			add			a, b							; row index
+			out			[0xAA], a
+			in			a, [0xA9]
+			ld			b, a
 			ret
 			endscope
 

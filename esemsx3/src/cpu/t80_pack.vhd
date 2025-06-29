@@ -1,7 +1,7 @@
 --
 -- Z80 compatible microprocessor core
 --
--- Version : 0250 (+k05)
+-- Version : 0250 (+k06)
 --
 -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
 --
@@ -51,6 +51,7 @@
 --  +k03 : Version alignment by KdL 2019.05.20
 --  +k04 : Separation of T800 from T80 by KdL 2021.02.01, then reverted on 2023.05.15
 --  +k05 : Version alignment by KdL 2023.05.15
+--  +k06 : Minor fixes by KdL 2025.05.14
 --
 
 library IEEE;
@@ -61,7 +62,6 @@ package T80_Pack is
     component T80
     generic(
         Mode        : integer := 0;  -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
-        R800_MULU   : integer := 1;  -- 0 => no MULU, 1=> R800 MULU
         IOWait      : integer := 0;  -- 0 => Single I/O cycle, 1 => Std I/O cycle
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
@@ -123,7 +123,6 @@ package T80_Pack is
     component T80_MCode
     generic(
         Mode        : integer := 0;
-        R800_MULU   : integer := 1;  -- 0 => no MULU, 1 => MULU with LEs, 2 => MULU with FPGA Multiplier
         Flag_C      : integer := 0;
         Flag_N      : integer := 1;
         Flag_P      : integer := 2;

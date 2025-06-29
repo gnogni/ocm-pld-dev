@@ -2,7 +2,7 @@
 ;	IPL-ROM for OCM-PLD v3.9.1 or later
 ;	load BIOS image
 ; ------------------------------------------------------------------------------
-; Copyright (c) 2021-2024 Takayuki Hara
+; Copyright (c) 2021-2025 Takayuki Hara
 ; All rights reserved.
 ;
 ; Redistribution and use of this source code or any derivative works, are
@@ -85,7 +85,7 @@ JIS2_KANJI8_BANK				:= 0xBE
 load_bios::
 			; Load the BIOS image
 			ld			a, 0xD4
-			ld			[bios_updating], a				; Write the bios_updating flag.
+			ld			[bios_updating], a				; Write the bios_updating flag
 
 			ld			a, DOS_ROM1_BANK				; target bank ID on ESE-RAM
 			ld			[bank_id], a
@@ -142,7 +142,7 @@ bank_init:
 			; initialize ESE-RAM bank registers
 			xor			a, a
 			out			[exp_io_vendor_id_port], a		; ID canceled to support many more cartridges
-			ld			[bios_updating], a				; Delete the bios_updating flag.
+			ld			[bios_updating], a				; Delete the bios_updating flag
 			ld			[eseram8k_bank0], a				; init ESE-RAM Bank#0
 			inc			a
 			ld			[eseram8k_bank1], a				; init ESE-RAM Bank#1

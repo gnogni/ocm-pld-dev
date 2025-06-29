@@ -1,4 +1,4 @@
-# vsim -c -t 1ps -do "run.do" tb 
+# vsim -c -t 1ps -do "run.do" tb
 # Start time: 21:18:59 on Aug 06,2021
 # Loading sv_std.std
 # Loading work.tb

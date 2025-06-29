@@ -218,7 +218,7 @@ begin   -- rtl
     w_channel       <= slot( 4 downto 1 );
 --  w_is_carrier    <= slot( 0 );
 
-    process (clk, reset)
+    process (reset, clk)
 
         variable kflag : std_logic;
         variable tll : std_logic_vector(db_type'high+1 downto 0);

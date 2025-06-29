@@ -149,13 +149,13 @@
 -- JP:     ・A4     スプライトY座標検査
 -- JP:     ・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
 -- JP:
--- JP:     - 非描画中(スプライト準備中)
--- JP:      ・A0     スプライトX座標リード
--- JP:      ・A1     スプライトパターン番号リード
--- JP:      ・A2     スプライトパターン左リード
--- JP:      ・A3     スプライトパターン右リード
--- JP:      ・A4     スプライトカラーリード
--- JP:      ・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
+-- JP:    - 非描画中(スプライト準備中)
+-- JP:     ・A0     スプライトX座標リード
+-- JP:     ・A1     スプライトパターン番号リード
+-- JP:     ・A2     スプライトパターン左リード
+-- JP:     ・A3     スプライトパターン右リード
+-- JP:     ・A4     スプライトカラーリード
+-- JP:     ・A6     VRAM R/W or VDPコマンド (2回に一回ずつ、交互に割り当てる)
 -- JP:
 -- JP:   A5とA7のスロットは実際には使用することもできるのですが、
 -- JP:   これを使ってしまうと実機よりも帯域が増えてしまうので、
@@ -203,6 +203,7 @@ ENTITY VDP_SPRITE IS
         PVDPS0RESETACK              : OUT   STD_LOGIC;
         PVDPS5RESETREQ              : IN    STD_LOGIC;
         PVDPS5RESETACK              : OUT   STD_LOGIC;
+
         -- VDP REGISTERS
         REG_R1_SP_SIZE              : IN    STD_LOGIC;
         REG_R1_SP_ZOOM              : IN    STD_LOGIC;
@@ -210,9 +211,12 @@ ENTITY VDP_SPRITE IS
         REG_R6_SP_GEN_ADDR          : IN    STD_LOGIC_VECTOR(  5 DOWNTO 0 );
         REG_R8_COL0_ON              : IN    STD_LOGIC;
         REG_R8_SP_OFF               : IN    STD_LOGIC;
+        REG_R9_Y_DOTS               : IN    STD_LOGIC;
         REG_R23_VSTART_LINE         : IN    STD_LOGIC_VECTOR(  7 DOWNTO 0 );
         REG_R27_H_SCROLL            : IN    STD_LOGIC_VECTOR(  2 DOWNTO 0 );
+
         SPMODE2                     : IN    STD_LOGIC;
+        SPMAXSPR                    : IN    STD_LOGIC;
         VRAMINTERLEAVEMODE          : IN    STD_LOGIC;
 
         SPVRAMACCESSING             : OUT   STD_LOGIC;
@@ -223,9 +227,9 @@ ENTITY VDP_SPRITE IS
         -- JP: スプライトを描画した時に'1'になる。カラーコード0で
         -- JP: 描画する事もできるので、このビットが必要
         SPCOLOROUT                  : OUT   STD_LOGIC;
+
         -- OUTPUT COLOR
-        SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 );
-        REG_R9_Y_DOTS               : IN    STD_LOGIC
+        SPCOLORCODE                 : OUT   STD_LOGIC_VECTOR(  3 DOWNTO 0 )
     );
 END VDP_SPRITE;
 
@@ -252,6 +256,8 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
 
     SIGNAL FF_SP_EN                 : STD_LOGIC;
     SIGNAL FF_CUR_Y                 : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+    SIGNAL FF_PREV_CUR_Y            : STD_LOGIC_VECTOR(  8 DOWNTO 0 );
+    SIGNAL SPLIT_SCRN               : STD_LOGIC;
 
     SIGNAL FF_VDPS0RESETACK         : STD_LOGIC;
     SIGNAL FF_VDPS5RESETACK         : STD_LOGIC;
@@ -292,7 +298,7 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
 
     -- JP: Y座標検査中のプレーン番号
     SIGNAL FF_Y_TEST_SP_NUM         : STD_LOGIC_VECTOR(  4 DOWNTO 0 );
-    SIGNAL FF_Y_TEST_LISTUP_ADDR    : STD_LOGIC_VECTOR(  3 DOWNTO 0 );   -- 0 - 8
+    SIGNAL FF_Y_TEST_LISTUP_ADDR    : STD_LOGIC_VECTOR(  3 DOWNTO 0 );  -- 0 - 8
     SIGNAL FF_Y_TEST_EN             : STD_LOGIC;
     -- JP: 下書きデータ準備中のローカルプレーン番号
     SIGNAL SPPREPARELOCALPLANENUM   : STD_LOGIC_VECTOR(  2 DOWNTO 0 );
@@ -308,7 +314,7 @@ ARCHITECTURE RTL OF VDP_SPRITE IS
     SIGNAL SPCCD                    : STD_LOGIC;
 
     -- JP: 下書きをしているスプライトのローカルプレーン番号
-    SIGNAL SPPREDRAWLOCALPLANENUM   : STD_LOGIC_VECTOR(  2 DOWNTO 0 );   -- 0 - 7
+    SIGNAL SPPREDRAWLOCALPLANENUM   : STD_LOGIC_VECTOR(  2 DOWNTO 0 );  -- 0 - 7
     SIGNAL SPPREDRAWEND             : STD_LOGIC;
 
     -- JP: ラインバッファへの描画用
@@ -360,7 +366,7 @@ BEGIN
         IF( RESET = '1' )THEN
             FF_SP_EN <= '0';
         ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
-            IF( DOTSTATE = "01" AND DOTCOUNTERX = 256+8 )THEN                   -- Fixed by KdL, 2024/Dec/25th
+            IF( DOTSTATE = "01" AND DOTCOUNTERX = 256+8 )THEN   -- Fixed by KdL, 2024/Dec/25th
                 FF_SP_EN <= (NOT REG_R8_SP_OFF) AND W_ACTIVE;
             END IF;
         END IF;
@@ -379,17 +385,17 @@ BEGIN
         Q           => SPINFORAMDATA_OUT
     );
 
-    SPINFORAMDATA_IN    <=  '0' &
-                            SPINFORAMX_IN & SPINFORAMPATTERN_IN &
-                            SPINFORAMCOLOR_IN & SPINFORAMCC_IN & SPINFORAMIC_IN;
-    SPINFORAMX_OUT      <=  SPINFORAMDATA_OUT( 30 DOWNTO 22 );
-    SPINFORAMPATTERN_OUT<=  SPINFORAMDATA_OUT( 21 DOWNTO  6 );
-    SPINFORAMCOLOR_OUT  <=  SPINFORAMDATA_OUT(  5 DOWNTO  2 );
-    SPINFORAMCC_OUT     <=  SPINFORAMDATA_OUT( 1 );
-    SPINFORAMIC_OUT     <=  SPINFORAMDATA_OUT( 0 );
+    SPINFORAMDATA_IN        <=  '0' &
+                                SPINFORAMX_IN & SPINFORAMPATTERN_IN &
+                                SPINFORAMCOLOR_IN & SPINFORAMCC_IN & SPINFORAMIC_IN;
+    SPINFORAMX_OUT          <=  SPINFORAMDATA_OUT( 30 DOWNTO 22 );
+    SPINFORAMPATTERN_OUT    <=  SPINFORAMDATA_OUT( 21 DOWNTO  6 );
+    SPINFORAMCOLOR_OUT      <=  SPINFORAMDATA_OUT(  5 DOWNTO  2 );
+    SPINFORAMCC_OUT         <=  SPINFORAMDATA_OUT(  1 );
+    SPINFORAMIC_OUT         <=  SPINFORAMDATA_OUT(  0 );
 
-    SPINFORAMADDR <=    SPPREPARELOCALPLANENUM  WHEN( SPSTATE = SPSTATE_PREPARE )ELSE
-                        SPPREDRAWLOCALPLANENUM;
+    SPINFORAMADDR           <=  SPPREPARELOCALPLANENUM  WHEN( SPSTATE = SPSTATE_PREPARE )ELSE
+                                SPPREDRAWLOCALPLANENUM;
 
     -----------------------------------------------------------------------------
     -- SPRITE LINE BUFFER
@@ -468,11 +474,23 @@ BEGIN
     BEGIN
         IF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( (DOTSTATE = "01") AND (DOTCOUNTERX = 0) )THEN
-                --   +1 SHOULD BE NEEDED. BECAUSE IT WILL BE DRAWN IN THE NEXT LINE.
+                -- +1 IS NEEDED BECAUSE IT WILL BE DRAWN ON THE NEXT LINE
                 FF_CUR_Y <= DOTCOUNTERYP + ('0' & REG_R23_VSTART_LINE) + 1;
             END IF;
         END IF;
     END PROCESS;
+
+    PROCESS( CLK21M )
+    BEGIN
+        IF( CLK21M'EVENT AND CLK21M = '1' )THEN
+            IF( DOTSTATE = "01" AND DOTCOUNTERX = 0 )THEN
+                FF_PREV_CUR_Y <= FF_CUR_Y;
+            END IF;
+        END IF;
+    END PROCESS;
+
+    -- SPLIT-SCREEN DETECTION AS A TEMPORARY FIX FOR OUT-OF-BOUNDS SPRITES
+    SPLIT_SCRN <= '0' WHEN( FF_CUR_Y = FF_PREV_CUR_Y + 1 )ELSE '1';
 
     -----------------------------------------------------------------------------
     -- VRAM ADDRESS GENERATOR
@@ -538,7 +556,7 @@ BEGIN
                         '0';
 
     -- [Y_TEST]４つ（８つ）のスプライトが並んでいるかどうかの信号
-    W_SP_OVERMAP    <=  '1' WHEN( (FF_Y_TEST_LISTUP_ADDR(2) = '1' AND SPMODE2 = '0') OR FF_Y_TEST_LISTUP_ADDR(3) = '1' )ELSE
+    W_SP_OVERMAP    <=  '1' WHEN( ((FF_Y_TEST_LISTUP_ADDR(2) = '1' AND SPMODE2 = '0') AND SPMAXSPR = '0') OR FF_Y_TEST_LISTUP_ADDR(3) = '1' )ELSE
                         '0';
 
     -- [Y_TEST]表示中のラインか否か
@@ -706,11 +724,11 @@ BEGIN
     -----------------------------------------------------------------------------
     -- PREPARE SPRITE
     --
-    -- JP: 画面描画中           : 8ドット描画する間に1プレーン、スプライトのY座標を検査し、
-    -- JP:                        表示すべきスプライトをリストアップする。
-    -- JP: 画面非描画中         : リストアップしたスプライトの情報を集め、inforamに格納
+    -- JP: 画面描画中          : 8ドット描画する間に1プレーン、スプライトのY座標を検査し、
+    -- JP:                     表示すべきスプライトをリストアップする。
+    -- JP: 画面非描画中        : リストアップしたスプライトの情報を集め、inforamに格納
     -- JP: 次の画面描画中       : inforamに格納された情報を元に、ラインバッファに描画
-    -- JP: 次の次の画面描画中   : ラインバッファに描画された絵を出力し、画面描画に混ぜる
+    -- JP: 次の次の画面描画中    : ラインバッファに描画された絵を出力し、画面描画に混ぜる
     -----------------------------------------------------------------------------
 
     -- READ TIMING OF SPRITE ATTRIBUTE TABLE
@@ -729,18 +747,18 @@ BEGIN
             -- PREPAREING
             IF( DOTSTATE = "11" )THEN
                 CASE EIGHTDOTSTATE IS
-                WHEN "000" =>                               -- Y READ
-                    IRAMADRPREPARE <= SPATTRIB_ADDR & "00";
-                WHEN "001" =>                               -- X READ
-                    IRAMADRPREPARE <= SPATTRIB_ADDR & "01";
-                WHEN "010" =>                               -- PATTERN NUM READ
-                    IRAMADRPREPARE <= SPATTRIB_ADDR & "10";
-                WHEN "011" | "100" =>                       -- PATTERN READ
-                    IRAMADRPREPARE <= READVRAMADDRPTREAD;
-                WHEN "101" =>                               -- COLOR READ
-                    IRAMADRPREPARE <= READVRAMADDRCREAD;
-                WHEN OTHERS =>
-                    NULL;
+                    WHEN "000" =>                               -- Y READ
+                        IRAMADRPREPARE <= SPATTRIB_ADDR & "00";
+                    WHEN "001" =>                               -- X READ
+                        IRAMADRPREPARE <= SPATTRIB_ADDR & "01";
+                    WHEN "010" =>                               -- PATTERN NUM READ
+                        IRAMADRPREPARE <= SPATTRIB_ADDR & "10";
+                    WHEN "011" | "100" =>                       -- PATTERN READ
+                        IRAMADRPREPARE <= READVRAMADDRPTREAD;
+                    WHEN "101" =>                               -- COLOR READ
+                        IRAMADRPREPARE <= READVRAMADDRCREAD;
+                    WHEN OTHERS =>
+                        NULL;
                 END CASE;
             END IF;
         END IF;
@@ -822,7 +840,7 @@ BEGIN
                                 END IF;
                             WHEN "111" =>
                                 SPPREPARELOCALPLANENUM <= SPPREPARELOCALPLANENUM + 1;
-                                IF( (SPPREPARELOCALPLANENUM = 7) OR ((SPPREPARELOCALPLANENUM = 3 AND SPMODE2='0')) ) THEN
+                                IF( (SPPREPARELOCALPLANENUM = 7) OR (SPMAXSPR = '0' AND (SPPREPARELOCALPLANENUM = 3 AND SPMODE2='0')) ) THEN
                                     SPPREPAREEND <= '1';
                                 END IF;
                             WHEN OTHERS =>
@@ -838,7 +856,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS( RESET, CLK21M )
+    PROCESS( CLK21M )
     BEGIN
         IF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( DOTSTATE = "01" )THEN
@@ -884,7 +902,7 @@ BEGIN
             SPCC0FOUNDV                 := '0';
             LASTCC0LOCALPLANENUMV       := (OTHERS => '0');
 
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( SPSTATE = SPSTATE_YTEST_DRAW ) THEN
                 CASE DOTSTATE IS
                     WHEN "10" =>
@@ -943,12 +961,12 @@ BEGIN
                         --
                         IF( DOTCOUNTERX = 0 ) THEN
                             SPPREDRAWLOCALPLANENUM <= (OTHERS => '0');
-                            SPPREDRAWEND <= REG_R8_SP_OFF;
+                            SPPREDRAWEND <= SPLIT_SCRN OR REG_R8_SP_OFF;
                             LASTCC0LOCALPLANENUMV := (OTHERS => '0');
                             SPCC0FOUNDV := '0';
                         ELSIF( DOTCOUNTERX(4 DOWNTO 0) = 0 ) THEN
                             SPPREDRAWLOCALPLANENUM <= SPPREDRAWLOCALPLANENUM + 1;
-                            IF( (SPPREDRAWLOCALPLANENUM = 7) OR (SPPREDRAWLOCALPLANENUM = 3 AND SPMODE2 = '0') ) THEN
+                            IF( (SPPREDRAWLOCALPLANENUM = 7) OR (SPMAXSPR = '0' AND (SPPREDRAWLOCALPLANENUM = 3 AND SPMODE2 = '0')) ) THEN
                                 SPPREDRAWEND <= '1';
                             END IF;
                         END IF;
@@ -968,8 +986,8 @@ BEGIN
             END IF;
 
             PVDPS0SPCOLLISIONINCIDENCE <= VDPS0SPCOLLISIONINCIDENCEV;
-            PVDPS3S4SPCOLLISIONX    <= VDPS3S4SPCOLLISIONXV;
-            PVDPS5S6SPCOLLISIONY    <= VDPS5S6SPCOLLISIONYV;
+            PVDPS3S4SPCOLLISIONX <= VDPS3S4SPCOLLISIONXV;
+            PVDPS5S6SPCOLLISIONY <= VDPS5S6SPCOLLISIONYV;
         END IF;
     END PROCESS;
 
@@ -981,7 +999,7 @@ BEGIN
     BEGIN
         IF( RESET = '1' )THEN
             SPLINEBUFDISPX  <= (OTHERS => '0');
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( DOTSTATE = "10" )THEN
                 -- JP: DOTCOUNTERと実際の表示(カラーコードの出力)は8ドットずれている
                 IF( DOTCOUNTERX = 8 )THEN
@@ -997,7 +1015,7 @@ BEGIN
     BEGIN
         IF( RESET = '1' ) THEN
             SPWINDOWX <= '0';
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( DOTSTATE = "10" )THEN
                 -- JP: DOTCOUNTERと実際の表示(カラーコードの出力)は8ドットずれている
                 IF( DOTCOUNTERX = 8 )THEN
@@ -1013,7 +1031,7 @@ BEGIN
     BEGIN
         IF( RESET = '1' ) THEN
             SPLINEBUFDISPWE <= '0';
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( DOTSTATE = "10" )THEN
                 SPLINEBUFDISPWE <= '0';
             ELSIF( DOTSTATE = "11" AND SPWINDOWX = '1' )THEN
@@ -1029,11 +1047,11 @@ BEGIN
         IF( RESET = '1' ) THEN
             SPCOLOROUT  <= '0';                     -- JP:  0=透明, 1=スプライトドット
             SPCOLORCODE <= (OTHERS => '0');         -- JP:  SPCOLOROUT=1 の時のスプライトドット色番号
-        ELSIF (CLK21M'EVENT AND CLK21M = '1') THEN
+        ELSIF( CLK21M'EVENT AND CLK21M = '1' )THEN
             IF( DOTSTATE = "01" )THEN
                 IF( SPWINDOWX = '1' ) THEN
-                    SPCOLOROUT  <= SPLINEBUFDISPDATA_OUT( 7 );
-                    SPCOLORCODE <= SPLINEBUFDISPDATA_OUT( 3 DOWNTO 0 );
+                    SPCOLOROUT  <= SPLINEBUFDISPDATA_OUT(7);
+                    SPCOLORCODE <= SPLINEBUFDISPDATA_OUT(3 DOWNTO 0);
                 ELSE
                     SPCOLOROUT  <= '0';
                     SPCOLORCODE <= (OTHERS => '0');

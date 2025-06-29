@@ -69,7 +69,7 @@ begin
 
   ROM2413 : VoiceRom port map(clk, rom_addr, rom_data);
 
-  process (clk, reset)
+  process (reset, clk)
 
     variable init_id  : integer range 0 to VOICE_ID_TYPE'high+1;
 

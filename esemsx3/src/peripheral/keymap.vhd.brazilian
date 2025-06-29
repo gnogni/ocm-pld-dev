@@ -61,6 +61,13 @@
 -- 2022.06.11 modified by KdL
 -- Improved French, Spanish and Brazilian layouts.
 --
+-- 2025.01.20 modified by KdL
+-- Alignment of the RALT and RCTRL keys on all layouts.
+--
+-- 2025.03.23 modified by KdL
+-- Remapped the Han/Zenkaku key from SELECT to UNDERSCORE.
+-- This improves compatibility with 101/102 keyboards.
+--
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -120,15 +127,15 @@ constant rom108 : rom_108 := (
 -- bit     7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
 
 -- Special keys for Brazilian 108 Keyboard
--- PS/2 KEYS        : MSX KEYS
--------------------------------------
--- F6     ($0B)     : [GRAPH]   ($26)
--- F7     ($83)     : [KANA]    ($46)
--- F8     ($0A)     : [SELECT]  ($67)
--- END    ($E0 $69) : [STOP]    ($47)
--- ALT L  ($11)     : [GRAPH]   ($26)
--- ALT R  ($E0 $11) : [CANCEL]  ($3B)
--- CTRL R ($E0 $14) : [EXECUTE] ($1B)
+-- PS/2 KEYS       : MSX KEYS
+------------------------------------
+-- F6    ($0B)     : [GRAPH]   ($26)
+-- F7    ($83)     : [KANA]    ($46)
+-- F8    ($0A)     : [SELECT]  ($67)
+-- END   ($E0 $69) : [STOP]    ($47)
+-- LALT  ($11)     : [GRAPH]   ($26)
+-- RALT  ($E0 $11) : [CANCEL]  ($3B)
+-- RCTRL ($E0 $14) : [EXECUTE] ($1B)
 
 -- 108 keyboard (set 2) / Shift = OFF
 --      PS/2 Scan Code XX
@@ -273,20 +280,21 @@ constant rom106 : rom_106 := (
 
 -- Special keys for Japanese 106 Keyboard
 -- PS/2 KEYS             : MSX KEYS
------------------------------------------
--- F6          ($0B)     : [GRAPH]  ($26)
--- F7          ($83)     : [KANA]   ($46)
--- F8          ($0A)     : [SELECT] ($67)
--- END         ($E0 $69) : [STOP]   ($47)
--- Han/Zenkaku ($0E)     : [SELECT] ($67)
--- Katakana    ($13)     : [KANA]   ($46)
--- ALT L       ($11)     : [GRAPH]  ($26)
--- ALT R       ($E0 11)  : [GRAPH]  ($26)
+---------------------------------------------
+-- F6          ($0B)     : [GRAPH]      ($26)
+-- F7          ($83)     : [KANA]       ($46)
+-- F8          ($0A)     : [SELECT]     ($67)
+-- END         ($E0 $69) : [STOP]       ($47)
+-- Han/Zenkaku ($0E)     : [UNDERSCORE] ($52)
+-- Katakana    ($13)     : [KANA]       ($46)
+-- LALT        ($11)     : [GRAPH]      ($26)
+-- RALT        ($E0 $11) : [CANCEL]     ($3B)
+-- RCTRL       ($E0 $14) : [EXECUTE]    ($1B)
 
 -- Keymap for 106 keyboard (set 2)
 --      PS/2 Scan Code XX
         X"FF", X"3F", X"FF", X"17", X"76", X"56", X"66", X"0F", -- 00
-        X"FF", X"2F", X"67", X"26", X"07", X"37", X"67", X"FF", -- 08
+        X"FF", X"2F", X"67", X"26", X"07", X"37", X"52", X"FF", -- 08
         X"FF", X"26", X"06", X"46", X"16", X"64", X"10", X"FF", -- 10
         X"FF", X"FF", X"75", X"05", X"62", X"45", X"20", X"FF", -- 18
         X"FF", X"03", X"55", X"13", X"23", X"40", X"30", X"FF", -- 20
@@ -321,7 +329,7 @@ constant rom106 : rom_106 := (
 --      PS/2 Scan Code E0 XX
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 00
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", -- 08
-        X"FF", X"26", X"FF", X"FF", X"16", X"FF", X"FF", X"FF", -- 10
+        X"FF", X"3B", X"FF", X"FF", X"1B", X"FF", X"FF", X"FF", -- 10
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"08", -- 18  (LWIN = 0x1F => SPACE)
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"08", -- 20  (RWIN = 0x27 => SPACE)
         X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"FF", X"46", -- 28  (APP  = 0x2F => KANA )

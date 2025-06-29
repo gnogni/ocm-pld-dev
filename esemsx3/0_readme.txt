@@ -1,15 +1,15 @@
 Collect the firmware using the scripts for 1chipMSX and Zemmix Neo
 ==================================================================
 
-Prerequisites:
---------------
+Prerequisites
+-------------
 a.  Install Quartus II v11.0 SP1 Web Edition on a Windows OS.
 
 b.  Copy the full project in a folder ('C:\Altera\esemsx3\' is suggested).
 
 
-How to:
--------
+How To
+------
 1.  Select a machine type using '1_swap.cmd', 1chipMSX is the default type.
 
 2.  Run '2_compile.cmd' and go with 'Start Compilation' of Quartus II.
@@ -29,10 +29,10 @@ How to:
     and run '6_fw-upload.cmd' to start programming via USB-Blaster [USB-0].
 
 
-Note: 
------
+Note
+----
 The 'zz*.cmd' scripts are used to get the Multi-Release in a short time.
 
 
 _______________________________________
-'0_readme.txt' v3.1 by KdL (2023.12.13)
+'0_readme.txt' v3.2 by KdL (2025.06.29)
