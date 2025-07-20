@@ -16,9 +16,9 @@ if exist old_%PARKING% if not exist old_%PARKING%\ del old_%PARKING% >nul 2>nul
 if exist %PARKING% if not exist %PARKING%\ del %PARKING% >nul 2>nul
 if exist %PARKING%\ if exist old_%PARKING%\ rd /S /Q old_%PARKING%\ >nul 2>nul
 if exist %PARKING%\ ren %PARKING%\ old_%PARKING% >nul 2>nul
-set DEVICE=DEVICE1
+set DEVICE=%DEVICE1%
 call :collect_device
-set DEVICE=DEVICE2
+set DEVICE=%DEVICE2%
 call :collect_device
 if exist %PROJECT%.pld md %PARKING%\ >nul 2>nul
 move %PROJECT%.pld %PARKING%\ >nul 2>nul

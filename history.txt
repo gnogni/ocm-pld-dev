@@ -100,7 +100,7 @@
 --                Danilo Angelo, Maarten Loor, Andre Ruiz, Miguel Colom Barco, Marco Casali, Francisco J. Estévez,
 --                Thomas Budsa, Andrea Di Dio, Cesare Zavattari, Franck Sataud, Guilherme Yan, Andrea Gasparrini,
 --                Daniel Rodriguez Ramirez, David Iglesias Teixeira, Stephan Szarafinski, Jose Luis Lerma Moreno,
---                sdsnatcher73, and Marcelo Correia.
+--                sdsnatcher73, Marcelo Correia, Giuseve, and Thijs van der Veen.
 ----------------------------------------------------------------------------------------------------------------------
 --
 -- OCM-PLD is the "Official MSX++ Firmware" from 2022/Jul/21st 11:10AM (CEST) thanks to 西 和彦 [Mr. Kazuhiko Nishi]
