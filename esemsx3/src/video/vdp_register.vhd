@@ -82,6 +82,9 @@
 --  5th,June,2021 by t.hara
 --      Fixed to clear H-blanking interrupt when '0' is written to bit4 of R0.
 --
+--  20th,Nov,2025 by t.hara
+--      Fixed the upper bits of S#4 and S#6 to '1'.
+--
 
 LIBRARY IEEE;
     USE IEEE.STD_LOGIC_1164.ALL;
@@ -417,11 +420,11 @@ BEGIN
                     WHEN "0011" => -- READ S#3
                         DBI <= VDPS3S4SPCOLLISIONX(7 DOWNTO 0);
                     WHEN "0100" => -- READ S#4
-                        DBI <= "0000000" & VDPS3S4SPCOLLISIONX(8);
+                        DBI <= "1111111" & VDPS3S4SPCOLLISIONX(8);
                     WHEN "0101" => -- READ S#5
                         DBI <= VDPS5S6SPCOLLISIONY(7 DOWNTO 0);
                     WHEN "0110" => -- READ S#6
-                        DBI <= "0000000" & VDPS5S6SPCOLLISIONY(8);
+                        DBI <= "1111111" & VDPS5S6SPCOLLISIONY(8);
                     WHEN "0111" => -- READ S#7: THE COLOR REGISTER
                         DBI <= VDPCMDCLR;
                     WHEN "1000" => -- READ S#8: SXTMP LSB
