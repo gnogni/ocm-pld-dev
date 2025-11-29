@@ -16,6 +16,11 @@ _In-development firmware for official MSX++ systems._
 - SX-E
 
 > **Note:** SM-X Mini and SX-Lite are limited to the legacy source package.
+## Contributors
+
+This firmware is the result of collaborative work by multiple authors.  
+The main contributor and maintainer is Luca Chiodi (nickname: KdL, GitHub: gnogni).  
+Other contributors and the global historical context are documented in ['history.txt'](history.txt).
 ## Description
 
 This firmware supports upgrading to MSX2+ with a wide range of additional features managed via a dedicated I/O interface.
