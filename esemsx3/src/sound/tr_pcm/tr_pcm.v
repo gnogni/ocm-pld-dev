@@ -31,6 +31,10 @@
 //
 // ----------------------------------------------------------------------------
 //  Update history
+// ----------------------------------------------------------------------------
+//  20th, July, 2022
+//      Bugfix. Remove NON blocking load by t.hara.
+//
 //  22nd, March, 2021
 //      Modified by KdL
 //      PreScaler with lfsr counter.
@@ -42,9 +46,7 @@
 //  30th, November, 2019
 //      First release by t.hara
 //      But not implemented a digital filter (LPF) yet.
-//
-//  20th, July, 2022
-//      Bugfix. Remove NON blocking load by t.hara.
+// ----------------------------------------------------------------------------
 //
 
 module tr_pcm (
